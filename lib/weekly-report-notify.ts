@@ -18,6 +18,9 @@ type SB = SupabaseClient<Database, any, any, any>
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://errornote.ai'
 
+/** 연속 실패가 이 임계 이상이면 카카오 발송을 스킵하고 인앱만 발송한다. */
+export const KAKAO_FAILURE_FALLBACK_THRESHOLD = 3
+
 export function buildWeeklyReportTemplate(input: {
   studentName: string
   headline: string
@@ -37,8 +40,9 @@ export function buildWeeklyReportTemplate(input: {
 /**
  * 학생에게 주간 리포트 카카오 메시지 발송.
  * - notification_settings 의 암호화된 access token 없음 → no-op
+ * - 연속 실패(kakao_consecutive_failures)가 임계 이상이면 발송 스킵(인앱 폴백)
  * - 401 시 refresh_token 으로 재발급 후 재시도 (RPC kakao_set_tokens 로 재저장)
- * - 성공/실패 결과 반환 (cron 측이 카운팅)
+ * - 성공 → 카운터 0 리셋, 실패 → +1. 결과 반환(cron 측이 카운팅)
  */
 export async function notifyWeeklyReportKakao(
   _supabase: SB,
@@ -56,6 +60,20 @@ export async function notifyWeeklyReportKakao(
     return { sent: false, error: '카카오 연동 안됨' }
   }
 
+  // 연속 실패 임계 도달 → 즉시 폴백 (kakao 발송 안함, 호출 측이 인앱만 처리하도록).
+  const { data: settingsRow } = await admin
+    .from('notification_settings')
+    .select('kakao_consecutive_failures')
+    .eq('user_id', userId)
+    .maybeSingle()
+  const consecutive = settingsRow?.kakao_consecutive_failures ?? 0
+  if (consecutive >= KAKAO_FAILURE_FALLBACK_THRESHOLD) {
+    return {
+      sent: false,
+      error: `kakao_fallback: ${consecutive}회 연속 실패로 카카오 발송 스킵`
+    }
+  }
+
   let token = tokens.access_token
   let result = await sendKakaoMessage(token, template)
 
@@ -71,7 +89,7 @@ export async function notifyWeeklyReportKakao(
       logSecurityEvent({ tag: 'kakao_token', event: 'refresh', user_id: userId })
       result = await sendKakaoMessage(token, template)
     } catch (refreshErr) {
-      return {
+      result = {
         sent: false,
         error: `토큰 갱신 실패: ${
           refreshErr instanceof Error ? refreshErr.message : String(refreshErr)
@@ -79,6 +97,12 @@ export async function notifyWeeklyReportKakao(
       }
     }
   }
+
+  // 결과를 토대로 연속 실패 카운터 갱신. 성공 → 0 리셋, 실패 → +1.
+  await admin
+    .from('notification_settings')
+    .update({ kakao_consecutive_failures: result.sent ? 0 : consecutive + 1 })
+    .eq('user_id', userId)
 
   return result
 }

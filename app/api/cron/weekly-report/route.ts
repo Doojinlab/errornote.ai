@@ -30,6 +30,7 @@ import {
 } from '@/lib/in-app-notifications'
 import { buildWeeklyReportTemplate, notifyWeeklyReportKakao } from '@/lib/weekly-report-notify'
 import { generateWeeklyReportAdmin } from '@/lib/professor-reports-admin'
+import { finishCronRun, startCronRun } from '@/lib/cron-runs'
 import type {
   CronWeeklyReportRequest,
   CronWeeklyReportResponse
@@ -111,6 +112,7 @@ async function runCron(req: Request): Promise<Response> {
   const skipNotify = body.skipNotify === true
 
   const admin = createAdminClient()
+  const runId = await startCronRun(admin, 'weekly-report')
 
   const errors: CronWeeklyReportResponse['errors'] = []
   const counters = {
@@ -119,7 +121,8 @@ async function runCron(req: Request): Promise<Response> {
     professor_reports_created: 0,
     in_app: 0,
     kakao: 0,
-    kakao_failed: 0
+    kakao_failed: 0,
+    kakao_fallback: 0
   }
 
   // 활성 클래스 목록 (또는 단일 클래스).
@@ -130,6 +133,11 @@ async function runCron(req: Request): Promise<Response> {
   if (onlyClassId) classQuery = classQuery.eq('id', onlyClassId)
   const { data: classRaw, error: classErr } = await classQuery
   if (classErr) {
+    await finishCronRun(admin, runId, {
+      status: 'failed',
+      summary: { weekStart, error: 'classes 조회 실패' },
+      errors: [{ scope: 'classes', message: classErr.message }]
+    })
     return NextResponse.json({ error: `classes: ${classErr.message}` }, { status: 500 })
   }
   const classes = (classRaw ?? []) as ClassRow[]
@@ -146,6 +154,9 @@ async function runCron(req: Request): Promise<Response> {
     }
   }
 
+  const status: 'success' | 'partial' | 'failed' =
+    errors.length === 0 ? 'success' : counters.students_processed > 0 ? 'partial' : 'failed'
+
   const response: CronWeeklyReportResponse = {
     ok: true,
     weekStart,
@@ -159,6 +170,22 @@ async function runCron(req: Request): Promise<Response> {
     },
     errors
   }
+
+  await finishCronRun(admin, runId, {
+    status,
+    summary: {
+      weekStart,
+      classes_processed: counters.classes_processed,
+      students_processed: counters.students_processed,
+      professor_reports_created: counters.professor_reports_created,
+      notifications_sent: response.notifications_sent,
+      kakao_fallback_skipped: counters.kakao_fallback
+      // 토큰·비용 관측성은 lib/ai/observability.recordCacheUsage 가 dispatch 마다
+      // task·model 별 메트릭(claude.output_tokens / claude.cost_usd)으로 기록한다.
+    },
+    errors
+  })
+
   return NextResponse.json(response)
 }
 
@@ -169,6 +196,8 @@ interface Counters {
   in_app: number
   kakao: number
   kakao_failed: number
+  /** 연속 실패 임계 도달로 카카오 발송 자체를 건너뛴 횟수. */
+  kakao_fallback: number
 }
 
 // 학생당 Claude(Haiku) 호출은 독립적이므로 제한된 동시성으로 처리한다.
@@ -260,8 +289,12 @@ async function processStudent(
             headline: suggestions.headline
           })
         )
-        if (result.sent) counters.kakao += 1
-        else if (result.error && !result.error.includes('카카오 연동 안됨')) {
+        if (result.sent) {
+          counters.kakao += 1
+        } else if (result.error?.startsWith('kakao_fallback:')) {
+          // 3회 이상 연속 실패로 폴백 — 인앱은 이미 발송됨. 에러로 취급하지 않음.
+          counters.kakao_fallback += 1
+        } else if (result.error && !result.error.includes('카카오 연동 안됨')) {
           counters.kakao_failed += 1
           errors.push({
             scope: `notify_kakao:${agg.student_id}`,
