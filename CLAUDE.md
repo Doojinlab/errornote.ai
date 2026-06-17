@@ -162,3 +162,6 @@ The type file is handwritten until Docker Desktop is available; keep `types/data
 - **`components/ui/`** — shared primitives; do not modify
 - Claude API calls must only be made from `app/api/` route handlers, never from Client Components
 - `types/database.ts` is the single source of Supabase table types; all `supabase.from('table')` calls are typed through it
+
+## 게임화 / 인게이지먼트
+- 설계 기준: docs/gamification-spec.md (재미 우선, 무벌점, 닫힘 루프, 과잉 게임화 경계)
