@@ -2,10 +2,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 const mockCreate = vi.fn()
 
+// Vitest 4 에서 `new Anthropic()` 는 mock 구현을 생성자로 호출한다.
+// 화살표 함수 구현은 생성자가 될 수 없으므로 생성 가능한 class 로 모킹한다.
 vi.mock('@anthropic-ai/sdk', () => ({
-  default: vi.fn().mockImplementation(() => ({
-    messages: { create: mockCreate }
-  }))
+  default: class {
+    messages = { create: mockCreate }
+  }
 }))
 
 import { dispatchText, dispatchJSON } from './dispatch'

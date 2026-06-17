@@ -7,8 +7,13 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database, Json } from '@/types/database'
 import type { InAppNotification } from '@/types/weekly-reports'
 
+// @supabase/ssr@0.5 가 돌려주는 클라이언트는 구 SupabaseClient 제네릭 시그니처라
+// supabase-js@2.105 의 신 시그니처(`SupabaseClient<Database>`)와 직접 대입이 안 된다.
+// 런타임 동작은 동일하므로 스키마 제네릭을 느슨히 받아 호출처 타입을 흡수한다.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Admin = SupabaseClient<Database, any, any, any>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RlsClient = SupabaseClient<Database, any, any, any>
 
 export interface CreateInAppNotificationInput {
   userId: string
@@ -43,7 +48,7 @@ export async function createInAppNotification(
 
 /** RLS 적용 클라이언트(=auth.uid 기반)에서 본인 알림 조회. */
 export async function listInAppNotifications(
-  supabase: SupabaseClient<Database>,
+  supabase: RlsClient,
   userId: string,
   opts: { limit?: number; unreadOnly?: boolean } = {}
 ): Promise<InAppNotification[]> {
@@ -81,7 +86,7 @@ export async function listInAppNotifications(
 
 /** 본인 알림 읽음 처리. RLS 적용 클라이언트에서 호출. */
 export async function markNotificationRead(
-  supabase: SupabaseClient<Database>,
+  supabase: RlsClient,
   notificationId: string
 ): Promise<void> {
   const { error } = await supabase
