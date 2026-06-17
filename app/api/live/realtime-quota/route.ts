@@ -9,6 +9,7 @@
 import { NextResponse } from 'next/server'
 import { requireAuth, AuthError } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase'
+import { captureMessage, trackMetric } from '@/lib/monitoring'
 import type { LiveSessionRow } from '@/types/live'
 
 export const runtime = 'nodejs'
@@ -74,6 +75,20 @@ export async function GET() {
       warnings,
       generated_at: new Date().toISOString()
     }
+
+    // #50 — 운영 메트릭/알림. 임계 초과 시 모니터링으로 경보(Sentry 또는 구조적 로그).
+    trackMetric('realtime.utilization_pct', utilization, {
+      active_sessions: live.length,
+    })
+    if (warnings.length > 0) {
+      captureMessage('Realtime 쿼터 경보', 'warning', {
+        utilization_pct: utilization,
+        active_live_sessions: live.length,
+        potential_concurrent_students: potential,
+        warnings,
+      })
+    }
+
     // 세션 ID 노출 방지로 추가 메타데이터 없이 반환. auth 는 검증용.
     void auth
     return NextResponse.json(body)
