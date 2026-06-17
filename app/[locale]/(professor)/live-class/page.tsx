@@ -55,7 +55,7 @@ export default async function LiveClassPickerPage() {
             return (
               <li key={c.id}>
                 <Link
-                  href={`/live/${c.id}`}
+                  href={`/live-class/${c.id}`}
                   className="block rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-indigo-300 hover:bg-indigo-50/40"
                 >
                   <div className="flex items-center justify-between">

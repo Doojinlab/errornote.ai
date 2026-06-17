@@ -11,7 +11,7 @@
 'use client'
 
 import type { RealtimeChannel } from '@supabase/supabase-js'
-import { createBrowserClient } from '@/lib/supabase'
+import { createBrowserClient } from '@/lib/supabase-browser'
 import type {
   LiveControlPayload,
   LiveTypingPayload

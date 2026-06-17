@@ -23,10 +23,11 @@ const MAX_DRAFT_LENGTH = 8000
 const DEFAULT_CHAPTER = 0
 
 interface Ctx {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-export async function POST(req: Request, { params }: Ctx) {
+export async function POST(req: Request, props: Ctx) {
+  const params = await props.params;
   if (!UUID_RE.test(params.id)) {
     return NextResponse.json({ error: '유효하지 않은 assignmentId' }, { status: 400 })
   }

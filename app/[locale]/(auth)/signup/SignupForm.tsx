@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { useTranslations } from "next-intl";
 import { signup, type SignupState } from "./actions";
-import { createBrowserClient } from "@/lib/supabase";
+import { createBrowserClient } from "@/lib/supabase-browser";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 

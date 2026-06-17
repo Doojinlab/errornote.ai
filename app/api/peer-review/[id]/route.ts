@@ -11,10 +11,8 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 // 리뷰어 본인만 접근 가능. 익명 초안 + 과제 정보 반환.
 // ──────────────────────────────────────────────────────────────
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   let auth
   try {
     auth = await requireAuth('student')
@@ -44,10 +42,8 @@ export async function GET(
 // 임시 저장 (status → in_progress). 최종 제출은 POST /api/peer-review.
 // ──────────────────────────────────────────────────────────────
 
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   let auth
   try {
     auth = await requireAuth('student')

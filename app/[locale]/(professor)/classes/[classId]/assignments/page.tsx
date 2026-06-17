@@ -22,11 +22,12 @@ async function loadClass(classId: string, userId: string): Promise<ClassRow | nu
   return (data as ClassRow | null) ?? null
 }
 
-export default async function AssignmentsPage({
-  params,
-}: {
-  params: { classId: string }
-}) {
+export default async function AssignmentsPage(
+  props: {
+    params: Promise<{ classId: string }>
+  }
+) {
+  const params = await props.params;
   const t = await getTranslations('pages.professor.assignments')
   const supabase = createServerClient()
   const {

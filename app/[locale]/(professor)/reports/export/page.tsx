@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent } from 'react'
 import { useTranslations } from 'next-intl'
-import { createBrowserClient } from '@/lib/supabase'
+import { createBrowserClient } from '@/lib/supabase-browser'
 import type { ExportFormat, AnonymizationLevel } from '@/types/export'
 
 interface ClassOption {

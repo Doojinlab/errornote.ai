@@ -23,11 +23,12 @@ function Stars({ value, ariaLabel }: { value: number; ariaLabel: string }) {
 
 export const dynamic = 'force-dynamic'
 
-export default async function MarketplaceDetailPage({
-  params
-}: {
-  params: { docId: string }
-}) {
+export default async function MarketplaceDetailPage(
+  props: {
+    params: Promise<{ docId: string }>
+  }
+) {
+  const params = await props.params;
   const supabase = createServerClient()
   const {
     data: { user }

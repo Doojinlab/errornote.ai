@@ -19,7 +19,7 @@ const mockChannel = {
 }
 const channelSpy = vi.fn(() => mockChannel)
 
-vi.mock('@/lib/supabase', () => ({
+vi.mock('@/lib/supabase-browser', () => ({
   createBrowserClient: () => ({
     channel: channelSpy,
     removeChannel: removeChannelSpy

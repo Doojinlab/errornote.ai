@@ -5,10 +5,8 @@ import type { MarketplaceRateRequest, MarketplaceRateResponse } from '@/types/ma
 
 export const runtime = 'nodejs'
 
-export async function POST(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   let auth
   try {
     auth = await requireAuth('professor')

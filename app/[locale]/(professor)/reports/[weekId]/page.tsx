@@ -103,11 +103,12 @@ function BlockShell({
 
 export const dynamic = 'force-dynamic'
 
-export default async function ReportDetailPage({
-  params
-}: {
-  params: { weekId: string }
-}) {
+export default async function ReportDetailPage(
+  props: {
+    params: Promise<{ weekId: string }>
+  }
+) {
+  const params = await props.params;
   const t = await getTranslations('pages.professor.reportDetail')
   const supabase = createServerClient()
   const {
