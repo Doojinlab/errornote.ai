@@ -22,11 +22,12 @@ function addDays(iso: string, days: number): string {
 
 export const dynamic = 'force-dynamic'
 
-export default async function ReportsListPage({
-  searchParams
-}: {
-  searchParams: { classId?: string }
-}) {
+export default async function ReportsListPage(
+  props: {
+    searchParams: Promise<{ classId?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createServerClient()
   const {
     data: { user }

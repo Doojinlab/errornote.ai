@@ -3,10 +3,18 @@
 // [창] feat/phase4-weekly-report
 
 import { NextResponse } from 'next/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { requireAuth, AuthError } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase'
+import type { Database } from '@/types/database'
 
 export const runtime = 'nodejs'
+
+// @supabase/ssr@0.5 의 클라이언트 타입은 supabase-js@2.105 의 신 제네릭 시그니처와
+// 어긋나 `.from(...).update(...)` 가 never 로 추론된다. 런타임은 동일하므로
+// 신 시그니처 타입으로 좁혀서 사용한다(스키마 제네릭은 느슨히).
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DbClient = SupabaseClient<Database, any, any, any>
 
 interface ReadBody {
   id?: unknown
@@ -24,7 +32,7 @@ export async function POST(req: Request) {
 
   try {
     const auth = await requireAuth()
-    const supabase = createServerClient()
+    const supabase = createServerClient() as unknown as DbClient
     const now = new Date().toISOString()
 
     if (body.all === true) {

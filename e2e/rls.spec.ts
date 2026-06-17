@@ -21,7 +21,8 @@
 //   PostgREST 에서 RLS 로 차단된 read 는 "에러" 가 아니라 "빈 배열" 로 응답한다.
 //   따라서 본 spec 은 `data?.length === 0` 또는 `data === null` 을 차단의 신호로 본다.
 
-import { test, expect, type SupabaseClient } from '@playwright/test'
+import { test, expect } from '@playwright/test'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { adminClient, anonClient, readRlsEnv, signInClient, tag, type RlsEnv } from './helpers/supabase-clients'
 import type { Database } from '@/types/database'
 

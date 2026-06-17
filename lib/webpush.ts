@@ -69,22 +69,25 @@ interface PushSubscriptionRow {
   created_at: string
 }
 
+// #54 하드닝: 클라이언트 등록은 push_subscriptions 직접 접근 대신 SECURITY DEFINER
+// RPC(register_push_subscription)로만 한다. RPC 내부에서 auth.uid() 로 본인 행만
+// 다루므로 studentId 인자는 호출부 호환을 위해 유지하되 신뢰값으로 쓰지 않는다.
+// (로그인 사용자의 RLS 클라이언트로 호출해야 한다 — service_role 은 auth.uid() 가 없어 거부됨)
 export async function saveSubscription(
   supabase: SB,
-  studentId: string,
+  _studentId: string,
   sub: PushSubscriptionJson
 ): Promise<void> {
-  const row = {
-    student_id: studentId,
-    endpoint: sub.endpoint,
-    subscription: sub as unknown as Json,
-  }
-  const { error } = await supabase
-    .from('push_subscriptions')
-    .upsert(row as never, { onConflict: 'student_id,endpoint' })
-  if (error) throw new Error(`push_subscriptions upsert 실패: ${error.message}`)
+  const { error } = await supabase.rpc('register_push_subscription', {
+    p_endpoint: sub.endpoint,
+    p_subscription: sub as unknown as Json,
+  })
+  if (error) throw new Error(`push_subscriptions 등록 실패: ${error.message}`)
 }
 
+// 만료 구독(410/404) 정리에 service_role(admin) 클라이언트로 호출된다. service_role 은
+// RLS 를 우회하므로 직접 delete 한다. 클라이언트의 본인 해제는 unregister_push_subscription
+// RPC 를 별도로 사용한다(auth.uid() 기반).
 export async function deleteSubscription(
   supabase: SB,
   studentId: string,

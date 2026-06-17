@@ -9,7 +9,7 @@ import type {
   RealtimePostgresInsertPayload,
   RealtimePostgresUpdatePayload
 } from '@supabase/supabase-js'
-import { createBrowserClient } from '@/lib/supabase'
+import { createBrowserClient } from '@/lib/supabase-browser'
 import type {
   LiveErrorInsertEvent,
   LiveSessionUpdateEvent

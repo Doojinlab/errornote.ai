@@ -178,11 +178,12 @@ function formatDate(iso: string | null): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-export default async function ClassDetailPage({
-  params
-}: {
-  params: { classId: string }
-}) {
+export default async function ClassDetailPage(
+  props: {
+    params: Promise<{ classId: string }>
+  }
+) {
+  const params = await props.params;
   const t = await getTranslations('pages.professor.classDetail')
   const supabase = createServerClient()
   const {

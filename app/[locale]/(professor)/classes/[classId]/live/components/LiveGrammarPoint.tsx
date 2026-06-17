@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Button from '@/components/ui/Button'
-import { createBrowserClient } from '@/lib/supabase'
+import { createBrowserClient } from '@/lib/supabase-browser'
 
 interface Props {
   classId: string

@@ -10,10 +10,8 @@ const CONTENT_TYPE: Record<string, string> = {
   txt: 'text/plain; charset=utf-8'
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await requireAuth('professor')
   } catch (err) {

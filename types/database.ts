@@ -1127,6 +1127,14 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: undefined
       }
+      register_push_subscription: {
+        Args: { p_endpoint: string; p_subscription: Json }
+        Returns: undefined
+      }
+      unregister_push_subscription: {
+        Args: { p_endpoint: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

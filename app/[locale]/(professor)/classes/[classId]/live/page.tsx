@@ -4,7 +4,7 @@
 // 5초 폴링 + Supabase realtime INSERT 이벤트 병행.
 // realtime 이 끊겨도 HUD 는 최대 5초 이내에 최신화된다.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, use } from 'react';
 import { useTranslations } from 'next-intl'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -27,10 +27,11 @@ import LiveGrammarPoint from './components/LiveGrammarPoint'
 const POLL_INTERVAL_MS = 5000
 
 interface PageProps {
-  params: { classId: string }
+  params: Promise<{ classId: string }>
 }
 
-export default function LiveClassPage({ params }: PageProps) {
+export default function LiveClassPage(props: PageProps) {
+  const params = use(props.params);
   const t = useTranslations('pages.professor.live')
   const { classId } = params
 

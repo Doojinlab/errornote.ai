@@ -23,11 +23,12 @@ interface RowJoin {
 
 export const dynamic = 'force-dynamic'
 
-export default async function StudentWeeklySuggestionDetail({
-  params
-}: {
-  params: { weekStart: string; classId: string }
-}) {
+export default async function StudentWeeklySuggestionDetail(
+  props: {
+    params: Promise<{ weekStart: string; classId: string }>
+  }
+) {
+  const params = await props.params;
   const auth = await getAuthContext()
   if (!auth) redirect('/login')
   if (auth.role !== 'student') redirect('/dashboard')

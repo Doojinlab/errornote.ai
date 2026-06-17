@@ -4,14 +4,22 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // supabase 클라이언트 모킹 — channel.send 를 spy 로 기록.
-const sendSpy = vi.fn(() => Promise.resolve({ error: null }))
+// 실제 Realtime 처럼 channel.subscribe() 는 채널 자신(=send 보유)을 반환해야 한다.
+// 퍼블리셔가 `.channel(...).subscribe()` 결과를 채널 핸들로 사용하기 때문.
+interface BroadcastSend {
+  type: string
+  event: string
+  payload: { student_id: string; name: string; text: string; ts: string }
+}
+const sendSpy = vi.fn((_opts: BroadcastSend) => Promise.resolve({ error: null }))
 const removeChannelSpy = vi.fn(() => Promise.resolve('ok'))
-const channelSpy = vi.fn(() => ({
-  subscribe: () => ({}),
+const mockChannel = {
+  subscribe: vi.fn(() => mockChannel),
   send: sendSpy
-}))
+}
+const channelSpy = vi.fn(() => mockChannel)
 
-vi.mock('@/lib/supabase', () => ({
+vi.mock('@/lib/supabase-browser', () => ({
   createBrowserClient: () => ({
     channel: channelSpy,
     removeChannel: removeChannelSpy

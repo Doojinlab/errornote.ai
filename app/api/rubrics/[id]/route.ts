@@ -10,10 +10,11 @@ export const runtime = 'nodejs'
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 interface Ctx {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-export async function GET(_req: Request, { params }: Ctx) {
+export async function GET(_req: Request, props: Ctx) {
+  const params = await props.params;
   if (!UUID_RE.test(params.id)) {
     return NextResponse.json({ error: '유효하지 않은 id' }, { status: 400 })
   }
@@ -34,7 +35,8 @@ export async function GET(_req: Request, { params }: Ctx) {
   }
 }
 
-export async function PATCH(req: Request, { params }: Ctx) {
+export async function PATCH(req: Request, props: Ctx) {
+  const params = await props.params;
   if (!UUID_RE.test(params.id)) {
     return NextResponse.json({ error: '유효하지 않은 id' }, { status: 400 })
   }
@@ -89,7 +91,8 @@ export async function PATCH(req: Request, { params }: Ctx) {
   return NextResponse.json({ rubric: data as Rubric })
 }
 
-export async function DELETE(_req: Request, { params }: Ctx) {
+export async function DELETE(_req: Request, props: Ctx) {
+  const params = await props.params;
   if (!UUID_RE.test(params.id)) {
     return NextResponse.json({ error: '유효하지 않은 id' }, { status: 400 })
   }

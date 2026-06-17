@@ -20,7 +20,8 @@ async function loadActiveClassId(userId: string): Promise<string | null> {
   return (data as EnrollmentRow | null)?.class_id ?? null;
 }
 
-export default async function LearnPage({ params }: { params: { chapterId: string } }) {
+export default async function LearnPage(props: { params: Promise<{ chapterId: string }> }) {
+  const params = await props.params;
   const t = await getTranslations("pages.student.learn");
   const supabase = createServerClient();
   const {

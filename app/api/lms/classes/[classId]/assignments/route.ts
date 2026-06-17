@@ -5,10 +5,8 @@ import { formatAssignments } from '@/lib/lms-formatter'
 
 export const runtime = 'nodejs'
 
-export async function GET(
-  req: Request,
-  { params }: { params: { classId: string } },
-) {
+export async function GET(req: Request, props: { params: Promise<{ classId: string }> }) {
+  const params = await props.params;
   const ctx = await validateApiKey(req.headers.get('authorization'))
   if (!ctx) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
