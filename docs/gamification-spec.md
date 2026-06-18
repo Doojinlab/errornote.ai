@@ -3,7 +3,7 @@
 > 제품명: **errornote** (확정) · 도메인: **errornote.ai** (구매 완료)
 > 학습자가 **매일 접속해 계속 쓰고 활동하게** 만드는 것이 목표.
 > 우선순위: **재미 > 효율**. 단, 과잉 게임화로 내적 동기를 훼손하지 않는다.
-> 본 문서는 기존 `Wunote.md` 제품 명세를 보완하는 게임화 레이어 스펙이다.
+> 본 문서는 기존 `errornote.md` 제품 명세를 보완하는 게임화 레이어 스펙이다.
 > 구현은 Claude Code가 §5 로드맵 체크리스트를 하나씩 PR로 처리한다.
 
 ---
@@ -193,8 +193,8 @@
 제품명은 **errornote**로 확정(도메인 errornote.ai). 코드/문서에 남은 `Wunote`/`wunote` 표기를 통일한다.
 
 - [ ] `package.json` — `"name": "wunote"` → `"errornote"`
-- [ ] `README.md` — 제목/설명의 Wunote.ai → errornote
-- [ ] `Wunote.md` — 파일명 및 본문 표기 정리(예: `docs/PRODUCT.md` 또는 `errornote.md`로 이동 고려)
+- [x] `README.md` — 제목/설명의 Wunote.ai → errornote
+- [x] `Wunote.md` → `errornote.md` 로 파일명 변경 + 본문 표기 정리 (CLAUDE.md·README·audits·migrations·sounds README 등 md 전반 표기 통일 완료)
 - [ ] i18n 메시지(`messages/{ko,en,ja}.json`)의 표기
 - [ ] 메타데이터/manifest(`app/layout.tsx`, PWA manifest, OG 태그 등)
 - [ ] 도메인/URL 환경변수(`NEXT_PUBLIC_APP_URL` 등) errornote.ai 반영

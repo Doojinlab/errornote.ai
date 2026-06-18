@@ -1,4 +1,4 @@
-# DB Security Audit — errornote.ai (Wunote.ai)
+# DB Security Audit — errornote.ai
 
 - **스캔 대상**: `supabase/migrations/*.sql` 9개 + `types/database.ts`
 - **기준 시점**: 2026-05-04 (최신 마이그레이션 `20260505000002`)
