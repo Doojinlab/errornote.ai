@@ -43,7 +43,8 @@ describe('router policy', () => {
     const kinds: TaskKind[] = [
       'analyze', 'tutor-chat', 'cardnews', 'rubric-evaluate',
       'pronunciation', 'translate-compare', 'url-analyze',
-      'quiz-generate', 'remedial', 'professor-report', 'daily-quest'
+      'quiz-generate', 'remedial', 'professor-report', 'daily-quest',
+      'graded-reading', 'naturalness-check'
     ]
     for (const k of kinds) {
       const p = policyForTask(k)
