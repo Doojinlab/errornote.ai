@@ -182,7 +182,8 @@ export async function extractContent(rawUrl: string): Promise<ExtractedContent> 
   type CheerioModule = { load: (html: string) => CheerioRoot }
   let cheerio: CheerioModule
   try {
-    // @ts-ignore -- cheerio 미설치 환경에서도 빌드되도록 모듈 해결을 우회한다
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore -- cheerio 미설치 환경에서도 빌드되도록 모듈 해결을 우회한다(설치 시엔 정상 해결되므로 @ts-expect-error 사용 불가)
     cheerio = (await import('cheerio')) as unknown as CheerioModule
   } catch {
     throw new UrlExtractError(

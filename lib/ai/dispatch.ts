@@ -87,7 +87,7 @@ export async function dispatchJSON<T>(
   const raw = await dispatchText(task, opts)
   try {
     return parse(raw)
-  } catch (firstErr) {
+  } catch (_firstErr) {
     const retryMessages: Anthropic.MessageParam[] = [
       ...opts.messages,
       { role: 'assistant', content: raw },

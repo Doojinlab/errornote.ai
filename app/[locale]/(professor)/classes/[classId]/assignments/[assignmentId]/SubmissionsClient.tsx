@@ -37,7 +37,6 @@ function initialScoresFor(rubric: Rubric | null): RubricScoreItem[] {
 }
 
 export default function SubmissionsClient({
-  assignment,
   rubric,
   initialSubmissions,
 }: Props) {

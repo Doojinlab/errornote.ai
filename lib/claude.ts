@@ -97,7 +97,7 @@ export async function completeJSON<T>(
   const raw = await completeText(opts)
   try {
     return parse(raw)
-  } catch (firstErr) {
+  } catch (_firstErr) {
     const retryMessages: Anthropic.MessageParam[] = [
       ...opts.messages,
       { role: 'assistant', content: raw },
