@@ -1179,6 +1179,63 @@ export type Database = {
         }
         Relationships: []
       }
+      reward_items: {
+        Row: {
+          id: string
+          code: string
+          category: 'sound_pack' | 'theme' | 'avatar' | 'sticker'
+          name_ko: string
+          name_zh: string
+          rarity: 'common' | 'rare' | 'epic'
+          icon: string
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          code: string
+          category: 'sound_pack' | 'theme' | 'avatar' | 'sticker'
+          name_ko: string
+          name_zh?: string
+          rarity?: 'common' | 'rare' | 'epic'
+          icon?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string
+          category?: 'sound_pack' | 'theme' | 'avatar' | 'sticker'
+          name_ko?: string
+          name_zh?: string
+          rarity?: 'common' | 'rare' | 'epic'
+          icon?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      reward_inventory: {
+        Row: {
+          id: string
+          student_id: string
+          item_id: string
+          acquired_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          item_id: string
+          acquired_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          item_id?: string
+          acquired_at?: string
+        }
+        Relationships: []
+      }
       daily_quests: {
         Row: {
           id: string
@@ -1294,6 +1351,16 @@ export type Database = {
       advance_error_type_streak: {
         Args: { p_student_id: string; p_code: string; p_had_error: boolean }
         Returns: { no_error_days: number; best_days: number }[]
+      }
+      pull_gacha: {
+        Args: { p_student_id: string; p_cost: number }
+        Returns: {
+          item_code: string
+          item_id: string
+          rarity: 'common' | 'rare' | 'epic'
+          is_duplicate: boolean
+          activity_coins: number
+        }[]
       }
       register_push_subscription: {
         Args: { p_endpoint: string; p_subscription: Json }
