@@ -50,6 +50,7 @@ async function loadEarnedBadgeIds(): Promise<string[]> {
 
 type NavKey =
   | "learn"
+  | "quests"
   | "errors"
   | "vocabulary"
   | "bookmarks"
@@ -72,6 +73,7 @@ type NavKey =
 
 const NAV: Array<{ href: string; key: NavKey }> = [
   { href: "/learn/1", key: "learn" },
+  { href: "/quests", key: "quests" },
   { href: "/errors", key: "errors" },
   { href: "/vocabulary", key: "vocabulary" },
   { href: "/bookmarks", key: "bookmarks" },

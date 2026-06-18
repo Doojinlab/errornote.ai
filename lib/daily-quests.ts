@@ -14,6 +14,8 @@ import type { Json } from '@/types/database'
 export const MISSION_COUNT = 3
 /** 미션 근거로 삼을 어제 오류 상위 유형 수. */
 export const SOURCE_TOP_N = 3
+/** 미션 1개 완료 시 지급되는 활동 화폐(코스메틱). */
+export const QUEST_DONE_COINS = 10
 
 // ── 날짜 유틸 (UTC YYYY-MM-DD) ────────────────────────────────────────────────
 

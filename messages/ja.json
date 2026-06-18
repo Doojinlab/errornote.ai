@@ -6,6 +6,7 @@
   "nav": {
     "student": {
       "learn": "学習",
+      "quests": "クエスト",
       "errors": "エラー記録",
       "vocabulary": "単語帳",
       "bookmarks": "ブックマーク",
@@ -97,6 +98,17 @@
   },
   "pages": {
     "student": {
+      "quests": {
+        "title": "今日のクエスト",
+        "subtitle": "昨日のミスから作った2分ミッションです。误といっしょに取り組みましょう。",
+        "empty": "今日のクエストを準備できませんでした。しばらくして再度お試しください。",
+        "fromYesterday": "昨日の「{label}」のミスから出ました",
+        "complete": "完了",
+        "done": "完了済み",
+        "coinsEarned": "+{coins} スタンプ獲得",
+        "allDone": "今日のミッションをすべて終えました！🎉",
+        "failed": "処理に失敗しました。もう一度お試しください。"
+      },
       "learn": {
         "noActiveClassTitle": "進行中の授業がありません",
         "noActiveClassBody": "担当教員から招待コードを受け取り、授業に登録してください。",
