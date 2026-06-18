@@ -6,6 +6,7 @@
   "nav": {
     "student": {
       "learn": "학습",
+      "quests": "퀘스트",
       "errors": "오류 기록",
       "vocabulary": "단어장",
       "bookmarks": "북마크",
@@ -97,6 +98,17 @@
   },
   "pages": {
     "student": {
+      "quests": {
+        "title": "오늘의 퀘스트",
+        "subtitle": "어제 오류에서 만든 2분 미션이에요. 误 동반자와 함께해요.",
+        "empty": "오늘의 퀘스트를 준비하지 못했어요. 잠시 후 다시 시도해 주세요.",
+        "fromYesterday": "어제 너의 ‘{label}’ 오류에서 나왔어",
+        "complete": "완료",
+        "done": "완료됨",
+        "coinsEarned": "+{coins} 도장 획득",
+        "allDone": "오늘 미션을 모두 끝냈어요! 🎉",
+        "failed": "처리에 실패했어요. 다시 시도해 주세요."
+      },
       "learn": {
         "noActiveClassTitle": "활성 수업이 없습니다",
         "noActiveClassBody": "교수자에게 초대코드를 받아 수업에 등록해주세요.",

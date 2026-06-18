@@ -6,6 +6,7 @@
   "nav": {
     "student": {
       "learn": "Learn",
+      "quests": "Quests",
       "errors": "Error Log",
       "vocabulary": "Vocabulary",
       "bookmarks": "Bookmarks",
@@ -97,6 +98,17 @@
   },
   "pages": {
     "student": {
+      "quests": {
+        "title": "Today's Quests",
+        "subtitle": "Two-minute missions built from yesterday's mistakes. Tackle them with 误.",
+        "empty": "We couldn't prepare today's quests. Please try again shortly.",
+        "fromYesterday": "From your ‘{label}’ mistake yesterday",
+        "complete": "Done",
+        "done": "Completed",
+        "coinsEarned": "+{coins} stamps",
+        "allDone": "You finished all of today's missions! 🎉",
+        "failed": "Something went wrong. Please try again."
+      },
       "learn": {
         "noActiveClassTitle": "No active class",
         "noActiveClassBody": "Ask your professor for an invite code and join a class.",

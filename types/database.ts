@@ -1240,6 +1240,10 @@ export type Database = {
         Args: { p_student_id: string; p_code: string }
         Returns: { status: 'encountered' | 'tamed' | 'graduated'; encounter_count: number }[]
       }
+      record_dex_graduation: {
+        Args: { p_student_id: string; p_code: string }
+        Returns: { newly_graduated: boolean }[]
+      }
       register_push_subscription: {
         Args: { p_endpoint: string; p_subscription: Json }
         Returns: undefined
