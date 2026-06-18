@@ -1140,6 +1140,33 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_quests: {
+        Row: {
+          id: string
+          student_id: string
+          quest_date: string
+          source: Json
+          missions: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          quest_date: string
+          source?: Json
+          missions?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          quest_date?: string
+          source?: Json
+          missions?: Json
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       professor_reports_latest: {
