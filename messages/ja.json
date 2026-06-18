@@ -794,6 +794,15 @@
       }
     },
     "components": {
+      "companion": {
+        "ariaLabel": "学習コンパニオン",
+        "stage1": "误 たね",
+        "stage2": "误 なかま",
+        "stage3": "误 みちしるべ",
+        "stage4": "误 賢者",
+        "streak": "{days}日間いっしょにがんばっています",
+        "welcome": "今日もいっしょに始めましょう"
+      },
       "errorCard": {
         "typeVocab": "語彙",
         "typeGrammar": "文法",

@@ -794,6 +794,15 @@
       }
     },
     "components": {
+      "companion": {
+        "ariaLabel": "학습 동반자",
+        "stage1": "误 씨앗",
+        "stage2": "误 동무",
+        "stage3": "误 길잡이",
+        "stage4": "误 현자",
+        "streak": "{days}일째 함께하고 있어요",
+        "welcome": "오늘도 함께 시작해요"
+      },
       "errorCard": {
         "typeVocab": "어휘",
         "typeGrammar": "문법",
