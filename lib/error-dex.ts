@@ -4,6 +4,8 @@
 // - 학습자별 수집 상태(user_dex_entries)는 RPC(record_dex_encounter) 로만 기록.
 
 import { createServerClient } from './supabase'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database'
 
 export type DexStatus = 'encountered' | 'tamed' | 'graduated'
 /** 학습자 도감 셀의 상태. 아직 만난 적 없으면 'unseen'(미수집). */
@@ -101,7 +103,10 @@ export async function recordDexEncounter(
   studentId: string,
   code: string
 ): Promise<DexEncounterResult> {
-  const supabase = createServerClient()
+  // @supabase/ssr 0.5.x 의 createServerClient 반환 타입이 설치된 supabase-js 2.105 의
+  // SupabaseClient 제네릭 arity 와 어긋나 .rpc() 의 Args 추론이 깨진다(args→undefined).
+  // 정상 타입으로 좁혀 호출한다. (근본 해결: @supabase/ssr 업그레이드 — #53 참조)
+  const supabase = createServerClient() as unknown as SupabaseClient<Database>
   const { data, error } = await supabase.rpc('record_dex_encounter', {
     p_student_id: studentId,
     p_code: code
