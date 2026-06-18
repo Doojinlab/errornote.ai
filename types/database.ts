@@ -517,6 +517,9 @@ export type Database = {
           last_active_date: string | null
           activity_coins: number
           mastery_points: number
+          streak_protectors: number
+          last_protector_grant_date: string | null
+          longest_streak: number
           updated_at: string
         }
         Insert: {
@@ -528,6 +531,9 @@ export type Database = {
           last_active_date?: string | null
           activity_coins?: number
           mastery_points?: number
+          streak_protectors?: number
+          last_protector_grant_date?: string | null
+          longest_streak?: number
           updated_at?: string
         }
         Update: {
@@ -539,6 +545,9 @@ export type Database = {
           last_active_date?: string | null
           activity_coins?: number
           mastery_points?: number
+          streak_protectors?: number
+          last_protector_grant_date?: string | null
+          longest_streak?: number
           updated_at?: string
         }
         Relationships: []
@@ -1140,6 +1149,36 @@ export type Database = {
         }
         Relationships: []
       }
+      error_type_streaks: {
+        Row: {
+          id: string
+          student_id: string
+          species_id: string
+          no_error_days: number
+          best_days: number
+          last_advanced_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          species_id: string
+          no_error_days?: number
+          best_days?: number
+          last_advanced_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          species_id?: string
+          no_error_days?: number
+          best_days?: number
+          last_advanced_date?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       daily_quests: {
         Row: {
           id: string
@@ -1243,6 +1282,18 @@ export type Database = {
       record_dex_graduation: {
         Args: { p_student_id: string; p_code: string }
         Returns: { newly_graduated: boolean }[]
+      }
+      grant_weekly_streak_protector: {
+        Args: { p_student_id: string }
+        Returns: { streak_protectors: number; granted: boolean }[]
+      }
+      consume_streak_protector: {
+        Args: { p_student_id: string }
+        Returns: { streak_protectors: number; consumed: boolean }[]
+      }
+      advance_error_type_streak: {
+        Args: { p_student_id: string; p_code: string; p_had_error: boolean }
+        Returns: { no_error_days: number; best_days: number }[]
       }
       register_push_subscription: {
         Args: { p_endpoint: string; p_subscription: Json }
