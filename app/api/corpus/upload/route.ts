@@ -9,7 +9,7 @@ export const maxDuration = 60
 
 /** DB TEXT 컬럼으로 들어갈 파싱 결과가 극단적으로 커지면 잘라내 저장 비용을 제한한다. */
 const MAX_STORED_TEXT_CHARS = 200_000
-/** 수업당 최대 20개 파일 (Wunote.md 명세) */
+/** 수업당 최대 20개 파일 (errornote.md 명세) */
 const MAX_DOCS_PER_CLASS = 20
 
 export async function POST(req: Request) {

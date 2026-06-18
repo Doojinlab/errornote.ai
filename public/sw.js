@@ -1,4 +1,4 @@
-// Wunote service worker — offline mode + push notifications.
+// errornote service worker — offline mode + push notifications.
 //
 // Cache strategy:
 //   - Static assets (/_next/static, /fonts, /images, /icons, /sounds): cache-first
@@ -11,7 +11,7 @@
 // Bumping VERSION invalidates older caches on activate.
 
 const VERSION = 'v2'
-const STATIC_CACHE = `wunote-static-${VERSION}`
+const STATIC_CACHE = `errornote-static-${VERSION}`
 const ALL_CACHES = [STATIC_CACHE]
 
 const PRECACHE_URLS = [
@@ -125,11 +125,11 @@ self.addEventListener('fetch', (event) => {
 // online listener in components/OfflineQueueFlusher.tsx instead. This handler
 // is purely a best-effort booster and never the primary mechanism.
 self.addEventListener('sync', (event) => {
-  if (event.tag !== 'wunote-offline-flush') return
+  if (event.tag !== 'errornote-offline-flush') return
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
       for (const client of clients) {
-        client.postMessage({ type: 'wunote/flush-offline-queue' })
+        client.postMessage({ type: 'errornote/flush-offline-queue' })
       }
     })
   )
@@ -142,9 +142,9 @@ self.addEventListener('push', (event) => {
   try {
     payload = event.data.json()
   } catch {
-    payload = { title: 'Wunote', body: event.data.text() }
+    payload = { title: 'errornote', body: event.data.text() }
   }
-  const { title = 'Wunote', body = '', url = '/' } = payload
+  const { title = 'errornote', body = '', url = '/' } = payload
   event.waitUntil(
     self.registration.showNotification(title, {
       body,

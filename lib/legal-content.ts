@@ -22,7 +22,7 @@ export interface LegalDoc {
 }
 
 const LAST_UPDATED = '2026-06-17'
-const CONTACT_EMAIL = 'privacy@wunote.ai'
+const CONTACT_EMAIL = 'privacy@errornote.ai'
 
 // ============================================================
 // 개인정보처리방침
@@ -32,7 +32,7 @@ export const PRIVACY: Record<LegalLocale, LegalDoc> = {
     title: '개인정보처리방침',
     updated: LAST_UPDATED,
     intro:
-      'Wunote.ai(이하 "서비스")는 한국 대학 중국어 학습자를 위한 AI 작문 오류 교정 서비스입니다. 본 방침은 서비스가 이용자의 개인정보를 어떻게 수집·이용·보관·파기하는지 설명합니다.',
+      'errornote.ai(이하 "서비스")는 한국 대학 중국어 학습자를 위한 AI 작문 오류 교정 서비스입니다. 본 방침은 서비스가 이용자의 개인정보를 어떻게 수집·이용·보관·파기하는지 설명합니다.',
     sections: [
       {
         heading: '1. 수집하는 개인정보 항목',
@@ -96,7 +96,7 @@ export const PRIVACY: Record<LegalLocale, LegalDoc> = {
     title: 'Privacy Policy',
     updated: LAST_UPDATED,
     intro:
-      'Wunote.ai ("the Service") is an AI-powered Chinese writing error-correction service for Korean university learners. This policy explains how the Service collects, uses, stores, and deletes your personal data.',
+      'errornote.ai ("the Service") is an AI-powered Chinese writing error-correction service for Korean university learners. This policy explains how the Service collects, uses, stores, and deletes your personal data.',
     sections: [
       {
         heading: '1. Data We Collect',
@@ -160,7 +160,7 @@ export const PRIVACY: Record<LegalLocale, LegalDoc> = {
     title: 'プライバシーポリシー',
     updated: LAST_UPDATED,
     intro:
-      'Wunote.ai（以下「本サービス」）は、韓国の大学で中国語を学ぶ学習者向けのAI作文エラー添削サービスです。本ポリシーは、本サービスが利用者の個人情報をどのように収集・利用・保管・削除するかを説明します。',
+      'errornote.ai（以下「本サービス」）は、韓国の大学で中国語を学ぶ学習者向けのAI作文エラー添削サービスです。本ポリシーは、本サービスが利用者の個人情報をどのように収集・利用・保管・削除するかを説明します。',
     sections: [
       {
         heading: '1. 収集する個人情報',
@@ -230,7 +230,7 @@ export const TERMS: Record<LegalLocale, LegalDoc> = {
     title: '이용약관',
     updated: LAST_UPDATED,
     intro:
-      '본 약관은 Wunote.ai(이하 "서비스") 이용에 관한 조건을 정합니다. 서비스에 가입하거나 이용함으로써 본 약관에 동의한 것으로 봅니다.',
+      '본 약관은 errornote.ai(이하 "서비스") 이용에 관한 조건을 정합니다. 서비스에 가입하거나 이용함으로써 본 약관에 동의한 것으로 봅니다.',
     sections: [
       {
         heading: '1. 서비스 내용',
@@ -286,7 +286,7 @@ export const TERMS: Record<LegalLocale, LegalDoc> = {
     title: 'Terms of Service',
     updated: LAST_UPDATED,
     intro:
-      'These Terms govern your use of Wunote.ai ("the Service"). By signing up for or using the Service, you agree to these Terms.',
+      'These Terms govern your use of errornote.ai ("the Service"). By signing up for or using the Service, you agree to these Terms.',
     sections: [
       {
         heading: '1. The Service',
@@ -342,7 +342,7 @@ export const TERMS: Record<LegalLocale, LegalDoc> = {
     title: '利用規約',
     updated: LAST_UPDATED,
     intro:
-      '本規約は Wunote.ai（以下「本サービス」）の利用条件を定めます。本サービスに登録または利用することで、本規約に同意したものとみなします。',
+      '本規約は errornote.ai（以下「本サービス」）の利用条件を定めます。本サービスに登録または利用することで、本規約に同意したものとみなします。',
     sections: [
       {
         heading: '1. サービス内容',

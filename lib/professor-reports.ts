@@ -1,4 +1,4 @@
-// Wunote Phase 2 — 교수자 주간 리포트 생성 헬퍼
+// errornote Phase 2 — 교수자 주간 리포트 생성 헬퍼
 // DB 집계 + Claude 기반 5블록 리포트 생성 + 저장.
 
 import { dispatchJSON } from './ai/dispatch'

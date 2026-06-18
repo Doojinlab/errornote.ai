@@ -53,7 +53,7 @@ function toRecord(row: TargetRow): CardnewsRecord {
 }
 
 function appUrl(weekStart: string): string {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? 'https://wunote.ai'
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? 'https://errornote.ai'
   return `${base.replace(/\/$/, '')}/cardnews/${encodeURIComponent(weekStart)}`
 }
 

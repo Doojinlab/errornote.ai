@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
       // 'black-translucent' overlays content behind the status bar; we don't
       // because our app pages haven't been audited for safe-area insets.
       statusBarStyle: "default",
-      title: "Wunote",
+      title: "errornote",
       startupImage: [
         {
           url: "/icons/apple-splash-2048-2732.png",

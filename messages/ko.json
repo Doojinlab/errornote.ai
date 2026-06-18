@@ -1,6 +1,6 @@
 {
   "meta": {
-    "appName": "Wunote",
+    "appName": "errornote",
     "tagline": "AI 중국어 오류 교정 PWA"
   },
   "nav": {
@@ -241,7 +241,7 @@
       },
       "dataExport": {
         "title": "내 데이터 내보내기",
-        "subtitle": "Wunote.ai에 저장된 개인 데이터 전체를 내려받습니다. 작문 세션, 오류 기록, 단어장, 북마크, 배지가 포함됩니다.",
+        "subtitle": "errornote.ai에 저장된 개인 데이터 전체를 내려받습니다. 작문 세션, 오류 기록, 단어장, 북마크, 배지가 포함됩니다.",
         "includedTitle": "포함 항목",
         "includedProfile": "계정 정보 (이메일, 역할)",
         "includedSessions": "작문 세션 및 오류 분석 전체",
@@ -287,7 +287,7 @@
         "eventPeerReviewAssigned": "동료 평가 배정",
         "inbox": {
           "title": "인앱 알림",
-          "subtitle": "Wunote 안에서 보내드린 알림을 확인할 수 있습니다.",
+          "subtitle": "errornote 안에서 보내드린 알림을 확인할 수 있습니다.",
           "empty": "받은 알림이 없습니다.",
           "emptyUnread": "읽지 않은 알림이 없습니다.",
           "loading": "불러오는 중…",
@@ -436,7 +436,7 @@
         "badgesTitle": "획득한 배지",
         "goalsTitle": "학습 목표",
         "goalProgress": "{current} / {target} ({pct}%)",
-        "generatedFooter": "Wunote.ai · {date}"
+        "generatedFooter": "errornote.ai · {date}"
       },
       "pronunciation": {
         "title": "발음 연습",
@@ -733,7 +733,7 @@
       "notifications": {
         "inbox": {
           "title": "알림함",
-          "subtitle": "Wunote 안에서 보내드린 알림을 확인할 수 있습니다.",
+          "subtitle": "errornote 안에서 보내드린 알림을 확인할 수 있습니다.",
           "empty": "받은 알림이 없습니다.",
           "emptyUnread": "읽지 않은 알림이 없습니다.",
           "loading": "불러오는 중…",

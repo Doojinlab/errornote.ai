@@ -1,4 +1,4 @@
-// Wunote Phase 2 — 교수자 간 자료 공유 마켓플레이스 도메인 타입
+// errornote Phase 2 — 교수자 간 자료 공유 마켓플레이스 도메인 타입
 // 창: feat/phase2-marketplace-dashboard
 // 공용 types/index.ts 는 건드리지 않고 이 파일만 소유한다.
 

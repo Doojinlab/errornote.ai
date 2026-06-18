@@ -170,10 +170,10 @@ export async function sendKakaoMessage(
 const EVENT_MESSAGES: Record<KakaoEventType, (ctx?: string) => KakaoMessageTemplate> = {
   assignment_created: (title?) => ({
     object_type: 'text',
-    text: `📝 새 과제가 등록되었습니다${title ? `: ${title}` : ''}.\nWunote에서 확인하세요.`,
+    text: `📝 새 과제가 등록되었습니다${title ? `: ${title}` : ''}.\nerrornote에서 확인하세요.`,
     link: {
-      web_url: 'https://wunote.ai/assignments',
-      mobile_web_url: 'https://wunote.ai/assignments',
+      web_url: 'https://errornote.ai/assignments',
+      mobile_web_url: 'https://errornote.ai/assignments',
     },
     button_title: '과제 확인',
   }),
@@ -181,8 +181,8 @@ const EVENT_MESSAGES: Record<KakaoEventType, (ctx?: string) => KakaoMessageTempl
     object_type: 'text',
     text: `💬 피드백이 도착했습니다${title ? ` (${title})` : ''}.\n교수님의 코멘트를 확인하세요.`,
     link: {
-      web_url: 'https://wunote.ai/sessions',
-      mobile_web_url: 'https://wunote.ai/sessions',
+      web_url: 'https://errornote.ai/sessions',
+      mobile_web_url: 'https://errornote.ai/sessions',
     },
     button_title: '피드백 보기',
   }),
@@ -190,8 +190,8 @@ const EVENT_MESSAGES: Record<KakaoEventType, (ctx?: string) => KakaoMessageTempl
     object_type: 'text',
     text: `🏆 새 배지를 획득했습니다${name ? `: ${name}` : ''}!\n계속 열심히 학습하세요.`,
     link: {
-      web_url: 'https://wunote.ai/badges',
-      mobile_web_url: 'https://wunote.ai/badges',
+      web_url: 'https://errornote.ai/badges',
+      mobile_web_url: 'https://errornote.ai/badges',
     },
     button_title: '배지 확인',
   }),
@@ -199,8 +199,8 @@ const EVENT_MESSAGES: Record<KakaoEventType, (ctx?: string) => KakaoMessageTempl
     object_type: 'text',
     text: `👥 동료 평가가 배정되었습니다${title ? ` (${title})` : ''}.\n기한 내에 완료해주세요.`,
     link: {
-      web_url: 'https://wunote.ai/peer-review',
-      mobile_web_url: 'https://wunote.ai/peer-review',
+      web_url: 'https://errornote.ai/peer-review',
+      mobile_web_url: 'https://errornote.ai/peer-review',
     },
     button_title: '동료 평가 하기',
   }),

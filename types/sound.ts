@@ -6,7 +6,7 @@
  * - streak: 스트릭 갱신 (불꽃 효과음)
  * - levelUp: 레벨업 (축하 사운드)
  *
- * Wunote.md 558~564행 효과음 명세 참고.
+ * errornote.md 558~564행 효과음 명세 참고.
  */
 export const SOUND_KEYS = ['correct', 'badge', 'errorFound', 'streak', 'levelUp'] as const
 
@@ -25,7 +25,7 @@ export interface SoundPreference {
   enabled: boolean
 }
 
-export const SOUND_STORAGE_KEY = 'wunote.sound.preference'
+export const SOUND_STORAGE_KEY = 'errornote.sound.preference'
 
 export const SOUND_DEFAULT_PREFERENCE: SoundPreference = {
   enabled: true

@@ -73,11 +73,11 @@ export default function OfflineQueueFlusher() {
     const onOnline = () => void attemptFlush()
     window.addEventListener('online', onOnline)
 
-    // Background Sync booster: when the SW fires sync ('wunote-offline-flush')
+    // Background Sync booster: when the SW fires sync ('errornote-offline-flush')
     // it posts a message to all controlled clients. iOS Safari doesn't support
     // sync, so this is purely opportunistic.
     const onSwMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'wunote/flush-offline-queue') void attemptFlush()
+      if (event.data?.type === 'errornote/flush-offline-queue') void attemptFlush()
     }
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', onSwMessage)

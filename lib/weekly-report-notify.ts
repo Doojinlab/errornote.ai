@@ -16,7 +16,7 @@ import type { KakaoMessageTemplate, SendKakaoResult } from '@/types/kakao'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SB = SupabaseClient<Database, any, any, any>
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://wunote.ai'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://errornote.ai'
 
 export function buildWeeklyReportTemplate(input: {
   studentName: string

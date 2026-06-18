@@ -1,6 +1,6 @@
 {
   "meta": {
-    "appName": "Wunote",
+    "appName": "errornote",
     "tagline": "AI-powered Chinese error correction PWA"
   },
   "nav": {
@@ -241,7 +241,7 @@
       },
       "dataExport": {
         "title": "Download my data",
-        "subtitle": "Export a complete copy of your personal data stored in Wunote.ai. Includes writing sessions, error records, vocabulary, bookmarks, and badges.",
+        "subtitle": "Export a complete copy of your personal data stored in errornote.ai. Includes writing sessions, error records, vocabulary, bookmarks, and badges.",
         "includedTitle": "What's included",
         "includedProfile": "Account profile (email, role)",
         "includedSessions": "All writing sessions and error analyses",
@@ -436,7 +436,7 @@
         "badgesTitle": "Badges Earned",
         "goalsTitle": "Learning Goals",
         "goalProgress": "{current} / {target} ({pct}%)",
-        "generatedFooter": "Wunote.ai · {date}"
+        "generatedFooter": "errornote.ai · {date}"
       },
       "pronunciation": {
         "title": "Pronunciation Practice",
