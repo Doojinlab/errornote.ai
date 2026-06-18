@@ -5,6 +5,9 @@ import {
   addXp,
   updateStreak,
   getSnapshot,
+  awardActivityCoins,
+  spendActivityCoins,
+  awardMasteryPoints,
   LEVEL_THRESHOLDS,
   XP_FOR_DRAFT,
   XP_FOR_REVISION,
@@ -38,6 +41,10 @@ let mockStatsData: { data: unknown; error: null | { message: string } } = {
 }
 let mockUpdateResult: { error: null | { message: string } } = { error: null }
 let mockInsertResult: { error: null | { message: string } } = { error: null }
+let mockRpcResult: { data: unknown; error: null | { message: string } } = {
+  data: null,
+  error: null
+}
 
 const mockSupabase = {
   from: vi.fn((table: string) => {
@@ -55,7 +62,8 @@ const mockSupabase = {
       }
     }
     return makeChain({ data: null, error: null })
-  })
+  }),
+  rpc: vi.fn((_fn: string, _args: unknown) => Promise.resolve(mockRpcResult))
 }
 
 vi.mock('./supabase', () => ({
@@ -278,5 +286,84 @@ describe('getSnapshot()', () => {
     mockStatsData = { data: { level: 4, xp: 9999, streak_days: 1, last_active_date: '2026-04-20' }, error: null }
     const snap = await getSnapshot('student-max')
     expect(snap.next_level_xp).toBeNull()
+  })
+
+  it('이중 화폐를 스냅샷에 포함한다', async () => {
+    mockStatsData = {
+      data: { level: 2, xp: 600, streak_days: 3, last_active_date: '2026-04-20', activity_coins: 80, mastery_points: 4 },
+      error: null
+    }
+    const snap = await getSnapshot('student-1')
+    expect(snap.activity_coins).toBe(80)
+    expect(snap.mastery_points).toBe(4)
+  })
+
+  it('화폐 컬럼이 없는 구 데이터는 0 으로 보정', async () => {
+    mockStatsData = { data: { level: 1, xp: 0, streak_days: 0, last_active_date: null }, error: null }
+    const snap = await getSnapshot('student-legacy')
+    expect(snap.activity_coins).toBe(0)
+    expect(snap.mastery_points).toBe(0)
+  })
+})
+
+// ── 이중 화폐 (award_currency RPC) ────────────────────────────────────────────
+
+describe('awardActivityCoins() / spendActivityCoins() / awardMasteryPoints()', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockRpcResult = { data: [{ activity_coins: 100, mastery_points: 5 }], error: null }
+  })
+
+  it('유효하지 않은 amount → 에러 throw', async () => {
+    await expect(awardActivityCoins('s1', 0)).rejects.toThrow('awardActivityCoins amount')
+    await expect(spendActivityCoins('s1', -1)).rejects.toThrow('spendActivityCoins amount')
+    await expect(awardMasteryPoints('s1', NaN)).rejects.toThrow('awardMasteryPoints amount')
+  })
+
+  it('적립 → award_currency 를 양의 activity_delta 로 호출하고 잔액 반환', async () => {
+    const state = await awardActivityCoins('s1', 50)
+    expect(mockSupabase.rpc).toHaveBeenCalledWith('award_currency', {
+      p_student_id: 's1',
+      p_activity_delta: 50,
+      p_mastery_delta: 0
+    })
+    expect(state).toEqual({ activityCoins: 100, masteryPoints: 5 })
+  })
+
+  it('소수점 amount → floor 후 호출', async () => {
+    await awardActivityCoins('s1', 50.9)
+    expect(mockSupabase.rpc).toHaveBeenCalledWith('award_currency', {
+      p_student_id: 's1',
+      p_activity_delta: 50,
+      p_mastery_delta: 0
+    })
+  })
+
+  it('소비 → 음의 activity_delta 로 호출', async () => {
+    await spendActivityCoins('s1', 30)
+    expect(mockSupabase.rpc).toHaveBeenCalledWith('award_currency', {
+      p_student_id: 's1',
+      p_activity_delta: -30,
+      p_mastery_delta: 0
+    })
+  })
+
+  it('숙련 화폐 → mastery_delta 만 양수, activity_delta 0', async () => {
+    await awardMasteryPoints('s1', 3)
+    expect(mockSupabase.rpc).toHaveBeenCalledWith('award_currency', {
+      p_student_id: 's1',
+      p_activity_delta: 0,
+      p_mastery_delta: 3
+    })
+  })
+
+  it('RPC error → 에러 throw', async () => {
+    mockRpcResult = { data: null, error: { message: 'rpc boom' } }
+    await expect(awardActivityCoins('s1', 10)).rejects.toThrow('award_currency RPC 실패')
+  })
+
+  it('빈 결과 → 에러 throw', async () => {
+    mockRpcResult = { data: [], error: null }
+    await expect(awardActivityCoins('s1', 10)).rejects.toThrow('비어 있습니다')
   })
 })
