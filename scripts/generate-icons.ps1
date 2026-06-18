@@ -1,4 +1,4 @@
-# Generate Wunote PWA icons (any + maskable variants).
+# Generate errornote PWA icons (any + maskable variants).
 #
 # Outputs:
 #   public/icons/icon-192.png         - any  purpose, full bleed (no safe zone)
@@ -22,7 +22,7 @@ $primaryHi = [System.Drawing.ColorTranslator]::FromHtml('#6366F1')  # indigo-500
 $accent    = [System.Drawing.ColorTranslator]::FromHtml('#FBBF24')  # amber-400 (correction underline)
 $paper     = [System.Drawing.ColorTranslator]::FromHtml('#FFFFFF')
 
-function New-WunoteIcon {
+function New-ErrornoteIcon {
     param(
         [int]$Size,
         [bool]$Maskable
@@ -114,13 +114,13 @@ function New-WunoteIcon {
     Write-Output ("wrote {0}" -f $path)
 }
 
-New-WunoteIcon -Size 192 -Maskable $false
-New-WunoteIcon -Size 512 -Maskable $false
-New-WunoteIcon -Size 192 -Maskable $true
-New-WunoteIcon -Size 512 -Maskable $true
+New-ErrornoteIcon -Size 192 -Maskable $false
+New-ErrornoteIcon -Size 512 -Maskable $false
+New-ErrornoteIcon -Size 192 -Maskable $true
+New-ErrornoteIcon -Size 512 -Maskable $true
 
 # Apple touch icon — 180x180, opaque, no transparency (iOS Safari ignores transparency).
-New-WunoteIcon -Size 180 -Maskable $false
+New-ErrornoteIcon -Size 180 -Maskable $false
 $apple = Join-Path $out 'icon-180.png'
 $src   = Join-Path $out 'icon-180.png'
 if (Test-Path $src) {

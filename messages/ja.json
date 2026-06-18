@@ -1,6 +1,6 @@
 {
   "meta": {
-    "appName": "Wunote",
+    "appName": "errornote",
     "tagline": "AI中国語エラー訂正PWA"
   },
   "nav": {
@@ -241,7 +241,7 @@
       },
       "dataExport": {
         "title": "データをダウンロード",
-        "subtitle": "Wunote.aiに保存されている個人データをすべてダウンロードします。作文セッション、エラー記録、単語帳、ブックマーク、バッジが含まれます。",
+        "subtitle": "errornote.aiに保存されている個人データをすべてダウンロードします。作文セッション、エラー記録、単語帳、ブックマーク、バッジが含まれます。",
         "includedTitle": "含まれる内容",
         "includedProfile": "アカウント情報（メール、役割）",
         "includedSessions": "全作文セッションとエラー分析",
@@ -436,7 +436,7 @@
         "badgesTitle": "獲得バッジ",
         "goalsTitle": "学習目標",
         "goalProgress": "{current} / {target} ({pct}%)",
-        "generatedFooter": "Wunote.ai · {date}"
+        "generatedFooter": "errornote.ai · {date}"
       },
       "pronunciation": {
         "title": "発音練習",

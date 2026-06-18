@@ -33,7 +33,7 @@ function getApiKey(): string {
 }
 
 function getDefaultFrom(): string {
-  return process.env.RESEND_FROM_EMAIL ?? 'Wunote <noreply@wunote.ai>'
+  return process.env.RESEND_FROM_EMAIL ?? 'errornote <noreply@errornote.ai>'
 }
 
 export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
@@ -101,7 +101,7 @@ function renderBar(points: Array<{ name: string; value: number }>): string {
 export interface CardnewsEmailOptions {
   record: CardnewsRecord
   studentName: string | null
-  appUrl: string // 예: https://wunote.ai/cardnews/<weekId>
+  appUrl: string // 예: https://errornote.ai/cardnews/<weekId>
 }
 
 export function renderCardnewsEmail({
@@ -111,7 +111,7 @@ export function renderCardnewsEmail({
 }: CardnewsEmailOptions): { subject: string; html: string } {
   const { card1, card2, card3, card4, goal_progress, week_start } = record
   const name = studentName?.trim() || '학습자'
-  const subject = `[Wunote] ${week_start} 주간 카드뉴스 📬`
+  const subject = `[errornote] ${week_start} 주간 카드뉴스 📬`
 
   const html = `<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><title>${esc(subject)}</title></head>
@@ -172,7 +172,7 @@ export function renderCardnewsEmail({
       <a href="${esc(appUrl)}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;">앱에서 자세히 보기</a>
     </p>
     <p style="font-size:10px;color:#94a3b8;text-align:center;margin:20px 0 0;">
-      이메일 수신을 원하지 않으시면 Wunote 설정에서 알림을 끌 수 있습니다.
+      이메일 수신을 원하지 않으시면 errornote 설정에서 알림을 끌 수 있습니다.
     </p>
   </div>
 </body></html>`

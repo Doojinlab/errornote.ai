@@ -1,4 +1,4 @@
--- Wunote Phase 1 demo seed
+-- errornote Phase 1 demo seed
 -- Idempotent: safe to re-run via `supabase db reset`.
 --
 -- Creates: 1 professor + 2 students, 1 class with 2 enrollments,
@@ -12,9 +12,9 @@
 -- ------------------------------------------------------------
 delete from auth.users
 where email in (
-  'prof.demo@wunote.test',
-  'student1.demo@wunote.test',
-  'student2.demo@wunote.test'
+  'prof.demo@errornote.test',
+  'student1.demo@errornote.test',
+  'student2.demo@errornote.test'
 );
 
 -- ------------------------------------------------------------
@@ -30,7 +30,7 @@ insert into auth.users (
     '00000000-0000-0000-0000-000000000000',
     'e1111111-1111-1111-1111-111111111111',
     'authenticated', 'authenticated',
-    'prof.demo@wunote.test',
+    'prof.demo@errornote.test',
     crypt('demo-password-1234', gen_salt('bf')),
     now(),
     '{"provider":"email","providers":["email"]}',
@@ -42,7 +42,7 @@ insert into auth.users (
     '00000000-0000-0000-0000-000000000000',
     'e2222222-2222-2222-2222-222222222222',
     'authenticated', 'authenticated',
-    'student1.demo@wunote.test',
+    'student1.demo@errornote.test',
     crypt('demo-password-1234', gen_salt('bf')),
     now(),
     '{"provider":"email","providers":["email"]}',
@@ -54,7 +54,7 @@ insert into auth.users (
     '00000000-0000-0000-0000-000000000000',
     'e3333333-3333-3333-3333-333333333333',
     'authenticated', 'authenticated',
-    'student2.demo@wunote.test',
+    'student2.demo@errornote.test',
     crypt('demo-password-1234', gen_salt('bf')),
     now(),
     '{"provider":"email","providers":["email"]}',
@@ -73,7 +73,7 @@ insert into public.classes (
   'e1111111-1111-1111-1111-111111111111',
   '중급 중국어 작문',
   '2026-1',
-  'WUNOTE-DEMO',
+  'ERRORNOTE-DEMO',
   true,
   '把자문'
 );

@@ -1,4 +1,4 @@
-// Wunote Phase 2 — 학습 목표 설정·추적 타입
+// errornote Phase 2 — 학습 목표 설정·추적 타입
 // [소유자] feat/phase2-goals-translate. lib/goals.ts 및 app/api/goals/* 에서 공유.
 
 export type GoalType = 'error_type' | 'error_count' | 'vocab_count'

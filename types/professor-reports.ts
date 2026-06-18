@@ -1,4 +1,4 @@
-// Wunote Phase 2 — 교수자 주간 AI 리포트 도메인 타입
+// errornote Phase 2 — 교수자 주간 AI 리포트 도메인 타입
 // 창: feat/phase2-marketplace-dashboard
 // 리포트 5블록: 포커스 포인트 / 칭찬 / 관심 필요 / 화석화 위험 / 다음 수업 제안
 

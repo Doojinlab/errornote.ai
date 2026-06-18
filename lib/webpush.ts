@@ -43,7 +43,7 @@ function getWebPush(): WebPushModule | null {
 let _vapidConfigured = false
 function configureVapid(wp: WebPushModule): void {
   if (_vapidConfigured) return
-  const subject = process.env.WEB_PUSH_SUBJECT ?? 'mailto:noreply@wunote.ai'
+  const subject = process.env.WEB_PUSH_SUBJECT ?? 'mailto:noreply@errornote.ai'
   const pub = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
   const priv = process.env.VAPID_PRIVATE_KEY
   if (!pub || !priv) {

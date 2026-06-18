@@ -27,7 +27,7 @@ export default function LearnClient({ classId, chapterId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [focusedErrorId, setFocusedErrorId] = useState<number | null>(null);
   // 한 번이라도 분석 결과를 받은 적이 있으면 다음 분석은 "수정고" 로 간주.
-  // (오류 0개 수정고 → correct.mp3, Wunote.md 559)
+  // (오류 0개 수정고 → correct.mp3, errornote.md 559)
   const [hasSubmittedBefore, setHasSubmittedBefore] = useState(false);
 
   async function analyze() {

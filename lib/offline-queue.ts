@@ -21,7 +21,7 @@
  * `online` event to flushOfflineQueue and renders a toast.
  */
 
-const DB_NAME = 'wunote-offline'
+const DB_NAME = 'errornote-offline'
 const DB_VERSION = 1
 const STORE = 'queue'
 
@@ -331,7 +331,7 @@ async function registerBackgroundSync(): Promise<void> {
     const reg = await navigator.serviceWorker.ready
     const sync = (reg as unknown as { sync?: { register: (tag: string) => Promise<void> } }).sync
     if (sync?.register) {
-      await sync.register('wunote-offline-flush')
+      await sync.register('errornote-offline-flush')
     }
   } catch {
     // Background Sync unavailable — no-op.

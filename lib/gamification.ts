@@ -2,7 +2,7 @@ import { createServerClient, createAdminClient } from './supabase'
 import { notifyKakaoEvent } from './kakao'
 import type { GamificationSnapshot } from '@/types'
 
-// XP 획득 기준 (Wunote.md) — 한 곳에서 관리
+// XP 획득 기준 (errornote.md) — 한 곳에서 관리
 export const XP_FOR_DRAFT = 10
 export const XP_FOR_REVISION = 20
 export const XP_FOR_ZERO_ERROR_REVISION = 50

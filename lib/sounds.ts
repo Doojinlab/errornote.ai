@@ -38,7 +38,7 @@ export function saveSoundPreference(pref: SoundPreference): void {
 }
 
 /** 게이미피케이션 상태 비교용 localStorage 키 — 새 배지/레벨/스트릭 감지에 사용. */
-export const SOUND_STATE_SNAPSHOT_KEY = 'wunote.sound.lastState'
+export const SOUND_STATE_SNAPSHOT_KEY = 'errornote.sound.lastState'
 
 export interface SoundStateSnapshot {
   level: number

@@ -1,4 +1,4 @@
-// Wunote Phase 2 — 마켓플레이스 서버 헬퍼
+// errornote Phase 2 — 마켓플레이스 서버 헬퍼
 // Supabase 쿼리 래퍼. Route Handler / Server Component 양쪽에서 호출된다.
 
 import { createServerClient } from './supabase'
