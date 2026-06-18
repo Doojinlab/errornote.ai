@@ -9,7 +9,7 @@
 //   3. 카드 클릭 → 풀뷰 모달
 //   4. 시작 시 'control:started' broadcast 로 학생측 입력창 활성화 신호 송출
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   subscribeToLiveTyping,
   broadcastLiveControl

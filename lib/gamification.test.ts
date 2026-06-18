@@ -19,10 +19,6 @@ import {
 
 // ── mock 외부 의존성 ──────────────────────────────────────────────────────────
 
-const mockUpdate = vi.fn()
-const mockInsert = vi.fn()
-const mockSelect = vi.fn()
-
 // Supabase 체이닝 빌더를 반환하는 헬퍼
 function makeChain(result: unknown) {
   const chain = {
@@ -212,10 +208,6 @@ describe('updateStreak()', () => {
   })
 
   it('오늘 이미 갱신한 경우 → changed false', async () => {
-    const today = new Date().toISOString().slice(0, 10).replace(
-      /(\d{4})-(\d{2})-(\d{2})/,
-      (_, y, m, d) => `${y}-${m}-${d}`
-    )
     // UTC 기준 오늘 날짜 계산
     const utcToday = `${new Date().getUTCFullYear()}-${String(new Date().getUTCMonth() + 1).padStart(2, '0')}-${String(new Date().getUTCDate()).padStart(2, '0')}`
     mockStatsData = { data: { level: 1, xp: 0, streak_days: 3, last_active_date: utcToday }, error: null }

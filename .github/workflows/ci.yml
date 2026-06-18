@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # npm ci 가 아닌 npm install 을 쓴다: 현재 package-lock.json 이 package.json 과
+      # 어긋나 있고(next 16 bump 시 lock 미재생성 → @swc/helpers 등 transitive 드리프트),
+      # npm 버전에 따라 resolve 결과가 달라 npm ci(엄격)는 환경 간 불안정하다.
+      # lock 을 표준 npm 으로 재생성해 동기화하면 npm ci 로 전환 가능(후속 과제).
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      # 정보성(차단 안 함): high+ 취약점을 로그로 노출하되 머지는 막지 않는다.
+      # 진짜 게이트는 typecheck/lint/test. 신뢰되는 lock 정착 후 차단형으로 승격 가능.
+      - name: Security audit (informational)
+        continue-on-error: true
+        run: npm audit --audit-level=high

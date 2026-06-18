@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE(_req: NextRequest) {
   const supabase = createServerClient()
   const {
     data: { user },
