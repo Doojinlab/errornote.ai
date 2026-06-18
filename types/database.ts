@@ -515,6 +515,8 @@ export type Database = {
           xp: number
           streak_days: number
           last_active_date: string | null
+          activity_coins: number
+          mastery_points: number
           updated_at: string
         }
         Insert: {
@@ -524,6 +526,8 @@ export type Database = {
           xp?: number
           streak_days?: number
           last_active_date?: string | null
+          activity_coins?: number
+          mastery_points?: number
           updated_at?: string
         }
         Update: {
@@ -533,6 +537,8 @@ export type Database = {
           xp?: number
           streak_days?: number
           last_active_date?: string | null
+          activity_coins?: number
+          mastery_points?: number
           updated_at?: string
         }
         Relationships: []
@@ -1062,6 +1068,78 @@ export type Database = {
         }
         Relationships: []
       }
+      error_species: {
+        Row: {
+          id: string
+          code: string
+          category: 'vocab' | 'grammar'
+          name_zh: string
+          name_ko: string
+          hsk_level: number | null
+          description: string
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          code: string
+          category: 'vocab' | 'grammar'
+          name_zh: string
+          name_ko: string
+          hsk_level?: number | null
+          description?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string
+          category?: 'vocab' | 'grammar'
+          name_zh?: string
+          name_ko?: string
+          hsk_level?: number | null
+          description?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      user_dex_entries: {
+        Row: {
+          id: string
+          student_id: string
+          species_id: string
+          status: 'encountered' | 'tamed' | 'graduated'
+          encounter_count: number
+          first_encountered_at: string
+          tamed_at: string | null
+          graduated_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          species_id: string
+          status?: 'encountered' | 'tamed' | 'graduated'
+          encounter_count?: number
+          first_encountered_at?: string
+          tamed_at?: string | null
+          graduated_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          species_id?: string
+          status?: 'encountered' | 'tamed' | 'graduated'
+          encounter_count?: number
+          first_encountered_at?: string
+          tamed_at?: string | null
+          graduated_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       professor_reports_latest: {
@@ -1126,6 +1204,14 @@ export type Database = {
       kakao_clear_tokens: {
         Args: { p_user_id: string }
         Returns: undefined
+      }
+      award_currency: {
+        Args: { p_student_id: string; p_activity_delta?: number; p_mastery_delta?: number }
+        Returns: { activity_coins: number; mastery_points: number }[]
+      }
+      record_dex_encounter: {
+        Args: { p_student_id: string; p_code: string }
+        Returns: { status: 'encountered' | 'tamed' | 'graduated'; encounter_count: number }[]
       }
       register_push_subscription: {
         Args: { p_endpoint: string; p_subscription: Json }
