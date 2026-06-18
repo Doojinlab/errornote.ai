@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { streamText } from '@/lib/claude'
 import { buildTutorSystemPrompt } from '@/lib/prompts/tutor'
-import { getLearnerProfileSection } from '@/lib/tutor-context'
+import { getTutorContext } from '@/lib/tutor-context'
 import { captureException } from '@/lib/monitoring'
 import { requireAuth, AuthError, type AuthContext } from '@/lib/auth'
 import type { ChatRequest, ChatMessage } from '@/types'
@@ -60,19 +60,23 @@ export async function POST(req: Request) {
     return errorResponse('첫 메시지는 user 여야 합니다', 400)
   }
 
-  // 학습자 오류 프로필 자동 주입(#48 멀티턴 컨텍스트 강화).
-  // 집계 실패가 대화를 막지 않도록 방어: 실패 시 모니터링에 보고하고 프로필 없이 진행.
+  // 학습자 오류 프로필 + 적응형 난이도 자동 주입(#48 멀티턴 컨텍스트 + 적응형 난이도).
+  // 집계 실패가 대화를 막지 않도록 방어: 실패 시 모니터링에 보고하고 컨텍스트 없이 진행.
   let learnerProfileSection: string | null = null
+  let adaptiveDifficultySection: string | null = null
   try {
-    learnerProfileSection = await getLearnerProfileSection(auth.userId)
+    const ctx = await getTutorContext(auth.userId)
+    learnerProfileSection = ctx.learnerProfileSection
+    adaptiveDifficultySection = ctx.adaptiveDifficultySection
   } catch (err) {
-    captureException(err, { route: '/api/chat', step: 'learner-profile' })
+    captureException(err, { route: '/api/chat', step: 'tutor-context' })
   }
 
   const system = buildTutorSystemPrompt({
     errorContext: body.errorContext,
     chapterNumber: body.chapterNumber,
-    learnerProfileSection
+    learnerProfileSection,
+    adaptiveDifficultySection
   })
 
   try {

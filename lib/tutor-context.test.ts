@@ -2,9 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import {
   aggregateLearnerProfile,
   buildLearnerProfileSection,
+  assessDifficulty,
+  buildAdaptiveDifficultySection,
+  getTutorContext,
   PROFILE_TOP_N,
   type LearnerProfile
 } from './tutor-context'
+
+function profileOf(over: Partial<LearnerProfile> = {}): LearnerProfile {
+  return { recurring: [], hskRange: null, totalRecent: 0, ...over }
+}
 
 let mockResult: { data: unknown; error: null | { message: string } } = { data: [], error: null }
 
@@ -102,5 +109,85 @@ describe('buildLearnerProfileSection()', () => {
     }
     const s = buildLearnerProfileSection(profile)!
     expect(s).not.toContain('HSK 급수 범위')
+  })
+})
+
+describe('assessDifficulty()', () => {
+  it('화석화 유형 2개 이상 → foundational', () => {
+    const p = profileOf({
+      recurring: [
+        { subtype: 'a', count: 3, fossilized: true },
+        { subtype: 'b', count: 3, fossilized: true }
+      ],
+      hskRange: { min: 1, max: 6 }
+    })
+    expect(assessDifficulty(p)).toBe('foundational')
+  })
+
+  it('화석화 0 + HSK 5급 이상 → advanced', () => {
+    const p = profileOf({
+      recurring: [{ subtype: 'a', count: 1, fossilized: false }],
+      hskRange: { min: 4, max: 5 }
+    })
+    expect(assessDifficulty(p)).toBe('advanced')
+  })
+
+  it('그 외 → standard', () => {
+    const p = profileOf({
+      recurring: [{ subtype: 'a', count: 1, fossilized: false }],
+      hskRange: { min: 2, max: 3 }
+    })
+    expect(assessDifficulty(p)).toBe('standard')
+    // 화석화 1개(임계 미만) + 고HSK 라도 advanced 아님(화석화>0)
+    const p2 = profileOf({
+      recurring: [{ subtype: 'a', count: 3, fossilized: true }],
+      hskRange: { min: 5, max: 6 }
+    })
+    expect(assessDifficulty(p2)).toBe('standard')
+  })
+
+  it('빈 프로필 → standard', () => {
+    expect(assessDifficulty(profileOf())).toBe('standard')
+  })
+})
+
+describe('buildAdaptiveDifficultySection()', () => {
+  it('난이도별 지시 문구', () => {
+    const found = buildAdaptiveDifficultySection(
+      profileOf({ recurring: [
+        { subtype: 'a', count: 3, fossilized: true },
+        { subtype: 'b', count: 3, fossilized: true }
+      ] })
+    )
+    expect(found).toContain('설명 난이도')
+    expect(found).toContain('쉬운 어휘')
+
+    const adv = buildAdaptiveDifficultySection(
+      profileOf({ recurring: [{ subtype: 'a', count: 1, fossilized: false }], hskRange: { min: 5, max: 6 } })
+    )
+    expect(adv).toContain('심화')
+  })
+})
+
+describe('getTutorContext()', () => {
+  it('한 번의 집계로 프로필+난이도 섹션 반환', async () => {
+    mockResult = {
+      data: [
+        card('把字句', 4), card('把字句', 4), card('把字句', 3),
+        card('语序', 5), card('语序', 5), card('语序', 4)
+      ],
+      error: null
+    }
+    const ctx = await getTutorContext('s1')
+    expect(ctx.learnerProfileSection).toContain('把字句')
+    // 把字句 3회(화석화) + 语序 3회(화석화) = 화석화 2개 → foundational
+    expect(ctx.adaptiveDifficultySection).toContain('쉬운 어휘')
+  })
+
+  it('오류 없으면 프로필 null + standard 난이도', async () => {
+    mockResult = { data: [], error: null }
+    const ctx = await getTutorContext('s1')
+    expect(ctx.learnerProfileSection).toBeNull()
+    expect(ctx.adaptiveDifficultySection).toContain('표준 난이도')
   })
 })
