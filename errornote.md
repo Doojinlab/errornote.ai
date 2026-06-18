@@ -1,4 +1,4 @@
-# CLAUDE.md — Wunote (AI 중국어 오류 교정 플랫폼)
+# errornote — 제품 명세 (AI 중국어 오류 교정 플랫폼)
 
 ## 프로젝트 개요
 
@@ -658,7 +658,7 @@ Claude API로 어휘·문체 분석
 - 전국 중문과 교수자 네트워크 효과 형성
 
 ### API 공개 (Phase 3)
-- Wunote 오류 분석 기능을 외부 LMS(Canvas·Moodle)에서 API 호출
+- errornote 오류 분석 기능을 외부 LMS(Canvas·Moodle)에서 API 호출
 - 인증: API Key 발급 방식
 - 문서: /api/docs 자동 생성 (Swagger)
 
@@ -771,8 +771,8 @@ Claude API로 어휘·문체 분석
 
 ```json
 {
-  "name": "Wunote — AI 중국어 오류 교정",
-  "short_name": "Wunote",
+  "name": "errornote — AI 중국어 오류 교정",
+  "short_name": "errornote",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

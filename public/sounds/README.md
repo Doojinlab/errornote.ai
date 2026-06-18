@@ -1,6 +1,6 @@
 # 게이미피케이션 효과음 자산
 
-Wunote.md 558~564행 사양에 정의된 학습자 효과음 5종.
+errornote.md 558~564행 사양에 정의된 학습자 효과음 5종.
 
 ## 현재 자산 (in-repo)
 
@@ -17,7 +17,7 @@ Wunote.md 558~564행 사양에 정의된 학습자 효과음 5종.
 
 ## 라이선스 (License & Attribution)
 
-이 효과음들은 **Wunote 프로젝트가 직접 합성**(`scripts/generate-sounds.ps1`)했고
+이 효과음들은 **errornote 프로젝트가 직접 합성**(`scripts/generate-sounds.ps1`)했고
 **CC0 1.0 Universal (Public Domain)** 으로 배포됩니다 — 상업·비상업 사용, 수정,
 재배포, 사적 사용 모두 가능하며 출처 표기 의무가 없습니다.
 

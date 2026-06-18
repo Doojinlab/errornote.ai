@@ -1,4 +1,4 @@
-# Wunote.ai
+# errornote.ai
 
 > 한국 대학교 중국어 전공 학부생을 위한 AI 기반 중국어 오류 교정 PWA.
 > Students submit Chinese text → Claude API returns structured error cards → professors see aggregate dashboards.
@@ -60,7 +60,7 @@ npm run test:e2e     # Playwright e2e
 
 ## 📚 문서
 
-- **[Wunote.md](Wunote.md)** — 전체 제품 명세 (DB 스키마, 라우트, Phase별 진행도)
+- **[errornote.md](errornote.md)** — 전체 제품 명세 (DB 스키마, 라우트, Phase별 진행도)
 - **[CLAUDE.md](CLAUDE.md)** — 개발자 가이드 (디렉토리 구조, env vars, 코딩 규칙)
 
 ---
