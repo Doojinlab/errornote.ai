@@ -1,5 +1,7 @@
 import { createServerClient, createAdminClient } from './supabase'
 import { notifyKakaoEvent } from './kakao'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database'
 import type { GamificationSnapshot } from '@/types'
 
 // XP 획득 기준 (errornote.md) — 한 곳에서 관리
@@ -209,7 +211,11 @@ async function callAwardCurrency(
   activityDelta: number,
   masteryDelta: number
 ): Promise<CurrencyState> {
-  const { data, error } = await supabase.rpc('award_currency', {
+  // server/admin 두 클라이언트의 유니온에서 .rpc 호출 시 시그니처가 합쳐지지 않는다
+  // (@supabase/ssr 0.5.x 와 supabase-js 2.105 의 SupabaseClient 제네릭 arity 불일치).
+  // 정상 타입으로 좁혀 호출한다. (근본 해결: @supabase/ssr 업그레이드 — #53 참조)
+  const db = supabase as unknown as SupabaseClient<Database>
+  const { data, error } = await db.rpc('award_currency', {
     p_student_id: studentId,
     p_activity_delta: activityDelta,
     p_mastery_delta: masteryDelta
