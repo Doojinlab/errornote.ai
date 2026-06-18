@@ -5,6 +5,8 @@ export interface BuildTutorOptions {
   chapterNumber?: number
   /** 학습자 오류 프로필 섹션(lib/tutor-context.ts 가 생성). 멀티턴 컨텍스트 강화(#48). */
   learnerProfileSection?: string | null
+  /** 적응형 난이도 지시 섹션(lib/tutor-context.ts 가 생성). #48-C. */
+  adaptiveDifficultySection?: string | null
 }
 
 const TUTOR_ROLE = `당신은 한국 대학 중국어 전공 학부생을 위한 1:1 AI 과외 교수입니다.
@@ -27,6 +29,10 @@ export function buildTutorSystemPrompt(opts: BuildTutorOptions = {}): string {
 
   if (opts.learnerProfileSection) {
     sections.push(opts.learnerProfileSection)
+  }
+
+  if (opts.adaptiveDifficultySection) {
+    sections.push(opts.adaptiveDifficultySection)
   }
 
   const err = opts.errorContext

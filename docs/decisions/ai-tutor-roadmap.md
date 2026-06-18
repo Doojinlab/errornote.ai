@@ -27,15 +27,16 @@
 근거: A는 errornote의 핵심 차별점(본인 오류 기반 개인화)을 튜터에 직접 연결하고,
 순수 백엔드라 이 환경에서 완전히 검증 가능하다. B·C는 A가 만든 학습자 프로필을 재사용한다.
 
-## PR 분해
+## PR 분해 (진행 상황)
 
-1. **[본 PR] 멀티턴 컨텍스트 강화** (~300 LOC)
+1. ✅ **멀티턴 컨텍스트 강화** (#75, 머지됨)
    - `lib/tutor-context.ts`: 최근 오류 카드 → 학습자 프로필(반복 유형·화석화·HSK 범위) 집계
-   - `buildTutorSystemPrompt` 에 학습자 프로필 섹션 주입(옵션)
-   - `app/api/chat` 와이어링: 인증 사용자 프로필을 자동 주입
-   - 단위 테스트
-2. **Tool use** — `add_to_vocab`·`generate_quiz` 도구 정의 + 핸들러. 스트리밍 경로에 tool_use 처리.
-3. **적응형 난이도** — 프로필의 추세(개선/정체)를 읽어 설명 깊이·예문 난이도 조절 지시를 프롬프트에 반영.
+   - `buildTutorSystemPrompt` 에 학습자 프로필 섹션 주입, `app/api/chat` 자동 주입
+2. ✅ **적응형 난이도** — `assessDifficulty`(화석화 부하·HSK 범위 → foundational/standard/
+   advanced) + 난이도별 지시 섹션. 프로필 1회 집계로 함께 주입.
+   - ※ 원래 3순위였으나, 아래 tool use 가 런타임 검증을 요해 순서를 앞당겼다(순수 로직이라 검증 용이).
+3. ⏳ **Tool use** — `add_to_vocab`·`generate_quiz` 도구 정의 + 핸들러. 스트리밍 경로에
+   tool_use 처리. **스트리밍 챗 통합은 실제 API/앱 런타임 검증이 필요** → 검증 가능 환경에서 진행.
 
 ## 비범위(이 트랙 밖)
 
