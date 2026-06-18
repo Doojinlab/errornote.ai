@@ -794,6 +794,15 @@
       }
     },
     "components": {
+      "companion": {
+        "ariaLabel": "Learning companion",
+        "stage1": "误 Seed",
+        "stage2": "误 Buddy",
+        "stage3": "误 Guide",
+        "stage4": "误 Sage",
+        "streak": "{days} days together and counting",
+        "welcome": "Let's start together today"
+      },
       "errorCard": {
         "typeVocab": "Vocabulary",
         "typeGrammar": "Grammar",
