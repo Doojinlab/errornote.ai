@@ -1236,6 +1236,105 @@ export type Database = {
         }
         Relationships: []
       }
+      class_goals: {
+        Row: {
+          id: string
+          class_id: string
+          species_id: string
+          title: string
+          target_count: number
+          current_count: number
+          period_start: string
+          period_end: string
+          achieved: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          class_id: string
+          species_id: string
+          title?: string
+          target_count: number
+          current_count?: number
+          period_start: string
+          period_end: string
+          achieved?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          class_id?: string
+          species_id?: string
+          title?: string
+          target_count?: number
+          current_count?: number
+          period_start?: string
+          period_end?: string
+          achieved?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      league_points: {
+        Row: {
+          id: string
+          student_id: string
+          class_id: string
+          week_start: string
+          points: number
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          class_id: string
+          week_start: string
+          points?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          class_id?: string
+          week_start?: string
+          points?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mistake_feed: {
+        Row: {
+          id: string
+          student_id: string
+          original_ko: string
+          literal_zh: string
+          corrected_zh: string
+          is_public: boolean
+          likes: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          original_ko: string
+          literal_zh: string
+          corrected_zh?: string
+          is_public?: boolean
+          likes?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          original_ko?: string
+          literal_zh?: string
+          corrected_zh?: string
+          is_public?: boolean
+          likes?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
       daily_quests: {
         Row: {
           id: string
@@ -1360,6 +1459,31 @@ export type Database = {
           rarity: 'common' | 'rare' | 'epic'
           is_duplicate: boolean
           activity_coins: number
+        }[]
+      }
+      contribute_class_goal: {
+        Args: { p_class_id: string; p_code: string }
+        Returns: { current_count: number; target_count: number; achieved: boolean }[]
+      }
+      add_league_points: {
+        Args: { p_student_id: string; p_class_id: string; p_week_start: string; p_points: number }
+        Returns: number
+      }
+      get_league_standings: {
+        Args: { p_class_id: string; p_week_start: string }
+        Returns: { rank: number; points: number; anon_seed: string; is_me: boolean }[]
+      }
+      get_public_mistake_feed: {
+        Args: { p_limit: number }
+        Returns: {
+          id: string
+          original_ko: string
+          literal_zh: string
+          corrected_zh: string
+          likes: number
+          anon_seed: string
+          is_me: boolean
+          created_at: string
         }[]
       }
       register_push_subscription: {
