@@ -54,6 +54,8 @@ export const MOCK_GAMIFICATION = {
   xp: 350,
   streak_days: 5,
   next_level_xp: 500,
+  activity_coins: 120,
+  mastery_points: 3,
 }
 
 export const MOCK_CLASS = {

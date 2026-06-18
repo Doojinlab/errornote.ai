@@ -176,4 +176,6 @@ export interface GamificationSnapshot {
   streak_days: number
   last_active_date: string | null
   next_level_xp: number | null
+  activity_coins: number
+  mastery_points: number
 }
