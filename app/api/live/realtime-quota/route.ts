@@ -10,6 +10,7 @@ import { NextResponse } from 'next/server'
 import { requireAuth, AuthError } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase'
 import { captureMessage, trackMetric } from '@/lib/monitoring'
+import { evaluateRealtimeQuota } from '@/lib/realtime-quota'
 import type { LiveSessionRow } from '@/types/live'
 
 export const runtime = 'nodejs'
@@ -55,16 +56,11 @@ export async function GET() {
       potential = ((enrollRaw as Array<{ class_id: string }> | null) ?? []).length
     }
 
-    const utilization =
-      PLAN_LIMIT_ESTIMATE > 0
-        ? Math.round((potential / PLAN_LIMIT_ESTIMATE) * 1000) / 10
-        : 0
-
-    const warnings: string[] = []
-    if (utilization >= 80) warnings.push('utilization>=80% — 동시 broadcast 부하 주의')
-    if (live.length >= 5) warnings.push('5개 이상 클래스가 동시에 라이브 중 — 채널 분산 검토')
-    if (potential >= PLAN_LIMIT_ESTIMATE)
-      warnings.push('잠재 동시연결이 플랜 한도 추정치를 초과 — Supabase 플랜 업그레이드 필요')
+    const { utilizationPct: utilization, warnings, shouldAlert } = evaluateRealtimeQuota({
+      activeSessions: live.length,
+      potential,
+      planLimit: PLAN_LIMIT_ESTIMATE
+    })
 
     const body: QuotaResponse = {
       active_live_sessions: live.length,
@@ -80,7 +76,7 @@ export async function GET() {
     trackMetric('realtime.utilization_pct', utilization, {
       active_sessions: live.length,
     })
-    if (warnings.length > 0) {
+    if (shouldAlert) {
       captureMessage('Realtime 쿼터 경보', 'warning', {
         utilization_pct: utilization,
         active_live_sessions: live.length,
