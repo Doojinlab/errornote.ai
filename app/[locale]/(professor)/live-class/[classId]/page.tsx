@@ -27,11 +27,12 @@ interface ConsentRow {
 
 export const dynamic = 'force-dynamic'
 
-export default async function ProfessorLiveRoomPage({
-  params
-}: {
-  params: { classId: string }
-}) {
+export default async function ProfessorLiveRoomPage(
+  props: {
+    params: Promise<{ classId: string }>
+  }
+) {
+  const params = await props.params;
   const auth = await getAuthContext()
   if (!auth) redirect('/login')
   if (auth.role !== 'professor') redirect('/learn/1')
@@ -44,7 +45,7 @@ export default async function ProfessorLiveRoomPage({
     .eq('id', params.classId)
     .maybeSingle<ClassDetailRow>()
 
-  if (!cls || cls.professor_id !== auth.userId) redirect('/live')
+  if (!cls || cls.professor_id !== auth.userId) redirect('/live-class')
 
   const { data: enrollments } = await supabase
     .from('enrollments')

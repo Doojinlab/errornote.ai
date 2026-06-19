@@ -1,4 +1,4 @@
-# Generate Wunote gamification sound effects as WAV (44.1 kHz / 16-bit / mono).
+# Generate errornote gamification sound effects as WAV (44.1 kHz / 16-bit / mono).
 #
 # Outputs to public/sounds/:
 #   correct.wav     - rising major triad, "ding-dong" (clean revision submitted)

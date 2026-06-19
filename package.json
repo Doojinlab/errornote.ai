@@ -1,15 +1,16 @@
 {
-  "name": "wunote",
+  "name": "errornote",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "db:types": "supabase gen types typescript --local > types/database.ts",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -17,17 +18,18 @@
     "icons:build": "powershell -ExecutionPolicy Bypass -File scripts/generate-icons.ps1",
     "sounds:gen": "powershell -ExecutionPolicy Bypass -File scripts/generate-sounds.ps1",
     "sounds:build": "node scripts/build-sounds.mjs",
+    "loadtest:live": "tsx scripts/live-loadtest.ts",
     "pwa:check": "node scripts/check-pwa-manifest.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.92.0",
     "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.45.4",
+    "@supabase/supabase-js": "^2.105.1",
     "cheerio": "^1.2.0",
     "howler": "^2.2.4",
     "mammoth": "^1.8.0",
-    "next": "14.2.35",
-    "next-intl": "^4.9.1",
+    "next": "16.2.9",
+    "next-intl": "^4.11.0",
     "pdf-parse": "^1.1.1",
     "react": "18.3.1",
     "react-dom": "18.3.1"
@@ -43,13 +45,15 @@
     "@types/pdf-parse": "^1.1.4",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@vitest/coverage-v8": "^4.1.4",
+    "@vitest/coverage-v8": "^4.1.5",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
     "eslint-config-next": "14.2.18",
-    "postcss": "^8.5.10",
+    "fake-indexeddb": "^6.0.0",
+    "jsdom": "^25.0.1",
+    "postcss": "^8.5.13",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.5"
   }
 }

@@ -13,9 +13,8 @@ export const maxDuration = 60
 
 const MAX_DRAFT_LENGTH = 8000
 
-interface AnalyzeBody extends Omit<AnalyzeRequest, 'studentId'> {
-  /** studentId 는 서버에서 세션 사용자로 덮어쓰므로 클라이언트 값은 무시한다. */
-}
+/** studentId 는 서버에서 세션 사용자로 덮어쓰므로 클라이언트 값은 무시한다. */
+type AnalyzeBody = Omit<AnalyzeRequest, 'studentId'>
 
 export async function POST(req: Request) {
   let body: Partial<AnalyzeBody>

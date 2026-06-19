@@ -1,4 +1,4 @@
-## Wunote.ai — Migrations Guide
+## errornote.ai — Migrations Guide
 
 이 디렉토리는 **append-only**다. 한 번 머지된 마이그레이션 파일은 절대 수정·삭제하지 않는다 (CLAUDE.md "Key Constraints" 참조).
 

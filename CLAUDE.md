@@ -1,9 +1,9 @@
-# CLAUDE.md — Wunote.ai
+# CLAUDE.md — errornote.ai
 
 AI-powered Chinese writing error correction PWA for Korean university students.
 Students submit Chinese text → Claude API returns structured error cards → professors see aggregate dashboards.
 
-Full product spec: [Wunote.md](Wunote.md)
+> 공개용 프로젝트 소개는 [README.md](README.md), 전체 제품 명세는 [errornote.md](errornote.md) 참고. 이 문서는 개발자(특히 Claude Code) 대상 가이드입니다.
 
 ---
 
@@ -50,7 +50,7 @@ Copy `.env.example` to `.env.local` and fill in the values below.
 | Variable | Feature |
 |---|---|
 | `RESEND_API_KEY` | Weekly card-news email delivery |
-| `RESEND_FROM_EMAIL` | Sender address (default: `Wunote <noreply@wunote.ai>`) |
+| `RESEND_FROM_EMAIL` | Sender address (default: `errornote <noreply@errornote.ai>`) |
 | `KAKAO_CLIENT_ID` / `KAKAO_CLIENT_SECRET` | Kakao notification OAuth |
 | `NEXT_PUBLIC_KAKAO_REDIRECT_URI` | Kakao OAuth callback URL |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | PWA web push |
@@ -162,3 +162,6 @@ The type file is handwritten until Docker Desktop is available; keep `types/data
 - **`components/ui/`** — shared primitives; do not modify
 - Claude API calls must only be made from `app/api/` route handlers, never from Client Components
 - `types/database.ts` is the single source of Supabase table types; all `supabase.from('table')` calls are typed through it
+
+## 게임화 / 인게이지먼트
+- 설계 기준: docs/gamification-spec.md (재미 우선, 무벌점, 닫힘 루프, 과잉 게임화 경계)

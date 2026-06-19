@@ -13,11 +13,12 @@ interface MySessionRow {
   created_at: string;
 }
 
-export default async function StudentAssignmentPage({
-  params,
-}: {
-  params: { assignmentId: string };
-}) {
+export default async function StudentAssignmentPage(
+  props: {
+    params: Promise<{ assignmentId: string }>;
+  }
+) {
+  const params = await props.params;
   const t = await getTranslations("pages.student.assignmentDetail");
   const supabase = createServerClient();
   const {

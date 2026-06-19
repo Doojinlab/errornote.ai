@@ -25,11 +25,12 @@ interface ConsentRow {
 
 export const dynamic = 'force-dynamic'
 
-export default async function StudentLiveRoomPage({
-  params
-}: {
-  params: { classId: string }
-}) {
+export default async function StudentLiveRoomPage(
+  props: {
+    params: Promise<{ classId: string }>
+  }
+) {
+  const params = await props.params;
   const auth = await getAuthContext()
   if (!auth) redirect('/login')
   if (auth.role !== 'student') redirect('/dashboard')

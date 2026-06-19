@@ -3,10 +3,11 @@ import { Link } from "@/i18n/routing";
 import LoginForm from "./LoginForm";
 
 interface Props {
-  searchParams: { redirect?: string; verify?: string };
+  searchParams: Promise<{ redirect?: string; verify?: string }>;
 }
 
-export default async function LoginPage({ searchParams }: Props) {
+export default async function LoginPage(props: Props) {
+  const searchParams = await props.searchParams;
   const [t, tMeta] = await Promise.all([
     getTranslations("auth.login"),
     getTranslations("meta"),

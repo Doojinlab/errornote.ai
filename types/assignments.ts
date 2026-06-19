@@ -1,4 +1,4 @@
-// Wunote Phase 2 — 과제(assignments) + 루브릭(rubrics) 공유 타입.
+// errornote Phase 2 — 과제(assignments) + 루브릭(rubrics) 공유 타입.
 // [소유자] feat/phase2-assignments. types/index.ts 를 건드리지 않기 위해 별도 파일로 분리.
 
 export interface RubricCriterion {

@@ -1,4 +1,4 @@
-// Wunote 주간 카드뉴스 — Phase 2
+// errornote 주간 카드뉴스 — Phase 2
 // [소유자] feature/phase2-cardnews 브랜치 전용. 공용 types/index.ts 를 건드리지 않기 위해 분리.
 
 /** Recharts BarChart 가 그대로 사용할 수 있는 점 형태. */

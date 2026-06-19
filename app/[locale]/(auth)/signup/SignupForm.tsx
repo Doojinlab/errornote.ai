@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { useTranslations } from "next-intl";
 import { signup, type SignupState } from "./actions";
-import { createBrowserClient } from "@/lib/supabase";
+import { createBrowserClient } from "@/lib/supabase-browser";
+import { Link } from "@/i18n/routing";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
@@ -11,11 +12,11 @@ const initial: SignupState = { error: null };
 
 type Role = "student" | "professor";
 
-function SubmitButton() {
+function SubmitButton({ disabled }: { disabled?: boolean }) {
   const { pending } = useFormStatus();
   const t = useTranslations("auth.signup");
   return (
-    <Button type="submit" disabled={pending} className="w-full">
+    <Button type="submit" disabled={pending || disabled} className="w-full">
       {pending ? t("loading") : t("submit")}
     </Button>
   );
@@ -25,6 +26,7 @@ export default function SignupForm() {
   const t = useTranslations("auth.signup");
   const [state, formAction] = useFormState(signup, initial);
   const [role, setRole] = useState<Role>("student");
+  const [agreed, setAgreed] = useState(false);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -92,13 +94,46 @@ export default function SignupForm() {
         </div>
       )}
 
+      <label className="flex items-start gap-2 text-xs text-slate-600">
+        <input
+          type="checkbox"
+          name="agree"
+          checked={agreed}
+          onChange={(e) => setAgreed(e.target.checked)}
+          required
+          className="mt-0.5 h-4 w-4 rounded border-slate-300 text-indigo-600"
+        />
+        <span>
+          {t.rich("agree", {
+            terms: (chunks) => (
+              <Link
+                href="/terms"
+                target="_blank"
+                className="text-indigo-600 underline hover:text-indigo-700"
+              >
+                {chunks}
+              </Link>
+            ),
+            privacy: (chunks) => (
+              <Link
+                href="/privacy"
+                target="_blank"
+                className="text-indigo-600 underline hover:text-indigo-700"
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
+        </span>
+      </label>
+
       {state.error && (
         <p role="alert" className="text-sm text-red-600">
           {state.error}
         </p>
       )}
 
-      <SubmitButton />
+      <SubmitButton disabled={!agreed} />
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">

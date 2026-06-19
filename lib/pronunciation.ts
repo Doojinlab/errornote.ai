@@ -78,6 +78,7 @@ export async function savePronunciationSession(params: {
 }): Promise<string> {
   const supabase = createServerClient()
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pronunciation_sessions 는 handwritten types/database.ts 에 아직 없음
   const { data, error } = await (supabase as any)
     .from('pronunciation_sessions')
     .insert({
@@ -98,6 +99,7 @@ export async function savePronunciationSession(params: {
 export async function getPronunciationHistory(studentId: string): Promise<PronunciationSession[]> {
   const supabase = createServerClient()
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pronunciation_sessions 는 handwritten types/database.ts 에 아직 없음
   const { data, error } = await (supabase as any)
     .from('pronunciation_sessions')
     .select('*')

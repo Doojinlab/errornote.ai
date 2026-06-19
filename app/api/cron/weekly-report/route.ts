@@ -21,7 +21,10 @@ import {
   previousWeekStart,
   upsertStudentWeeklyReport
 } from '@/lib/weekly-reports'
-import { createInAppNotification } from '@/lib/in-app-notifications'
+import {
+  createInAppNotification,
+  buildWeeklyReportNotificationCopy
+} from '@/lib/in-app-notifications'
 import { buildWeeklyReportTemplate, notifyWeeklyReportKakao } from '@/lib/weekly-report-notify'
 import { generateWeeklyReportAdmin } from '@/lib/professor-reports-admin'
 import type {
@@ -202,13 +205,17 @@ async function processClass(
       counters.students_processed += 1
 
       if (!skipNotify) {
-        // 인앱 알림
+        // 인앱 알림 — 무벌점 톤(활동 없으면 복귀 환영).
         try {
+          const copy = buildWeeklyReportNotificationCopy({
+            totalSessions: agg.metrics.total_sessions,
+            headline: suggestions.headline
+          })
           await createInAppNotification(admin, {
             userId: agg.student_id,
             type: 'weekly_report',
-            title: '이번 주 학습 제안이 도착했습니다',
-            body: suggestions.headline,
+            title: copy.title,
+            body: copy.body,
             linkUrl: `/weekly-suggestions/${weekStart}/${cls.id}`,
             payload: { class_id: cls.id, week_start: weekStart }
           })

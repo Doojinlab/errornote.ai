@@ -5,7 +5,7 @@ const HTML = `<!DOCTYPE html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Wunote.ai LMS API</title>
+  <title>errornote.ai LMS API</title>
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
   <style>
     body { margin: 0; }

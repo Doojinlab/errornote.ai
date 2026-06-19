@@ -12,7 +12,7 @@ const GOAL_COLUMNS =
   'id, student_id, class_id, goal_type, target_value, current_value, deadline, is_achieved, achieved_at, created_at, updated_at'
 
 interface Ctx {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 function sanitizeUpdate(raw: unknown): GoalUpdateInput | null {
@@ -37,7 +37,8 @@ function sanitizeUpdate(raw: unknown): GoalUpdateInput | null {
   return Object.keys(out).length === 0 ? null : out
 }
 
-export async function PATCH(req: Request, { params }: Ctx) {
+export async function PATCH(req: Request, props: Ctx) {
+  const params = await props.params;
   const id = params.id
   if (!UUID_RE.test(id)) {
     return NextResponse.json({ error: '유효하지 않은 id 입니다' }, { status: 400 })
@@ -111,7 +112,8 @@ export async function PATCH(req: Request, { params }: Ctx) {
   return NextResponse.json(body)
 }
 
-export async function DELETE(_req: Request, { params }: Ctx) {
+export async function DELETE(_req: Request, props: Ctx) {
+  const params = await props.params;
   const id = params.id
   if (!UUID_RE.test(id)) {
     return NextResponse.json({ error: '유효하지 않은 id 입니다' }, { status: 400 })

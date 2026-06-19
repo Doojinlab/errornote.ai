@@ -17,9 +17,14 @@ export async function signup(
   const name = String(formData.get('name') ?? '').trim()
   const roleRaw = String(formData.get('role') ?? 'student')
   const studentIdRaw = String(formData.get('student_id') ?? '').trim()
+  const agreeRaw = String(formData.get('agree') ?? '')
 
   if (!email || !password || !name) {
     return { error: '이름, 이메일, 비밀번호를 모두 입력하세요.' }
+  }
+  // #49 — 약관/개인정보 동의는 가입 필수(서버 측 방어).
+  if (agreeRaw !== 'on' && agreeRaw !== 'true') {
+    return { error: '이용약관과 개인정보처리방침에 동의해야 가입할 수 있습니다.' }
   }
   if (password.length < 8) {
     return { error: '비밀번호는 8자 이상이어야 합니다.' }

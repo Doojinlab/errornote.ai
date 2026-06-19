@@ -14,6 +14,9 @@ export type TaskKind =
   | 'quiz-generate'
   | 'remedial'
   | 'professor-report'
+  | 'daily-quest'
+  | 'graded-reading'
+  | 'naturalness-check'
 
 interface ModelChoice {
   model: RouterModel
@@ -31,7 +34,10 @@ const POLICY: Record<TaskKind, ModelChoice> = {
   'translate-compare':{ model: ROUTER_HAIKU, cacheTier: '5m', reason: '번역 비교 — 짧고 결정적' },
   'url-analyze':      { model: ROUTER_HAIKU, cacheTier: '5m', reason: 'URL 어휘·문체 추출' },
   'quiz-generate':    { model: ROUTER_HAIKU, cacheTier: '5m', reason: '오류카드 기반 빈칸 생성' },
-  'professor-report': { model: ROUTER_HAIKU, cacheTier: '1h', reason: '주간 집계 — 코퍼스 RAG 캐시' }
+  'professor-report': { model: ROUTER_HAIKU, cacheTier: '1h', reason: '주간 집계 — 코퍼스 RAG 캐시' },
+  'daily-quest':      { model: ROUTER_HAIKU, cacheTier: '5m', reason: '어제 오류 → 2분 미션 3개 생성' },
+  'graded-reading':   { model: ROUTER_HAIKU, cacheTier: '5m', reason: '약점 문법 심은 짧은 지문 생성' },
+  'naturalness-check':{ model: ROUTER_HAIKU, cacheTier: '5m', reason: '문장 자연스러움 즉답 — 짧고 결정적' }
 }
 
 export function modelForTask(kind: TaskKind): RouterModel {
