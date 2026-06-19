@@ -732,6 +732,69 @@ export type Database = {
         }
         Relationships: []
       }
+      lti_platforms: {
+        Row: {
+          id: string
+          professor_id: string | null
+          class_id: string | null
+          name: string
+          issuer: string
+          client_id: string
+          deployment_id: string | null
+          auth_login_url: string
+          auth_token_url: string
+          jwks_uri: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          professor_id?: string | null
+          class_id?: string | null
+          name: string
+          issuer: string
+          client_id: string
+          deployment_id?: string | null
+          auth_login_url: string
+          auth_token_url: string
+          jwks_uri: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          professor_id?: string | null
+          class_id?: string | null
+          name?: string
+          issuer?: string
+          client_id?: string
+          deployment_id?: string | null
+          auth_login_url?: string
+          auth_token_url?: string
+          jwks_uri?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      lti_login_states: {
+        Row: {
+          state: string
+          nonce: string
+          issuer: string
+          created_at: string
+        }
+        Insert: {
+          state: string
+          nonce: string
+          issuer: string
+          created_at?: string
+        }
+        Update: {
+          state?: string
+          nonce?: string
+          issuer?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           id: string
