@@ -35,8 +35,14 @@
 2. ✅ **적응형 난이도** — `assessDifficulty`(화석화 부하·HSK 범위 → foundational/standard/
    advanced) + 난이도별 지시 섹션. 프로필 1회 집계로 함께 주입.
    - ※ 원래 3순위였으나, 아래 tool use 가 런타임 검증을 요해 순서를 앞당겼다(순수 로직이라 검증 용이).
-3. ⏳ **Tool use** — `add_to_vocab`·`generate_quiz` 도구 정의 + 핸들러. 스트리밍 경로에
-   tool_use 처리. **스트리밍 챗 통합은 실제 API/앱 런타임 검증이 필요** → 검증 가능 환경에서 진행.
+3. 🔶 **Tool use** — 도구 계층 분리 구현(검증 가능 부분 완료).
+   - ✅ `lib/tutor-tools.ts`: `add_to_vocab`(단어장 insert)·`generate_quiz`(객관식 정규화)
+     도구 정의 + 입력 검증 + 핸들러 + 디스패처(`runTutorTool`, 오류를 `isError`로 감쌈).
+   - ✅ `lib/tutor-tools.test.ts`: 16 케이스(스키마·검증·핸들러(mock supabase)·디스패치).
+   - ⏳ **스트리밍 챗 통합 잔여**: `streamText`(텍스트 전용)는 tool_use 블록을 다루지 못한다.
+     `complete()` 기반 tool_use 루프(요청→tool_use→`runTutorTool`→tool_result→재요청) 또는
+     스트리밍 tool 이벤트 처리가 필요하며, **실제 Claude API 런타임 검증이 필요** → 검증 가능
+     환경에서 진행. 통합 시 `add_to_vocab` 는 로그인 학습자의 RLS 클라이언트로 호출(본인 단어장).
 
 ## 비범위(이 트랙 밖)
 
