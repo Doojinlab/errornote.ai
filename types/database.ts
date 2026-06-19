@@ -819,6 +819,30 @@ export type Database = {
         }
         Relationships: []
       }
+      lti_context_links: {
+        Row: {
+          id: string
+          issuer: string
+          context_id: string
+          class_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          issuer: string
+          context_id: string
+          class_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          issuer?: string
+          context_id?: string
+          class_id?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           id: string

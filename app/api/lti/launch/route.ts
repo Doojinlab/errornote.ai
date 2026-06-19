@@ -7,6 +7,7 @@ import {
   type LtiPlatform,
 } from '@/lib/lti'
 import { resolveOrProvisionIdentity } from '@/lib/lti-provisioning'
+import { resolveClassForContext, ensureEnrollment } from '@/lib/lti-context'
 import { captureException } from '@/lib/monitoring'
 
 // LTI 1.3 런치(§5.1.3). 플랫폼이 form_post 로 id_token + state 를 보낸다.
@@ -80,15 +81,35 @@ export async function POST(req: Request) {
   // (issuer, sub) → errornote 계정 매핑/생성 후 매직링크로 로그인시킨다.
   // 프로비저닝/세션 수립 실패가 런치를 막지 않도록 방어: 실패 시 검증은 성공했으므로
   // 앱 진입점으로 폴백(미들웨어가 로그인으로 유도).
-  // context → class 매핑/수강 등록은 후속(#47).
   try {
-    const { email } = await resolveOrProvisionIdentity(supabase, {
+    const { userId, email } = await resolveOrProvisionIdentity(supabase, {
       issuer,
       sub: ctx.sub,
       isInstructor: ctx.isInstructor,
       name: typeof claims.name === 'string' ? claims.name : null,
       email: typeof claims.email === 'string' ? claims.email : null,
     })
+
+    // context → class 매핑(+ 학생 수강 등록). 실패해도 세션 수립은 계속한다.
+    try {
+      const cls = await resolveClassForContext(
+        supabase,
+        {
+          issuer,
+          contextId: ctx.context?.id ?? null,
+          contextTitle: ctx.context?.title ?? null,
+          preboundClassId: (pf as { class_id?: string | null }).class_id ?? null,
+        },
+        userId,
+        ctx.isInstructor
+      )
+      if (cls.classId && !ctx.isInstructor) {
+        await ensureEnrollment(supabase, cls.classId, userId)
+      }
+    } catch (e) {
+      captureException(e, { route: '/api/lti/launch', step: 'context-mapping', issuer })
+    }
+
     const { data: link } = await supabase.auth.admin.generateLink({
       type: 'magiclink',
       email,

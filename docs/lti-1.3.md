@@ -69,7 +69,8 @@ LMS 측 도구 등록 URL:
 
 - [x] 사용자 프로비저닝: LTI `sub` → errornote 계정 매핑/생성(`lti_identities`) + 매직링크 세션
       (※ 매직링크 세션 수립은 실제 LMS 런치 런타임 검증 필요)
-- [ ] 컨텍스트 매핑: LTI `context` → `classes` 연결 + 수강 등록
+- [x] 컨텍스트 매핑: LTI `context` → `classes` 연결 + 수강 등록 (`lib/lti-context.ts`,
+      `lti_context_links`) — 교수자 런치 시 클래스 생성, 학생 런치 시 매핑 클래스에 등록
 - [ ] Deep Linking 2.0: 과제 → LMS 임베드(도구 서명 응답)
 - [ ] AGS: 점수 회신(line item + score)
 - [ ] NRPS: 수강생 명단 동기화
