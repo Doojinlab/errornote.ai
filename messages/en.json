@@ -44,7 +44,8 @@
       "inbox": "Inbox",
       "settings": "Settings",
       "dataExport": "Export Data",
-      "apiKeys": "API Keys"
+      "apiKeys": "API Keys",
+      "ltiPlatforms": "LTI"
     }
   },
   "auth": {
@@ -684,6 +685,36 @@
         "footerInclude": "header in all",
         "footerInRequests": "requests.",
         "footerDocsLabel": "API docs:"
+      },
+      "ltiPlatforms": {
+        "title": "LTI 1.3 Integration",
+        "subtitle": "Register an LMS platform (Canvas, Moodle, etc.) to connect errornote via standard LTI launches.",
+        "registerButton": "+ Register platform",
+        "toolConfigTitle": "URLs to register errornote as a tool in your LMS",
+        "toolConfigHint": "Enter the URLs below in your LMS external tool (Developer Key) settings.",
+        "toolLoginUrl": "OIDC login URL",
+        "toolLaunchUrl": "Launch (Redirect) URL",
+        "toolJwksUrl": "Tool JWKS URL",
+        "errorClose": "Close",
+        "formTitle": "Register a new LTI platform",
+        "fieldName": "Display name",
+        "fieldNamePlaceholder": "e.g. University Canvas",
+        "fieldIssuer": "Issuer (platform identifier URL)",
+        "fieldClientId": "Client ID",
+        "fieldDeploymentId": "Deployment ID",
+        "optional": "optional",
+        "fieldAuthLoginUrl": "OIDC auth login URL",
+        "fieldAuthTokenUrl": "Auth token URL",
+        "fieldJwksUri": "Platform JWKS URL",
+        "formSubmit": "Register",
+        "formSubmitting": "Registering…",
+        "formCancel": "Cancel",
+        "loading": "Loading…",
+        "emptyState": "No platforms registered yet.",
+        "delete": "Delete",
+        "deleteConfirm": "Delete this platform registration? Launches from that LMS will stop working.",
+        "fetchError": "Couldn't load platforms",
+        "createError": "Failed to register platform"
       },
       "corpus": {
         "breadcrumbDashboard": "Dashboard",

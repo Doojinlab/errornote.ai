@@ -44,7 +44,8 @@
       "inbox": "通知ボックス",
       "settings": "設定",
       "dataExport": "データ書き出し",
-      "apiKeys": "APIキー"
+      "apiKeys": "APIキー",
+      "ltiPlatforms": "LTI連携"
     }
   },
   "auth": {
@@ -684,6 +685,36 @@
         "footerInclude": "ヘッダーをすべての",
         "footerInRequests": "リクエストに含めてください。",
         "footerDocsLabel": "APIドキュメント:"
+      },
+      "ltiPlatforms": {
+        "title": "LTI 1.3 連携",
+        "subtitle": "Canvas・Moodle などの LMS プラットフォームを登録し、標準 LTI ランチで errornote を接続します。",
+        "registerButton": "+ プラットフォーム登録",
+        "toolConfigTitle": "LMS に errornote をツールとして登録する際に入力する URL",
+        "toolConfigHint": "LMS の外部ツール(Developer Key)設定に以下の URL を入力してください。",
+        "toolLoginUrl": "OIDC ログイン URL",
+        "toolLaunchUrl": "ランチ(リダイレクト)URL",
+        "toolJwksUrl": "ツール JWKS URL",
+        "errorClose": "閉じる",
+        "formTitle": "新しい LTI プラットフォームを登録",
+        "fieldName": "表示名",
+        "fieldNamePlaceholder": "例: 本学 Canvas",
+        "fieldIssuer": "Issuer(プラットフォーム識別子 URL)",
+        "fieldClientId": "Client ID",
+        "fieldDeploymentId": "Deployment ID",
+        "optional": "任意",
+        "fieldAuthLoginUrl": "OIDC 認証ログイン URL",
+        "fieldAuthTokenUrl": "認証トークン URL",
+        "fieldJwksUri": "プラットフォーム JWKS URL",
+        "formSubmit": "登録",
+        "formSubmitting": "登録中…",
+        "formCancel": "キャンセル",
+        "loading": "読み込み中…",
+        "emptyState": "まだ登録されたプラットフォームがありません。",
+        "delete": "削除",
+        "deleteConfirm": "このプラットフォーム登録を削除しますか？その LMS からのランチが停止します。",
+        "fetchError": "プラットフォーム一覧を読み込めませんでした",
+        "createError": "プラットフォームの登録に失敗しました"
       },
       "corpus": {
         "breadcrumbDashboard": "ダッシュボード",

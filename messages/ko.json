@@ -44,7 +44,8 @@
       "inbox": "알림함",
       "settings": "설정",
       "dataExport": "데이터 내보내기",
-      "apiKeys": "API 키"
+      "apiKeys": "API 키",
+      "ltiPlatforms": "LTI 연동"
     }
   },
   "auth": {
@@ -684,6 +685,36 @@
         "footerInclude": "헤더를 모든",
         "footerInRequests": "요청에 포함하세요.",
         "footerDocsLabel": "API 문서:"
+      },
+      "ltiPlatforms": {
+        "title": "LTI 1.3 연동",
+        "subtitle": "Canvas·Moodle 등 LMS 플랫폼을 등록해 표준 LTI 런치로 errornote 를 연결합니다.",
+        "registerButton": "+ 플랫폼 등록",
+        "toolConfigTitle": "LMS 에 errornote 를 도구로 등록할 때 입력하는 URL",
+        "toolConfigHint": "LMS 의 외부 도구(Developer Key) 설정에 아래 URL 을 입력하세요.",
+        "toolLoginUrl": "OIDC 로그인 URL",
+        "toolLaunchUrl": "런치(Redirect) URL",
+        "toolJwksUrl": "도구 JWKS URL",
+        "errorClose": "닫기",
+        "formTitle": "새 LTI 플랫폼 등록",
+        "fieldName": "표시 이름",
+        "fieldNamePlaceholder": "예: 우리대학 Canvas",
+        "fieldIssuer": "Issuer (플랫폼 식별자 URL)",
+        "fieldClientId": "Client ID",
+        "fieldDeploymentId": "Deployment ID",
+        "optional": "선택",
+        "fieldAuthLoginUrl": "OIDC Auth 로그인 URL",
+        "fieldAuthTokenUrl": "Auth Token URL",
+        "fieldJwksUri": "플랫폼 JWKS URL",
+        "formSubmit": "등록",
+        "formSubmitting": "등록 중…",
+        "formCancel": "취소",
+        "loading": "불러오는 중…",
+        "emptyState": "아직 등록된 플랫폼이 없습니다.",
+        "delete": "삭제",
+        "deleteConfirm": "이 플랫폼 등록을 삭제하시겠습니까? 해당 LMS 의 런치가 중단됩니다.",
+        "fetchError": "플랫폼 목록을 불러오지 못했습니다",
+        "createError": "플랫폼 등록에 실패했습니다"
       },
       "corpus": {
         "breadcrumbDashboard": "대시보드",
