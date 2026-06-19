@@ -10,9 +10,11 @@ Canvas / Moodle 등 LMS와의 IMS Global **LTI 1.3** 표준 통합. 기존 `/api
 | 구성 | 위치 |
 |---|---|
 | 순수 로직(상태/URL/검증/추출) + jose 옵션 서명 검증 | `lib/lti.ts` (+ `lib/lti.test.ts`) |
+| 사용자 프로비저닝(issuer+sub → 계정) | `lib/lti-provisioning.ts` (+ `lib/lti-provisioning.test.ts`) |
 | 플랫폼 등록 · OIDC state 저장 | `supabase/migrations/20260619000001_lti_platforms.sql` |
+| LTI 사용자 매핑 | `supabase/migrations/20260619000002_lti_identities.sql` |
 | OIDC 로그인 개시 | `app/api/lti/login/route.ts` |
-| 런치(id_token 검증) | `app/api/lti/launch/route.ts` |
+| 런치(id_token 검증 → 프로비저닝 → 매직링크 세션) | `app/api/lti/launch/route.ts` |
 | 도구 공개 JWKS | `app/api/lti/jwks/route.ts` |
 
 ## 런치 흐름 (3-legged OIDC)
@@ -65,8 +67,9 @@ LMS 측 도구 등록 URL:
 
 ## 후속 작업 (수용 기준)
 
-- [ ] 사용자 프로비저닝: LTI `sub` → errornote 계정 매핑/세션 수립
-- [ ] 컨텍스트 매핑: LTI `context` → `classes` 연결
+- [x] 사용자 프로비저닝: LTI `sub` → errornote 계정 매핑/생성(`lti_identities`) + 매직링크 세션
+      (※ 매직링크 세션 수립은 실제 LMS 런치 런타임 검증 필요)
+- [ ] 컨텍스트 매핑: LTI `context` → `classes` 연결 + 수강 등록
 - [ ] Deep Linking 2.0: 과제 → LMS 임베드(도구 서명 응답)
 - [ ] AGS: 점수 회신(line item + score)
 - [ ] NRPS: 수강생 명단 동기화

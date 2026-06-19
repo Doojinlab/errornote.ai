@@ -795,6 +795,30 @@ export type Database = {
         }
         Relationships: []
       }
+      lti_identities: {
+        Row: {
+          id: string
+          issuer: string
+          sub: string
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          issuer: string
+          sub: string
+          user_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          issuer?: string
+          sub?: string
+          user_id?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           id: string

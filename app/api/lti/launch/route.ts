@@ -6,6 +6,8 @@ import {
   verifyIdToken,
   type LtiPlatform,
 } from '@/lib/lti'
+import { resolveOrProvisionIdentity } from '@/lib/lti-provisioning'
+import { captureException } from '@/lib/monitoring'
 
 // LTI 1.3 런치(§5.1.3). 플랫폼이 form_post 로 id_token + state 를 보낸다.
 //   1) state 를 소비(1회용)하고 nonce/issuer 를 회수
@@ -70,9 +72,35 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: violation }, { status: 401 })
   }
 
-  // 5) 런치 컨텍스트 추출 → 앱 진입(프로비저닝은 후속)
+  // 5) 런치 컨텍스트 추출 → 사용자 프로비저닝 → 세션 수립 → 앱 진입
   const ctx = extractLaunchContext(claims)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin
   const dest = ctx.isInstructor ? '/ko/dashboard' : '/ko/learn'
+
+  // (issuer, sub) → errornote 계정 매핑/생성 후 매직링크로 로그인시킨다.
+  // 프로비저닝/세션 수립 실패가 런치를 막지 않도록 방어: 실패 시 검증은 성공했으므로
+  // 앱 진입점으로 폴백(미들웨어가 로그인으로 유도).
+  // context → class 매핑/수강 등록은 후속(#47).
+  try {
+    const { email } = await resolveOrProvisionIdentity(supabase, {
+      issuer,
+      sub: ctx.sub,
+      isInstructor: ctx.isInstructor,
+      name: typeof claims.name === 'string' ? claims.name : null,
+      email: typeof claims.email === 'string' ? claims.email : null,
+    })
+    const { data: link } = await supabase.auth.admin.generateLink({
+      type: 'magiclink',
+      email,
+      options: { redirectTo: new URL(dest, appUrl).toString() },
+    })
+    const actionLink = link?.properties?.action_link
+    if (actionLink) {
+      return NextResponse.redirect(actionLink, 302)
+    }
+  } catch (e) {
+    captureException(e, { route: '/api/lti/launch', step: 'provisioning', issuer })
+  }
+
   return NextResponse.redirect(new URL(dest, appUrl), 302)
 }
