@@ -75,6 +75,7 @@ LMS 측 도구 등록 URL:
 - [~] AGS: 점수 회신(line item + score) — lib 기반(`lib/lti-ags.ts`): endpoint 파싱·Score
       페이로드·scores URL·토큰/전송(주입형 fetch) 단위 테스트 완료. 잔여: client assertion
       서명(jose, 도구 개인키)·grading 플로우 연동·실 LMS 검증(런북)
-- [ ] NRPS: 수강생 명단 동기화
+- [~] NRPS: 수강생 명단 동기화 — lib 기반(`lib/lti-nrps.ts`): 서비스/멤버십/Link 파싱·역할
+      판별·페이지네이션(주입형 fetch) 단위 테스트 완료. 잔여: 토큰 획득·classes 동기화 연동·실 LMS 검증
 - [ ] Canvas Test SSO + Deep Link + Grade Passback 통과 / Moodle 호환성
 - [ ] OpenAPI(`/api/docs`) 갱신
