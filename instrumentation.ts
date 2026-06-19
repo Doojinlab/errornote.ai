@@ -23,3 +23,25 @@ export async function register() {
     // @sentry/nextjs 미설치 — 무시.
   }
 }
+
+// Next.js 가 서버(Server Component/Route Handler/middleware) 요청 처리 중 발생한
+// 에러마다 호출하는 훅. Sentry 가 있으면 요청 컨텍스트와 함께 보고한다.
+// register() 와 동일한 옵션 의존성 패턴 — 미설치/미설정이면 no-op.
+export async function onRequestError(
+  err: unknown,
+  request: { path: string; method: string; headers: { [key: string]: string } },
+  context: { routerKind: string; routePath: string; routeType: string }
+): Promise<void> {
+  if (!process.env.SENTRY_DSN) return
+  try {
+    const mod = ['@sentry', 'nextjs'].join('/') // 정적 해석 회피
+    const Sentry = (await import(/* @vite-ignore */ mod)) as {
+      captureRequestError?: (e: unknown, req: unknown, ctx: unknown) => void
+      captureException?: (e: unknown) => void
+    }
+    if (Sentry.captureRequestError) Sentry.captureRequestError(err, request, context)
+    else Sentry.captureException?.(err)
+  } catch {
+    // @sentry/nextjs 미설치 — 무시.
+  }
+}
