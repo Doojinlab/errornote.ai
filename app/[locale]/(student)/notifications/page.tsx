@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { createBrowserClient } from '@/lib/supabase-browser'
+import PushToggle from '@/components/PushToggle'
 import type { KakaoConnectionStatus, KakaoEnabledEvents, KakaoEventType } from '@/types/kakao'
 
 const EVENT_TYPES: KakaoEventType[] = [
@@ -160,6 +161,8 @@ export default function NotificationsPage() {
         <h1 className="text-lg font-bold text-slate-900">{t('title')}</h1>
         <p className="mt-0.5 text-xs text-slate-500">{t('subtitle')}</p>
       </div>
+
+      <PushToggle />
 
       <section className="rounded-xl border border-slate-200 bg-white p-5">
         <div className="mb-4 flex items-center gap-3">
