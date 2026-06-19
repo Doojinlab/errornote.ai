@@ -7,6 +7,12 @@ import Companion from "@/components/gamification/Companion";
 import StudentSoundShell from "@/components/gamification/StudentSoundShell";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import StudentMobileNav from "@/components/StudentMobileNav";
+import StudentDesktopNav from "@/components/nav/StudentDesktopNav";
+import {
+  STUDENT_NAV_GROUPS,
+  type StudentNavGroupKey,
+  type StudentNavKey,
+} from "@/components/nav/studentNavGroups";
 import { companionStage, companionEmoji } from "@/lib/companion";
 
 interface GameStats {
@@ -48,62 +54,27 @@ async function loadEarnedBadgeIds(): Promise<string[]> {
   return rows.map((r) => r.badge_type);
 }
 
-type NavKey =
-  | "learn"
-  | "quests"
-  | "errors"
-  | "vocabulary"
-  | "bookmarks"
-  | "progress"
-  | "cardnews"
-  | "assignments"
-  | "badges"
-  | "goals"
-  | "translate"
-  | "urlAnalyze"
-  | "portfolio"
-  | "peerReview"
-  | "pronunciation"
-  | "live"
-  | "weeklySuggestions"
-  | "notifications"
-  | "inbox"
-  | "dataExport"
-  | "settings";
-
-const NAV: Array<{ href: string; key: NavKey }> = [
-  { href: "/learn/1", key: "learn" },
-  { href: "/quests", key: "quests" },
-  { href: "/errors", key: "errors" },
-  { href: "/vocabulary", key: "vocabulary" },
-  { href: "/bookmarks", key: "bookmarks" },
-  { href: "/progress", key: "progress" },
-  { href: "/cardnews", key: "cardnews" },
-  { href: "/assignments", key: "assignments" },
-  { href: "/badges", key: "badges" },
-  { href: "/goals", key: "goals" },
-  { href: "/translate", key: "translate" },
-  { href: "/analyze-url", key: "urlAnalyze" },
-  { href: "/portfolio", key: "portfolio" },
-  { href: "/peer-review", key: "peerReview" },
-  { href: "/pronunciation", key: "pronunciation" },
-  { href: "/live", key: "live" },
-  { href: "/weekly-suggestions", key: "weeklySuggestions" },
-  { href: "/notifications/inbox", key: "inbox" },
-  { href: "/notifications", key: "notifications" },
-  { href: "/data-export", key: "dataExport" },
-  { href: "/settings", key: "settings" },
-];
+const ALL_NAV_KEYS: StudentNavKey[] = STUDENT_NAV_GROUPS.flatMap((g) =>
+  g.items.map((i) => i.key),
+);
+const ALL_GROUP_KEYS: StudentNavGroupKey[] = STUDENT_NAV_GROUPS.map((g) => g.key);
 
 export default async function StudentLayout({ children }: { children: React.ReactNode }) {
-  const [stats, earnedBadgeIds, t] = await Promise.all([
+  const [stats, earnedBadgeIds, t, tGroups] = await Promise.all([
     loadStats(),
     loadEarnedBadgeIds(),
     getTranslations("nav.student"),
+    getTranslations("nav.student.groups"),
   ]);
   const tMeta = await getTranslations("meta");
+
+  const labels = Object.fromEntries(
+    ALL_NAV_KEYS.map((k) => [k, t(k)]),
+  ) as Record<StudentNavKey, string>;
+  const groupLabels = Object.fromEntries(
+    ALL_GROUP_KEYS.map((k) => [k, tGroups(k)]),
+  ) as Record<StudentNavGroupKey, string>;
   const tCompanion = await getTranslations("pages.components.companion");
-  const mobileNavItems = NAV.map((n) => ({ href: n.href, label: t(n.key) }));
 
   // 误 동반자: 진화 단계는 mastery_points 기반, 문구는 무벌점 톤.
   const companionStageNum = companionStage(stats?.mastery_points ?? 0);
@@ -121,24 +92,19 @@ export default async function StudentLayout({ children }: { children: React.Reac
       <div className="flex min-h-dvh flex-col bg-slate-100">
         <header className="flex items-center gap-3 border-b bg-white px-4 py-2">
           <StudentMobileNav
-            items={mobileNavItems}
+            labels={labels}
+            groupLabels={groupLabels}
             openLabel={t("menuOpen")}
             closeLabel={t("menuClose")}
           />
           <Link href="/learn/1" className="text-sm font-bold text-indigo-600">
             {tMeta("appName")}
           </Link>
-          <nav className="hidden gap-1 sm:flex" aria-label={tMeta("appName")}>
-            {NAV.map((n) => (
-              <Link
-                key={n.href}
-                href={n.href}
-                className="rounded px-2 py-1 text-xs text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              >
-                {t(n.key)}
-              </Link>
-            ))}
-          </nav>
+          <StudentDesktopNav
+            labels={labels}
+            groupLabels={groupLabels}
+            ariaLabel={tMeta("appName")}
+          />
           <div className="ml-auto flex items-center gap-3">
             <LanguageSwitcher />
             <Companion
