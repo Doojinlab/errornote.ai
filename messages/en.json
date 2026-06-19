@@ -812,6 +812,13 @@
       }
     },
     "components": {
+      "pwaInstall": {
+        "title": "Install errornote",
+        "installBody": "Add it to your home screen for faster launch and offline writing.",
+        "installCta": "Install",
+        "iosBody": "Tap the Share button and choose 'Add to Home Screen' to use it like an app. On iOS, notifications work only when installed to the home screen.",
+        "dismiss": "Later"
+      },
       "companion": {
         "ariaLabel": "Learning companion",
         "stage1": "误 Seed",
