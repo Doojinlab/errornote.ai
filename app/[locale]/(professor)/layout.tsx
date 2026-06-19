@@ -11,6 +11,7 @@ type NavKey =
   | 'marketplace'
   | 'dataExport'
   | 'apiKeys'
+  | 'ltiPlatforms'
 
 const NAV: Array<{ href: string; key: NavKey; fallback: string }> = [
   { href: '/dashboard', key: 'dashboard', fallback: '대시보드' },
@@ -21,6 +22,7 @@ const NAV: Array<{ href: string; key: NavKey; fallback: string }> = [
   { href: '/marketplace', key: 'marketplace', fallback: '마켓플레이스' },
   { href: '/reports/export', key: 'dataExport', fallback: '데이터 내보내기' },
   { href: '/settings/api-keys', key: 'apiKeys', fallback: 'API 키' },
+  { href: '/settings/lti', key: 'ltiPlatforms', fallback: 'LTI 연동' },
 ]
 
 // 교수자 네비에만 있는 apiKeys / dataExport 는 messages 에 professor.* 로만 존재 (또는 student.dataExport 재사용).
