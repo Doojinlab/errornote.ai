@@ -72,7 +72,9 @@ LMS 측 도구 등록 URL:
 - [x] 컨텍스트 매핑: LTI `context` → `classes` 연결 + 수강 등록 (`lib/lti-context.ts`,
       `lti_context_links`) — 교수자 런치 시 클래스 생성, 학생 런치 시 매핑 클래스에 등록
 - [ ] Deep Linking 2.0: 과제 → LMS 임베드(도구 서명 응답)
-- [ ] AGS: 점수 회신(line item + score)
+- [~] AGS: 점수 회신(line item + score) — lib 기반(`lib/lti-ags.ts`): endpoint 파싱·Score
+      페이로드·scores URL·토큰/전송(주입형 fetch) 단위 테스트 완료. 잔여: client assertion
+      서명(jose, 도구 개인키)·grading 플로우 연동·실 LMS 검증(런북)
 - [ ] NRPS: 수강생 명단 동기화
 - [ ] Canvas Test SSO + Deep Link + Grade Passback 통과 / Moodle 호환성
 - [ ] OpenAPI(`/api/docs`) 갱신
