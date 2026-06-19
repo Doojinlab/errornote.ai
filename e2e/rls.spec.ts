@@ -213,6 +213,23 @@ test.describe('RLS policies', () => {
       if (error) throw new Error(`live_typing_consents: ${error.message}`)
     }
 
+    // ── push_subscriptions: A 의 구독 1개 (#54 하드닝 검증용)
+    // Web Push 키(p256dh/auth) 평문을 담아두고, 클라이언트가 이를 회수하지 못함을 검증한다.
+    {
+      const endpoint = `https://push.test.example/${runTag}-A`
+      const { error } = await admin.from('push_subscriptions').insert([
+        {
+          student_id: studentA.userId,
+          endpoint,
+          subscription: {
+            endpoint,
+            keys: { p256dh: 'TEST_P256DH_PLAINTEXT', auth: 'TEST_AUTH_PLAINTEXT' },
+          },
+        } as never,
+      ])
+      if (error) throw new Error(`push_subscriptions: ${error.message}`)
+    }
+
     // ── corpus_documents: 1 public + 1 private (둘 다 P 소유)
     {
       const { data, error } = await admin
@@ -256,6 +273,7 @@ test.describe('RLS policies', () => {
     // 데이터 → 사용자 순으로 정리. on delete cascade 가 대부분 처리.
     if (publicDocId) await admin.from('corpus_documents').delete().eq('id', publicDocId)
     if (privateDocId) await admin.from('corpus_documents').delete().eq('id', privateDocId)
+    await admin.from('push_subscriptions').delete().eq('student_id', studentA.userId)
     if (classCId) await admin.from('classes').delete().eq('id', classCId)
     if (classC2Id) await admin.from('classes').delete().eq('id', classC2Id)
     for (const u of [studentA, studentB, professorP, professorP2]) {
@@ -420,5 +438,44 @@ test.describe('RLS policies', () => {
       .eq('id', publicDocId)
     expect(error).toBeNull()
     expect(data ?? []).toHaveLength(1)
+  })
+
+  // ────────────────────────────────────────────────────────────────────────
+  // 4. push_subscriptions 하드닝 (#54)
+  //    마이그레이션 20260617000001 이 authenticated/anon 의 테이블 직접 권한을
+  //    회수했으므로, 클라이언트는 subscription(Web Push 키) 평문을 회수할 수 없다.
+  //    RLS 차단(빈 배열)과 달리 테이블 권한 자체가 없어 권한 에러가 날 수도 있으므로,
+  //    핵심 불변식은 "평문 subscription 이 행으로 노출되지 않는다" 로 검증한다.
+  // ────────────────────────────────────────────────────────────────────────
+  function leaksSubscription(data: unknown): boolean {
+    return ((data as Array<{ subscription?: unknown }> | null) ?? []).some(
+      (r) => r.subscription != null
+    )
+  }
+
+  test('학생은 본인 push_subscriptions 를 직접 select 해 키를 회수할 수 없다 (#54)', async () => {
+    const { data } = await aClient.from('push_subscriptions').select('subscription')
+    expect(leaksSubscription(data)).toBe(false)
+  })
+
+  test('익명은 push_subscriptions 를 못 읽는다 (#54)', async () => {
+    const { data } = await anonSb.from('push_subscriptions').select('subscription').limit(1)
+    expect(leaksSubscription(data)).toBe(false)
+  })
+
+  test('학생은 register_push_subscription RPC 로 본인 구독을 등록한다 (#54 sanity)', async () => {
+    const endpoint = `https://push.test.example/${runTag}-A-rpc`
+    const { error } = await aClient.rpc('register_push_subscription', {
+      p_endpoint: endpoint,
+      p_subscription: { endpoint, keys: { p256dh: 'X', auth: 'Y' } } as never,
+    })
+    expect(error).toBeNull()
+    // 등록은 service-role 로만 확인 가능(클라이언트는 read 불가).
+    const { data: rows } = await admin
+      .from('push_subscriptions')
+      .select('endpoint')
+      .eq('student_id', studentA.userId)
+      .eq('endpoint', endpoint)
+    expect(rows ?? []).toHaveLength(1)
   })
 })
