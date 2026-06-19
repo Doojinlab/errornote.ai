@@ -850,9 +850,9 @@ KAKAO_API_KEY=
 - [x] PWA 강화 (IndexedDB offline queue, SW v2, iOS splash) — PR #25, #26, #34
 - [x] 보안 (Kakao OAuth 토큰 pgcrypto 암호화) — PR #35
 - [x] AI 모델 라우터 + dispatchJSON wrapper + 1h prompt cache — PR #22, #23, #29, #31
-- [ ] 모바일 앱 (React Native) — 미착수, 우선순위 결정 필요
-- [ ] LTI 1.3 표준 연동 (Canvas/Moodle) — LMS API 위에 어댑터 추가
-- [ ] AI 튜터 고도화 — 추가 범위 정의 필요
-- [ ] 개인정보 처리방침 / 이용약관 페이지
-- [ ] 운영 모니터링 (Sentry, Supabase Realtime quota 알림)
-- [ ] 테스트 커버리지 게이트 (CI에서 vitest coverage 임계값)
+- [x] 개인정보 처리방침 / 이용약관 페이지 — `app/[locale]/(legal)/{privacy,terms}`, 회원가입 동의 화면에서 링크 (#49)
+- [x] 테스트 커버리지 게이트 — CI(`.github/workflows/ci.yml`) + `vitest.config.ts` thresholds (#51, #73)
+- [x] 운영 모니터링 코어 — `lib/monitoring.ts` + Realtime quota 평가·알림(`lib/realtime-quota.ts`) (#50, #74) · 외부 Sentry 연동만 잔여
+- [~] AI 튜터 고도화 — 진행 중: 멀티턴 컨텍스트 강화(#75), 적응형 난이도(#76) · 잔여 범위 정의 필요 (#48)
+- [ ] 모바일 앱 (React Native) — 미착수, 우선순위 결정 필요 (#46)
+- [ ] LTI 1.3 표준 연동 (Canvas/Moodle) — 미착수, LMS API 위에 어댑터 추가 (#47)
