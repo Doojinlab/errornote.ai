@@ -916,7 +916,11 @@
         "emptyState": "エラーカードをクリックするか、自由に質問してください。",
         "inputPlaceholder": "質問を入力してください…",
         "send": "送信",
-        "errorFallback": "申し訳ありません、応答を受け取れませんでした。"
+        "errorFallback": "申し訳ありません、応答を受け取れませんでした。",
+        "vocabAdded": "単語帳に追加しました: {word}",
+        "quizHeading": "練習クイズ",
+        "quizCorrect": "正解です！🎉",
+        "quizWrong": "おしい！もう一度見てみましょう。"
       },
       "documentEditor": {
         "heading": "文章作成",
