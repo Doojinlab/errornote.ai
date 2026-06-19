@@ -75,6 +75,19 @@ export async function complete(opts: CompleteOptions): Promise<Anthropic.Message
   return client.messages.create(buildCreateParams(opts))
 }
 
+/**
+ * 내부 Anthropic 클라이언트 접근자. tool_use 스트리밍 루프(lib/tutor-stream.ts)처럼
+ * 저수준 streaming + tools 호출이 필요한 모듈이 동일한 싱글턴 클라이언트를 재사용하도록 노출한다.
+ */
+export function getAnthropicClient(): Anthropic {
+  return getClient()
+}
+
+/** 시스템 입력을 캐시 컨트롤이 적용된 system 블록으로 변환(외부 모듈 재사용용). */
+export function buildSystemBlocks(system: SystemInput, cache?: CacheTier): Anthropic.TextBlockParam[] {
+  return toSystemBlocks(system, cache)
+}
+
 export function extractText(message: Anthropic.Message): string {
   return message.content
     .filter((b): b is Anthropic.TextBlock => b.type === 'text')

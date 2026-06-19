@@ -1,9 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { streamText } from '@/lib/claude'
 import { buildTutorSystemPrompt } from '@/lib/prompts/tutor'
 import { getTutorContext } from '@/lib/tutor-context'
 import { captureException } from '@/lib/monitoring'
 import { requireAuth, AuthError, type AuthContext } from '@/lib/auth'
+import { createServerClient } from '@/lib/supabase'
+import { streamTutorConversation } from '@/lib/tutor-stream'
+import { TUTOR_TOOLS, runTutorTool, type TutorToolContext } from '@/lib/tutor-tools'
 import type { ChatRequest, ChatMessage } from '@/types'
 
 export const runtime = 'nodejs'
@@ -80,15 +82,23 @@ export async function POST(req: Request) {
   })
 
   try {
-    const stream = streamText({
+    // tool_use 스트리밍 루프: 텍스트 델타 + 도구 산출물(퀴즈/단어장)을 NDJSON 이벤트로 흘린다.
+    // 도구 실행은 RLS self 클라이언트 컨텍스트(본인 단어장 insert 등)로 수행한다.
+    const toolCtx: TutorToolContext = {
+      supabase: createServerClient() as unknown as TutorToolContext['supabase'],
+      studentId: auth.userId
+    }
+    const stream = streamTutorConversation({
       system,
       messages: messages.map(m => ({ role: m.role, content: m.content })),
+      tools: TUTOR_TOOLS,
+      runTool: (name, input) => runTutorTool(name, input, toolCtx),
       maxTokens: 2048,
       cacheSystem: true
     })
     return new Response(stream, {
       headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
+        'Content-Type': 'application/x-ndjson; charset=utf-8',
         'Cache-Control': 'no-cache',
         'X-Accel-Buffering': 'no'
       }

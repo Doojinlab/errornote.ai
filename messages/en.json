@@ -858,7 +858,11 @@
         "emptyState": "Click an error card, or ask any question you like.",
         "inputPlaceholder": "Ask a question…",
         "send": "Send",
-        "errorFallback": "Sorry, I couldn't get a response."
+        "errorFallback": "Sorry, I couldn't get a response.",
+        "vocabAdded": "Added to your vocabulary: {word}",
+        "quizHeading": "Practice quiz",
+        "quizCorrect": "Correct! 🎉",
+        "quizWrong": "Not quite — take another look."
       },
       "documentEditor": {
         "heading": "Write",

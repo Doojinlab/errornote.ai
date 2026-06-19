@@ -858,7 +858,11 @@
         "emptyState": "오류 카드를 클릭하거나 자유롭게 질문해보세요.",
         "inputPlaceholder": "질문을 입력하세요...",
         "send": "전송",
-        "errorFallback": "죄송합니다. 응답을 받지 못했어요."
+        "errorFallback": "죄송합니다. 응답을 받지 못했어요.",
+        "vocabAdded": "단어장에 추가했어요: {word}",
+        "quizHeading": "연습 퀴즈",
+        "quizCorrect": "정답이에요! 🎉",
+        "quizWrong": "아쉬워요. 다시 살펴봐요."
       },
       "documentEditor": {
         "heading": "문서 작성",
