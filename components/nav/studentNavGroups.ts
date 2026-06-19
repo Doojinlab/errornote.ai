@@ -13,6 +13,9 @@ export type StudentNavKey =
   | 'badges'
   | 'goals'
   | 'peerReview'
+  | 'errorDex'
+  | 'gacha'
+  | 'league'
   | 'translate'
   | 'urlAnalyze'
   | 'pronunciation'
@@ -21,7 +24,7 @@ export type StudentNavKey =
   | 'dataExport'
   | 'settings'
 
-export type StudentNavGroupKey = 'study' | 'assignments' | 'tools' | 'account'
+export type StudentNavGroupKey = 'study' | 'assignments' | 'play' | 'tools' | 'account'
 
 export interface StudentNavGroupDef {
   key: StudentNavGroupKey
@@ -47,6 +50,14 @@ export const STUDENT_NAV_GROUPS: ReadonlyArray<StudentNavGroupDef> = [
       { href: '/badges', key: 'badges' },
       { href: '/goals', key: 'goals' },
       { href: '/peer-review', key: 'peerReview' }
+    ]
+  },
+  {
+    key: 'play',
+    items: [
+      { href: '/error-dex', key: 'errorDex' },
+      { href: '/gacha', key: 'gacha' },
+      { href: '/league', key: 'league' }
     ]
   },
   {

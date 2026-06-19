@@ -38,12 +38,28 @@ vi.mock('@/lib/prompts', () => ({
   SUPPORTED_CHAPTERS: [0, 1, 2, 3, 4, 5, 6, 7]
 }))
 
+// 게이미피케이션 적재(비치명적) — 실제 supabase 호출을 막기 위해 모킹.
+vi.mock('@/lib/graduation', () => ({
+  resolveSpeciesCode: vi.fn((subtype: string) => (subtype === '어순' ? 'word_order' : null))
+}))
+
+vi.mock('@/lib/error-dex', () => ({
+  recordDexEncounter: vi.fn().mockResolvedValue({ status: 'encountered', encounterCount: 1 })
+}))
+
+vi.mock('@/lib/league', () => ({
+  addLeaguePoints: vi.fn().mockResolvedValue(10),
+  LEAGUE_POINTS_PER_SUBMISSION: 10
+}))
+
 import { POST } from '@/app/api/analyze/route'
 import { requireAuth, AuthError } from '@/lib/auth'
 import { analyzeDraft } from '@/lib/analysis'
 import { createSession } from '@/lib/sessions'
 import { saveErrorCards } from '@/lib/error-cards'
 import { getChapterConfig } from '@/lib/prompts'
+import { recordDexEncounter } from '@/lib/error-dex'
+import { addLeaguePoints } from '@/lib/league'
 
 function makeRequest(body: unknown): Request {
   return new Request('http://localhost/api/analyze', {
@@ -120,6 +136,51 @@ describe('POST /api/analyze', () => {
       1,
       expect.any(Array)
     )
+
+    // 게이미피케이션 적재(비치명적): 도감 조우 + 리그 포인트가 인증 studentId 로 기록되는지.
+    expect(recordDexEncounter).toHaveBeenCalledWith('student-1', 'word_order')
+    expect(addLeaguePoints).toHaveBeenCalledWith('student-1', 'class-1', 10)
+  })
+
+  it('게이미피케이션 적재가 실패해도(throw) 분석은 200 으로 성공한다', async () => {
+    vi.mocked(requireAuth).mockResolvedValue({
+      userId: 'student-1',
+      role: 'student',
+      email: null
+    })
+    vi.mocked(analyzeDraft).mockResolvedValue({
+      error_count: 1,
+      annotated_text: '<ERR id=1>x</ERR>',
+      errors: [
+        {
+          id: 1,
+          error_span: 'x',
+          error_type: 'grammar',
+          error_subtype: '어순',
+          correction: 'y',
+          explanation: '',
+          cot_reasoning: [],
+          similar_example: '',
+          hsk_level: 3
+        }
+      ],
+      overall_feedback: ''
+    })
+    vi.mocked(createSession).mockResolvedValue('session-3')
+    vi.mocked(saveErrorCards).mockResolvedValue({
+      inserted: 1,
+      subtypeCounts: new Map([['어순', 1]])
+    })
+    vi.mocked(recordDexEncounter).mockRejectedValueOnce(new Error('dex down'))
+    vi.mocked(addLeaguePoints).mockRejectedValueOnce(new Error('league down'))
+
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const res = await POST(
+      makeRequest({ classId: 'class-1', chapterNumber: 1, draftText: '我去学校' })
+    )
+    errSpy.mockRestore()
+
+    expect(res.status).toBe(200)
   })
 
   it('subtypeCounts 가 임계치(3) 도달 → fossilization_warnings 포함', async () => {
