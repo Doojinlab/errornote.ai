@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase'
 import {
+  LTI,
+  MSG_DEEP_LINKING,
   extractLaunchContext,
   validateLaunchClaims,
   verifyIdToken,
@@ -8,6 +10,9 @@ import {
 } from '@/lib/lti'
 import { resolveOrProvisionIdentity } from '@/lib/lti-provisioning'
 import { resolveClassForContext, ensureEnrollment } from '@/lib/lti-context'
+import { parseDeepLinkingSettings, buildSelectionPage } from '@/lib/lti-deep-linking'
+import { mintDeepLinkToken, dlTokenSecret } from '@/lib/lti-dl-token'
+import { SUPPORTED_CHAPTERS } from '@/lib/prompts'
 import { captureException } from '@/lib/monitoring'
 
 // LTI 1.3 런치(§5.1.3). 플랫폼이 form_post 로 id_token + state 를 보낸다.
@@ -76,6 +81,34 @@ export async function POST(req: Request) {
   // 5) 런치 컨텍스트 추출 → 사용자 프로비저닝 → 세션 수립 → 앱 진입
   const ctx = extractLaunchContext(claims)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin
+
+  // 5-a) Deep Linking 요청: 리소스 링크 프로비저닝과 분기해 콘텐츠 선택 페이지를 직접 반환한다.
+  //      선택 후 /api/lti/deep-link/respond 가 서명된 LtiDeepLinkingResponse 로 회신한다.
+  if (ctx.messageType === MSG_DEEP_LINKING) {
+    const dl = parseDeepLinkingSettings(claims[LTI.DEEP_LINKING_SETTINGS])
+    if (!dl) {
+      return NextResponse.json({ error: 'deep_linking_settings 누락' }, { status: 400 })
+    }
+    const token = mintDeepLinkToken(
+      { iss: issuer, cid: platform.client_id, dep: ctx.deploymentId, ru: dl.returnUrl, data: dl.data },
+      dlTokenSecret(),
+      Math.floor(Date.now() / 1000)
+    )
+    const html = buildSelectionPage({
+      token,
+      actionUrl: new URL('/api/lti/deep-link/respond', appUrl).toString(),
+      chapters: SUPPORTED_CHAPTERS.map((n) => ({ value: n, label: `제${n}장` })),
+      appName: 'errornote',
+      heading: '수업에 추가할 챕터를 선택하세요',
+      instruction: 'errornote 챕터를 LMS 모듈로 추가합니다. 학생이 클릭하면 해당 챕터 학습 화면으로 진입합니다.',
+      submitLabel: 'LMS 에 추가',
+    })
+    return new NextResponse(html, {
+      status: 200,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    })
+  }
+
   const dest = ctx.isInstructor ? '/ko/dashboard' : '/ko/learn'
 
   // (issuer, sub) → errornote 계정 매핑/생성 후 매직링크로 로그인시킨다.
