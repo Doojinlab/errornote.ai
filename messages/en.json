@@ -336,6 +336,18 @@
         "subtitle": "Enter a Korean sentence and compare Chinese translations from DeepL, Papago, and GPT simultaneously. An AI tutor explains the learning points for each translation."
       },
       "notifications": {
+        "push": {
+          "title": "Browser notifications",
+          "subtitle": "Get assignment, feedback, and badge alerts instantly on this device.",
+          "onBadge": "On",
+          "enable": "Turn on notifications",
+          "disable": "Turn off notifications",
+          "working": "Working…",
+          "onBadgeAria": "Notifications on",
+          "iosNeedsInstall": "On iOS you must first install the app via Share → Add to Home Screen. After installing, open this screen and turn notifications on.",
+          "blocked": "Notifications are blocked in your browser. Allow notifications for this site in your browser settings, then try again.",
+          "failed": "Couldn't update notifications. Please try again shortly."
+        },
         "title": "Notification settings",
         "subtitle": "Receive learning notifications via KakaoTalk.",
         "kakaoTitle": "KakaoTalk notifications",
