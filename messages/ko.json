@@ -174,6 +174,12 @@
         "myTier": "내 티어",
         "pointsValue": "{points}P"
       },
+      "classGoalsCard": {
+        "title": "우리 반 목표",
+        "untitled": "협동 목표",
+        "achieved": "달성",
+        "hint": "내가 오류 유형을 졸업하면 반 목표에 보탬이 돼요."
+      },
       "learn": {
         "noActiveClassTitle": "활성 수업이 없습니다",
         "noActiveClassBody": "교수자에게 초대코드를 받아 수업에 등록해주세요.",
@@ -612,6 +618,7 @@
         "inviteCode": "초대 {code}",
         "corpusLink": "코퍼스",
         "reportsLink": "리포트",
+        "goalsLink": "반 협동 목표",
         "statStudents": "수강생",
         "statStudentsSub": "활동 {active} · 미활동 {inactive}",
         "statTotalSessions": "누적 세션",
@@ -773,6 +780,28 @@
         "deleteConfirm": "이 플랫폼 등록을 삭제하시겠습니까? 해당 LMS 의 런치가 중단됩니다.",
         "fetchError": "플랫폼 목록을 불러오지 못했습니다",
         "createError": "플랫폼 등록에 실패했습니다"
+      },
+      "classGoals": {
+        "title": "반 협동 목표",
+        "subtitle": "반 전체가 함께 특정 오류 유형을 정복해요. 학생이 그 유형을 졸업하면 목표에 +1 기여됩니다.",
+        "backToClass": "수업으로",
+        "newGoal": "+ 새 목표",
+        "species": "오류 유형",
+        "titleLabel": "목표 이름 (선택)",
+        "titlePlaceholder": "예: 이번 달 把字句 정복",
+        "target": "목표 횟수",
+        "periodStart": "시작일",
+        "periodEnd": "종료일",
+        "create": "생성",
+        "creating": "생성 중…",
+        "cancel": "취소",
+        "createFailed": "목표 생성에 실패했어요.",
+        "deleteConfirm": "이 목표를 삭제할까요?",
+        "delete": "삭제",
+        "empty": "아직 협동 목표가 없어요. 위에서 첫 목표를 만들어보세요.",
+        "untitled": "협동 목표",
+        "achieved": "달성!",
+        "inProgress": "진행 중"
       },
       "corpus": {
         "breadcrumbDashboard": "대시보드",

@@ -174,6 +174,12 @@
         "myTier": "あなたのティア",
         "pointsValue": "{points}P"
       },
+      "classGoalsCard": {
+        "title": "クラスの目標",
+        "untitled": "協力目標",
+        "achieved": "達成",
+        "hint": "エラータイプを卒業すると、クラスの目標に貢献できます。"
+      },
       "learn": {
         "noActiveClassTitle": "進行中の授業がありません",
         "noActiveClassBody": "担当教員から招待コードを受け取り、授業に登録してください。",
@@ -624,6 +630,7 @@
         "inviteCode": "招待 {code}",
         "corpusLink": "コーパス",
         "reportsLink": "レポート",
+        "goalsLink": "クラス協力目標",
         "statStudents": "受講生",
         "statStudentsSub": "活動 {active} · 未活動 {inactive}",
         "statTotalSessions": "累計セッション",
@@ -785,6 +792,28 @@
         "deleteConfirm": "このプラットフォーム登録を削除しますか？その LMS からのランチが停止します。",
         "fetchError": "プラットフォーム一覧を読み込めませんでした",
         "createError": "プラットフォームの登録に失敗しました"
+      },
+      "classGoals": {
+        "title": "クラス協力目標",
+        "subtitle": "クラス全体で特定のエラータイプを攻略します。学生がそのタイプを卒業すると目標に +1 貢献されます。",
+        "backToClass": "授業へ戻る",
+        "newGoal": "+ 新しい目標",
+        "species": "エラータイプ",
+        "titleLabel": "目標名(任意)",
+        "titlePlaceholder": "例: 今月は把字句を攻略",
+        "target": "目標回数",
+        "periodStart": "開始日",
+        "periodEnd": "終了日",
+        "create": "作成",
+        "creating": "作成中…",
+        "cancel": "キャンセル",
+        "createFailed": "目標の作成に失敗しました。",
+        "deleteConfirm": "この目標を削除しますか？",
+        "delete": "削除",
+        "empty": "まだ協力目標がありません。上から最初の目標を作成しましょう。",
+        "untitled": "協力目標",
+        "achieved": "達成！",
+        "inProgress": "進行中"
       },
       "corpus": {
         "breadcrumbDashboard": "ダッシュボード",

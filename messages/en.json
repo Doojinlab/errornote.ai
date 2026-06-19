@@ -174,6 +174,12 @@
         "myTier": "Your tier",
         "pointsValue": "{points}P"
       },
+      "classGoalsCard": {
+        "title": "Our class goals",
+        "untitled": "Co-op goal",
+        "achieved": "Achieved",
+        "hint": "When you graduate an error type, it helps the class goal."
+      },
       "learn": {
         "noActiveClassTitle": "No active class",
         "noActiveClassBody": "Ask your professor for an invite code and join a class.",
@@ -624,6 +630,7 @@
         "inviteCode": "Invite {code}",
         "corpusLink": "Corpus",
         "reportsLink": "Reports",
+        "goalsLink": "Class goals",
         "statStudents": "Students",
         "statStudentsSub": "Active {active} · Inactive {inactive}",
         "statTotalSessions": "Total sessions",
@@ -785,6 +792,28 @@
         "deleteConfirm": "Delete this platform registration? Launches from that LMS will stop working.",
         "fetchError": "Couldn't load platforms",
         "createError": "Failed to register platform"
+      },
+      "classGoals": {
+        "title": "Class co-op goals",
+        "subtitle": "The whole class conquers an error type together. When a student graduates that type, it adds +1 to the goal.",
+        "backToClass": "Back to class",
+        "newGoal": "+ New goal",
+        "species": "Error type",
+        "titleLabel": "Goal name (optional)",
+        "titlePlaceholder": "e.g. Conquer 把字句 this month",
+        "target": "Target count",
+        "periodStart": "Start date",
+        "periodEnd": "End date",
+        "create": "Create",
+        "creating": "Creating…",
+        "cancel": "Cancel",
+        "createFailed": "Failed to create the goal.",
+        "deleteConfirm": "Delete this goal?",
+        "delete": "Delete",
+        "empty": "No co-op goals yet. Create your first one above.",
+        "untitled": "Co-op goal",
+        "achieved": "Achieved!",
+        "inProgress": "In progress"
       },
       "corpus": {
         "breadcrumbDashboard": "Dashboard",
