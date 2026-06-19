@@ -812,6 +812,13 @@
       }
     },
     "components": {
+      "pwaInstall": {
+        "title": "errornote 앱 설치",
+        "installBody": "홈 화면에 추가하면 더 빠르게 열리고 오프라인에서도 작성할 수 있어요.",
+        "installCta": "설치",
+        "iosBody": "공유 버튼을 누르고 '홈 화면에 추가'를 선택하면 앱처럼 쓸 수 있어요. iOS는 홈 화면에 설치한 경우에만 알림을 받을 수 있어요.",
+        "dismiss": "나중에"
+      },
       "companion": {
         "ariaLabel": "학습 동반자",
         "stage1": "误 씨앗",

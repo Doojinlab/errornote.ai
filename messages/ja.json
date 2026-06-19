@@ -812,6 +812,13 @@
       }
     },
     "components": {
+      "pwaInstall": {
+        "title": "errornote をインストール",
+        "installBody": "ホーム画面に追加すると、起動が速くなりオフラインでも入力できます。",
+        "installCta": "インストール",
+        "iosBody": "共有ボタンから「ホーム画面に追加」を選ぶとアプリのように使えます。iOS では、ホーム画面に追加した場合のみ通知を受け取れます。",
+        "dismiss": "後で"
+      },
       "companion": {
         "ariaLabel": "学習コンパニオン",
         "stage1": "误 たね",
