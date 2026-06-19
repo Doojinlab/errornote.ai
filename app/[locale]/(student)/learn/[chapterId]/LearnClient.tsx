@@ -169,7 +169,6 @@ export default function LearnClient({ classId, chapterId }: Props) {
             role="tab"
             onClick={() => setTab(tab2.id)}
             aria-selected={tab === tab2.id}
-            aria-pressed={tab === tab2.id}
             className={`py-3 text-sm font-medium transition-colors ${
               tab === tab2.id
                 ? "bg-indigo-50 text-indigo-700"
