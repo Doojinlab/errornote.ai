@@ -6,6 +6,9 @@ import { createSession } from '@/lib/sessions'
 import { saveErrorCards } from '@/lib/error-cards'
 import { FOSSILIZATION_THRESHOLD } from '@/lib/fossilization'
 import { getChapterConfig } from '@/lib/prompts'
+import { resolveSpeciesCode } from '@/lib/graduation'
+import { recordDexEncounter } from '@/lib/error-dex'
+import { addLeaguePoints, LEAGUE_POINTS_PER_SUBMISSION } from '@/lib/league'
 import type { AnalyzeRequest, AnalysisResponse, FossilizationWarning, IclExample } from '@/types'
 
 export const runtime = 'nodejs'
@@ -79,6 +82,27 @@ export async function POST(req: Request) {
       auth.userId,
       body.chapterNumber,
       analysis.errors
+    )
+
+    // 게이미피케이션 적재(비치명적) — 분석 본 흐름을 막지 않는다.
+    // 1) 오류 도감: 이번 제출의 오류 유형을 误 몬스터 조우로 기록(종 코드로 매핑되는 것만, 중복 제거).
+    const speciesCodes = new Set<string>()
+    for (const e of analysis.errors) {
+      const code = resolveSpeciesCode(e.error_subtype ?? '')
+      if (code) speciesCodes.add(code)
+    }
+    await Promise.all(
+      [...speciesCodes].map((code) =>
+        recordDexEncounter(auth.userId, code).catch((err) => {
+          console.error('[api/analyze recordDexEncounter]', code, err)
+        })
+      )
+    )
+    // 2) 익명 주간 리그: 제출(노력)당 고정 포인트 적립. 오류 수와 무관(무경쟁 원칙).
+    await addLeaguePoints(auth.userId, body.classId, LEAGUE_POINTS_PER_SUBMISSION).catch(
+      (err) => {
+        console.error('[api/analyze addLeaguePoints]', err)
+      }
     )
 
     // 이번 제출로 임계치 도달 subtype 만 경고로 반환.

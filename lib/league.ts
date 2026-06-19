@@ -17,6 +17,13 @@ export type LeagueTier = 'bronze' | 'silver' | 'gold'
 export const LEAGUE_SILVER_AT = 100
 export const LEAGUE_GOLD_AT = 300
 
+/**
+ * 초고 1회 제출(분석 요청)당 적립되는 리그 포인트.
+ * 무벌점·무경쟁 원칙(spec §0/§2 M8): 오류 수가 아니라 *참여(노력)* 에 비례해 적립한다.
+ * "누가 더 틀렸나"가 아니라 꾸준히 쓴 만큼 오른다.
+ */
+export const LEAGUE_POINTS_PER_SUBMISSION = 10
+
 export function leagueTier(points: number): LeagueTier {
   if (points >= LEAGUE_GOLD_AT) return 'gold'
   if (points >= LEAGUE_SILVER_AT) return 'silver'
