@@ -39,10 +39,13 @@
    - ✅ `lib/tutor-tools.ts`: `add_to_vocab`(단어장 insert)·`generate_quiz`(객관식 정규화)
      도구 정의 + 입력 검증 + 핸들러 + 디스패처(`runTutorTool`, 오류를 `isError`로 감쌈).
    - ✅ `lib/tutor-tools.test.ts`: 16 케이스(스키마·검증·핸들러(mock supabase)·디스패치).
-   - ⏳ **스트리밍 챗 통합 잔여**: `streamText`(텍스트 전용)는 tool_use 블록을 다루지 못한다.
-     `complete()` 기반 tool_use 루프(요청→tool_use→`runTutorTool`→tool_result→재요청) 또는
-     스트리밍 tool 이벤트 처리가 필요하며, **실제 Claude API 런타임 검증이 필요** → 검증 가능
-     환경에서 진행. 통합 시 `add_to_vocab` 는 로그인 학습자의 RLS 클라이언트로 호출(본인 단어장).
+   - ✅ `lib/tutor-tool-loop.ts`: `runToolConversation` — tool_use 멀티턴 오케스트레이터
+     (모델 호출 주입형, 요청→tool_use→`runTutorTool`→tool_result→재요청, `MAX_TOOL_ROUNDS` 상한).
+     `lib/tutor-tool-loop.test.ts` 5 케이스(스크립트 모델로 루프 검증).
+   - ⏳ **프로덕션 바인딩 잔여**: `callModel` 을 Anthropic `tools` 호출에 연결 + 스트리밍 챗
+     연동. `streamText`(텍스트 전용)는 tool_use 블록을 다루지 못해 `complete()` 기반 또는
+     스트리밍 tool 이벤트 처리가 필요하며 **실제 Claude API 런타임 검증이 필요**. 통합 시
+     `add_to_vocab` 는 로그인 학습자의 RLS 클라이언트로 호출(본인 단어장).
 
 ## 비범위(이 트랙 밖)
 
