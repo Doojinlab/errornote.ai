@@ -24,10 +24,13 @@
 
 ## 권장 순서 (각 단독/묶음 PR + CI 그린)
 
-1. **`jsdom` 25→29** — 단독. Vitest 환경만 영향, 테스트로 즉시 검증. (가장 안전한 첫 타자)
-2. **`@types/node` 20→25** — 단독. Node LTS 채택 결정 후. 타입만.
-3. **`eslint` 8→10 + `eslint-config-next` 14→16** — 묶음. flat config(`eslint.config.js`) 마이그레이션.
+1. **`jsdom` 25→29** — ✅ 완료(#89). Vitest 환경만 영향, 테스트 382 통과로 검증.
+2. **`@types/node` 20→25** — 단독. **CI 런타임이 Node 20이므로 보류** — 런타임을 Node 22/24 LTS로
+   올리는 결정 후 동시 진행(현 상태에서 types만 25로 올리면 런타임과 불일치).
+3. **`eslint` 8→9/10 + `eslint-config-next` 14→16** — 묶음. flat config(`eslint.config.mjs`) 마이그레이션.
    - 비고: `next`는 이미 16(#52). `eslint-config-next` 16 정합. CI lint 게이트로 검증.
+   - ⚠️ **lock 정착 선행 필수(실증됨)**: 2026-06-19 시도 시 드리프트된 lock 때문에 npm이
+     `eslint@undefined`로 ERESOLVE 실패. lock 재생성 전에는 eslint 메이저 bump 불가.
 4. **`@supabase/ssr` 0.5→0.12** — 단독. `lib/supabase.ts`의 `createServerClient`/쿠키 핸들러
    시그니처 회귀 검증 필수(런타임 확인).
 5. **`pdf-parse` 1→2** — 단독. `lib/corpus-parser.ts` PDF 경로 회귀 테스트.
@@ -39,13 +42,20 @@
 
 ## 블로커 / 메모
 
-- 현재 `package-lock.json`이 package.json과 드리프트(#52 next 16 bump 후 미재생성). 표준 npm으로
-  lock을 정착시키면 CI를 `npm install`→`npm ci`(엄격)로 승급 가능 — 메이저 작업의 선행 권장.
+- **[선행·필수] lock 정착**: 현재 `package-lock.json`이 package.json과 드리프트(#52 next 16 bump 후
+  미재생성). 표준 npm으로 lock을 재생성하면 CI를 `npm install`→`npm ci`(엄격)로 승급 가능.
+  **2026-06-19 eslint bump 시도가 이 드리프트로 ERESOLVE 실패** → lock 정착은 권장이 아니라
+  **eslint·@supabase/ssr·pdf-parse·대형 bump의 하드 선행 조건**이다. 별도 PR로 먼저 처리할 것
+  (`rm -rf node_modules package-lock.json && npm install` → typecheck/lint/test/build 검증).
+- **@supabase/ssr·pdf-parse·react·tailwind·typescript**: typecheck만으로는 불충분(런타임/빌드/시각
+  회귀 필요) → 실배포·staging 검증 단계에서 진행. `docs/verification-runbook.md` 참조.
 - 각 PR은 `typecheck`/`lint`/`test:coverage` 게이트 통과 필수. react/tailwind는 빌드·시각 회귀까지.
 - 우선순위 낮음 단계(1~2)부터 점진 진행 → 회귀 시 롤백 범위 최소화.
 
 ## 다음 단계 (수용 기준)
 
 - [x] 메이저 후보 정리 문서화 (`docs/decisions/deps-major-bumps.md`) — 본 문서
-- [ ] 1번(`jsdom`)부터 단독 PR로 순차 진행
+- [x] 1번 `jsdom` 25→29 (#89)
+- [ ] **lock 정착(선행) → `npm ci` 승급** — eslint 등 이후 bump의 하드 선행 조건
+- [ ] eslint(+config-next) → @supabase/ssr → pdf-parse → react → tailwind → typescript 순차(lock 정착 후)
 - [ ] lock 정착(표준 npm 재생성) → `npm ci` 승급
