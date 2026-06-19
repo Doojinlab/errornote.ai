@@ -3,6 +3,7 @@ import { Link } from "@/i18n/routing";
 import { createServerClient } from "@/lib/supabase";
 import LevelBar from "@/components/gamification/LevelBar";
 import StreakCounter from "@/components/gamification/StreakCounter";
+import Companion from "@/components/gamification/Companion";
 import StudentSoundShell from "@/components/gamification/StudentSoundShell";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import StudentMobileNav from "@/components/StudentMobileNav";
@@ -12,11 +13,13 @@ import {
   type StudentNavGroupKey,
   type StudentNavKey,
 } from "@/components/nav/studentNavGroups";
+import { companionStage, companionEmoji } from "@/lib/companion";
 
 interface GameStats {
   level: 1 | 2 | 3 | 4;
   xp: number;
   streak_days: number;
+  mastery_points: number;
 }
 
 interface BadgeRow {
@@ -31,7 +34,7 @@ async function loadStats(): Promise<GameStats | null> {
   if (!user) return null;
   const { data } = await supabase
     .from("gamification_stats")
-    .select("level, xp, streak_days")
+    .select("level, xp, streak_days, mastery_points")
     .eq("student_id", user.id)
     .maybeSingle();
   return (data as GameStats | null) ?? null;
@@ -71,6 +74,14 @@ export default async function StudentLayout({ children }: { children: React.Reac
   const groupLabels = Object.fromEntries(
     ALL_GROUP_KEYS.map((k) => [k, tGroups(k)]),
   ) as Record<StudentNavGroupKey, string>;
+  const tCompanion = await getTranslations("pages.components.companion");
+
+  // 误 동반자: 진화 단계는 mastery_points 기반, 문구는 무벌점 톤.
+  const companionStageNum = companionStage(stats?.mastery_points ?? 0);
+  const companionSubtitle =
+    stats && stats.streak_days > 0
+      ? tCompanion("streak", { days: stats.streak_days })
+      : tCompanion("welcome");
 
   return (
     <StudentSoundShell
@@ -96,6 +107,12 @@ export default async function StudentLayout({ children }: { children: React.Reac
           />
           <div className="ml-auto flex items-center gap-3">
             <LanguageSwitcher />
+            <Companion
+              emoji={companionEmoji(companionStageNum)}
+              title={tCompanion(`stage${companionStageNum}`)}
+              subtitle={companionSubtitle}
+              ariaLabel={tCompanion("ariaLabel")}
+            />
             {stats && <StreakCounter days={stats.streak_days} />}
             {stats && (
               <div className="hidden w-56 sm:block">

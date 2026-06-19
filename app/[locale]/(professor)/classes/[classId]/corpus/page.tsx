@@ -49,11 +49,12 @@ function formatDate(iso: string): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-export default async function CorpusPage({
-  params,
-}: {
-  params: { classId: string }
-}) {
+export default async function CorpusPage(
+  props: {
+    params: Promise<{ classId: string }>
+  }
+) {
+  const params = await props.params;
   const t = await getTranslations('pages.professor.corpus')
   const supabase = createServerClient()
   const {

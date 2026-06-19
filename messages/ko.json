@@ -1,11 +1,12 @@
 {
   "meta": {
-    "appName": "Wunote",
+    "appName": "errornote",
     "tagline": "AI 중국어 오류 교정 PWA"
   },
   "nav": {
     "student": {
       "learn": "학습",
+      "quests": "퀘스트",
       "errors": "오류 기록",
       "vocabulary": "단어장",
       "bookmarks": "북마크",
@@ -18,6 +19,9 @@
       "portfolio": "포트폴리오",
       "peerReview": "동료 리뷰",
       "pronunciation": "발음 연습",
+      "live": "실시간 수업",
+      "weeklySuggestions": "주간 제안",
+      "inbox": "알림함",
       "notifications": "알림 설정",
       "dataExport": "데이터 내보내기",
       "urlAnalyze": "URL 분석",
@@ -34,8 +38,10 @@
     "professor": {
       "dashboard": "대시보드",
       "classes": "수업 관리",
+      "live": "실시간 수업",
       "marketplace": "마켓플레이스",
       "reports": "리포트",
+      "inbox": "알림함",
       "settings": "설정",
       "dataExport": "데이터 내보내기",
       "apiKeys": "API 키"
@@ -64,7 +70,9 @@
       "loading": "가입 중…",
       "hasAccount": "이미 계정이 있으신가요?",
       "goLogin": "로그인",
-      "errorGeneric": "회원가입에 실패했습니다"
+      "errorGeneric": "회원가입에 실패했습니다",
+      "agree": "<terms>이용약관</terms> 및 <privacy>개인정보처리방침</privacy>에 동의합니다",
+      "agreeRequired": "이용약관과 개인정보처리방침에 동의해야 가입할 수 있습니다"
     }
   },
   "landing": {
@@ -96,6 +104,17 @@
   },
   "pages": {
     "student": {
+      "quests": {
+        "title": "오늘의 퀘스트",
+        "subtitle": "어제 오류에서 만든 2분 미션이에요. 误 동반자와 함께해요.",
+        "empty": "오늘의 퀘스트를 준비하지 못했어요. 잠시 후 다시 시도해 주세요.",
+        "fromYesterday": "어제 너의 ‘{label}’ 오류에서 나왔어",
+        "complete": "완료",
+        "done": "완료됨",
+        "coinsEarned": "+{coins} 도장 획득",
+        "allDone": "오늘 미션을 모두 끝냈어요! 🎉",
+        "failed": "처리에 실패했어요. 다시 시도해 주세요."
+      },
       "learn": {
         "noActiveClassTitle": "활성 수업이 없습니다",
         "noActiveClassBody": "교수자에게 초대코드를 받아 수업에 등록해주세요.",
@@ -103,6 +122,7 @@
         "analysisResult": "분석 결과",
         "editAgain": "수정하기 →",
         "analyzeFailedDefault": "분석 요청에 실패했습니다.",
+        "offlineQueued": "오프라인 — 연결되면 자동으로 다시 분석합니다.",
         "unknownError": "알 수 없는 오류가 발생했습니다.",
         "tabDoc": "문서",
         "tabErrors": "오류",
@@ -239,7 +259,7 @@
       },
       "dataExport": {
         "title": "내 데이터 내보내기",
-        "subtitle": "Wunote.ai에 저장된 개인 데이터 전체를 내려받습니다. 작문 세션, 오류 기록, 단어장, 북마크, 배지가 포함됩니다.",
+        "subtitle": "errornote.ai에 저장된 개인 데이터 전체를 내려받습니다. 작문 세션, 오류 기록, 단어장, 북마크, 배지가 포함됩니다.",
         "includedTitle": "포함 항목",
         "includedProfile": "계정 정보 (이메일, 역할)",
         "includedSessions": "작문 세션 및 오류 분석 전체",
@@ -282,7 +302,38 @@
         "eventAssignmentCreated": "새 과제 등록",
         "eventFeedbackReceived": "피드백 수신",
         "eventBadgeEarned": "배지 획득",
-        "eventPeerReviewAssigned": "동료 평가 배정"
+        "eventPeerReviewAssigned": "동료 평가 배정",
+        "inbox": {
+          "title": "인앱 알림",
+          "subtitle": "errornote 안에서 보내드린 알림을 확인할 수 있습니다.",
+          "empty": "받은 알림이 없습니다.",
+          "emptyUnread": "읽지 않은 알림이 없습니다.",
+          "loading": "불러오는 중…",
+          "refresh": "새로고침",
+          "markAll": "모두 읽음",
+          "marking": "처리 중…",
+          "filterAll": "전체",
+          "filterUnread": "안 읽음",
+          "open": "열기",
+          "unread": "안 읽음",
+          "loadError": "알림을 불러오지 못했습니다."
+        }
+      },
+      "weeklySuggestions": {
+        "title": "주간 학습 제안",
+        "subtitle": "지난 한 주 활동을 토대로 AI 가 다음 주 학습 방향을 제안합니다.",
+        "empty": "아직 생성된 학습 제안이 없습니다. 매주 월요일 09:00 에 자동 생성됩니다.",
+        "noHeadline": "(요약 없음)",
+        "weekOf": "{date} 주",
+        "summary": "세션 {sessions}회 · 오류 {errors}건",
+        "backToList": "목록으로",
+        "statSessions": "세션",
+        "statErrors": "오류",
+        "statImprovement": "개선율",
+        "focusAreas": "이번 주 집중 영역",
+        "activities": "권장 활동",
+        "fossilization": "화석화 주의",
+        "fossilCount": "{count}회"
       },
       "settings": {
         "title": "환경설정",
@@ -345,6 +396,7 @@
         "draftAriaLabel": "중국어 문장 입력",
         "confirmResubmit": "이미 제출한 과제입니다. 다시 제출하면 기존 기록이 갱신됩니다. 계속할까요?",
         "submitFailed": "제출 실패",
+        "offlineQueued": "오프라인 — 연결되면 자동으로 다시 제출합니다.",
         "rubricTitle": "루브릭 채점",
         "colCriterion": "항목",
         "colScore": "점수",
@@ -402,7 +454,7 @@
         "badgesTitle": "획득한 배지",
         "goalsTitle": "학습 목표",
         "goalProgress": "{current} / {target} ({pct}%)",
-        "generatedFooter": "Wunote.ai · {date}"
+        "generatedFooter": "errornote.ai · {date}"
       },
       "pronunciation": {
         "title": "발음 연습",
@@ -440,6 +492,32 @@
         "errorConsonantError": "자음 오류",
         "langEnUS": "영어",
         "langKoKR": "한국어"
+      },
+      "live": {
+        "pickerTitle": "실시간 수업",
+        "pickerSubtitle": "교수자가 수업을 시작하면 입장해 본문을 작성할 수 있습니다.",
+        "emptyClasses": "수강 중인 수업이 없습니다.",
+        "badgeLive": "진행 중",
+        "badgeIdle": "대기",
+        "enterRoom": "입장",
+        "roomTitle": "{className} — 실시간 작성",
+        "weeklyFocus": "이번 주 포인트: {focus}",
+        "weeklyFocusEmpty": "이번 주 포인트가 지정되지 않았습니다.",
+        "consentTitle": "실시간 작성 공유 동의",
+        "consentBody": "수업 중 작성 중인 본문이 1초 단위로 교수자에게 공유됩니다. 본문은 서버에 저장되지 않으며 동의는 언제든 철회할 수 있습니다.",
+        "consentAccept": "동의하고 시작",
+        "consentDecline": "다음에",
+        "consentSaving": "저장 중…",
+        "consentRetry": "다시 시도",
+        "consentWithdraw": "동의 철회",
+        "consentRegrant": "다시 동의하기",
+        "notConsentedBlock": "동의를 철회하셨습니다. 본문이 교수자에게 공유되지 않습니다.",
+        "statusLive": "수업 진행 중",
+        "statusIdle": "수업 대기",
+        "statusEnded": "수업 종료",
+        "textareaLabel": "본문 작성",
+        "textareaPlaceholder": "여기에 중국어 문장을 작성하세요…",
+        "broadcastingHint": "1초 단위로 교수자 화면에 공유됩니다."
       }
     },
     "professor": {
@@ -643,7 +721,49 @@
         "sessionEmpty": "아직 시작한 세션이 없습니다.",
         "aggregateFail": "집계 실패 ({status})",
         "startFail": "시작 실패 ({status})",
-        "endFail": "종료 실패 ({status})"
+        "endFail": "종료 실패 ({status})",
+        "pickerTitle": "실시간 수업 모드",
+        "pickerSubtitle": "실시간 작성 broadcast 를 시작할 수업을 선택하세요.",
+        "emptyClasses": "운영 중인 수업이 없습니다.",
+        "badgeActive": "운영 중",
+        "badgeInactive": "종료",
+        "enrollCount": "수강생 {count}명",
+        "weeklyFocus": "이번 주 포인트: {focus}",
+        "weeklyFocusEmpty": "이번 주 포인트가 지정되지 않았습니다.",
+        "enterRoom": "입장",
+        "roomTitle": "{className} — 실시간 수업",
+        "startBtn": "수업 시작",
+        "endBtn": "수업 종료",
+        "starting": "시작 중…",
+        "ending": "종료 중…",
+        "sessionLive": "수업 진행 중",
+        "sessionIdle": "수업 대기",
+        "consentedCount": "broadcast 동의 {count}/{total}명",
+        "gridEmpty": "수강생이 없습니다.",
+        "gridStudentNoText": "(아직 작성 없음)",
+        "gridStudentTyping": "작성 중…",
+        "gridStudentNotConsented": "미동의",
+        "fullviewClose": "닫기",
+        "fullviewLastSeen": "마지막 갱신",
+        "anonymous": "익명",
+        "confirmEnd": "수업을 종료하시겠습니까?"
+      },
+      "notifications": {
+        "inbox": {
+          "title": "알림함",
+          "subtitle": "errornote 안에서 보내드린 알림을 확인할 수 있습니다.",
+          "empty": "받은 알림이 없습니다.",
+          "emptyUnread": "읽지 않은 알림이 없습니다.",
+          "loading": "불러오는 중…",
+          "refresh": "새로고침",
+          "markAll": "모두 읽음",
+          "marking": "처리 중…",
+          "filterAll": "전체",
+          "filterUnread": "안 읽음",
+          "open": "열기",
+          "unread": "안 읽음",
+          "loadError": "알림을 불러오지 못했습니다."
+        }
       }
     },
     "marketplace": {
@@ -692,6 +812,15 @@
       }
     },
     "components": {
+      "companion": {
+        "ariaLabel": "학습 동반자",
+        "stage1": "误 씨앗",
+        "stage2": "误 동무",
+        "stage3": "误 길잡이",
+        "stage4": "误 현자",
+        "streak": "{days}일째 함께하고 있어요",
+        "welcome": "오늘도 함께 시작해요"
+      },
       "errorCard": {
         "typeVocab": "어휘",
         "typeGrammar": "문법",
@@ -729,6 +858,12 @@
         "analyzing": "분석 중…",
         "submit": "재진단",
         "ariaLabel": "중국어 문장 입력"
+      },
+      "offlineQueue": {
+        "queued": "오프라인 — {count}건 대기 중. 연결되면 자동 전송됩니다.",
+        "syncing": "대기 중인 요청을 전송 중…",
+        "synced": "{count}건이 성공적으로 전송되었습니다.",
+        "failed": "{count}건 전송 실패. 다시 시도하겠습니다."
       }
     }
   }

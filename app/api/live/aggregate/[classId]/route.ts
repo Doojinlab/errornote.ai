@@ -25,10 +25,8 @@ export const dynamic = 'force-dynamic'
 const BUCKET_MS = 5000
 const FALLBACK_WINDOW_MS = 24 * 60 * 60 * 1000
 
-export async function GET(
-  req: Request,
-  { params }: { params: { classId: string } }
-) {
+export async function GET(req: Request, props: { params: Promise<{ classId: string }> }) {
+  const params = await props.params;
   const classId = (params.classId ?? '').trim()
   if (!classId) {
     return NextResponse.json({ error: 'classId 경로 파라미터가 필요합니다' }, { status: 400 })

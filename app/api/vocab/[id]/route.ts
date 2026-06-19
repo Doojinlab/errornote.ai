@@ -7,10 +7,11 @@ export const runtime = 'nodejs'
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 interface Ctx {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-export async function DELETE(_req: Request, { params }: Ctx) {
+export async function DELETE(_req: Request, props: Ctx) {
+  const params = await props.params;
   const id = params.id
   if (!UUID_RE.test(id)) {
     return NextResponse.json({ error: '유효하지 않은 id 입니다' }, { status: 400 })

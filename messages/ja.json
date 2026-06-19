@@ -1,11 +1,12 @@
 {
   "meta": {
-    "appName": "Wunote",
+    "appName": "errornote",
     "tagline": "AI中国語エラー訂正PWA"
   },
   "nav": {
     "student": {
       "learn": "学習",
+      "quests": "クエスト",
       "errors": "エラー記録",
       "vocabulary": "単語帳",
       "bookmarks": "ブックマーク",
@@ -18,6 +19,9 @@
       "portfolio": "ポートフォリオ",
       "peerReview": "ピアレビュー",
       "pronunciation": "発音練習",
+      "live": "ライブ授業",
+      "weeklySuggestions": "週次提案",
+      "inbox": "通知ボックス",
       "notifications": "通知設定",
       "dataExport": "データ書き出し",
       "urlAnalyze": "URL 分析",
@@ -34,8 +38,10 @@
     "professor": {
       "dashboard": "ダッシュボード",
       "classes": "授業管理",
+      "live": "ライブ授業",
       "marketplace": "マーケットプレイス",
       "reports": "レポート",
+      "inbox": "通知ボックス",
       "settings": "設定",
       "dataExport": "データ書き出し",
       "apiKeys": "APIキー"
@@ -64,7 +70,9 @@
       "loading": "登録中…",
       "hasAccount": "すでにアカウントをお持ちですか？",
       "goLogin": "ログイン",
-      "errorGeneric": "登録に失敗しました"
+      "errorGeneric": "登録に失敗しました",
+      "agree": "<terms>利用規約</terms>および<privacy>プライバシーポリシー</privacy>に同意します",
+      "agreeRequired": "利用規約とプライバシーポリシーに同意する必要があります"
     }
   },
   "landing": {
@@ -96,6 +104,17 @@
   },
   "pages": {
     "student": {
+      "quests": {
+        "title": "今日のクエスト",
+        "subtitle": "昨日のミスから作った2分ミッションです。误といっしょに取り組みましょう。",
+        "empty": "今日のクエストを準備できませんでした。しばらくして再度お試しください。",
+        "fromYesterday": "昨日の「{label}」のミスから出ました",
+        "complete": "完了",
+        "done": "完了済み",
+        "coinsEarned": "+{coins} スタンプ獲得",
+        "allDone": "今日のミッションをすべて終えました！🎉",
+        "failed": "処理に失敗しました。もう一度お試しください。"
+      },
       "learn": {
         "noActiveClassTitle": "進行中の授業がありません",
         "noActiveClassBody": "担当教員から招待コードを受け取り、授業に登録してください。",
@@ -103,6 +122,7 @@
         "analysisResult": "解析結果",
         "editAgain": "編集する →",
         "analyzeFailedDefault": "解析リクエストに失敗しました。",
+        "offlineQueued": "オフラインです — 接続が回復したら自動で再解析します。",
         "unknownError": "不明なエラーが発生しました。",
         "tabDoc": "文書",
         "tabErrors": "エラー",
@@ -239,7 +259,7 @@
       },
       "dataExport": {
         "title": "データをダウンロード",
-        "subtitle": "Wunote.aiに保存されている個人データをすべてダウンロードします。作文セッション、エラー記録、単語帳、ブックマーク、バッジが含まれます。",
+        "subtitle": "errornote.aiに保存されている個人データをすべてダウンロードします。作文セッション、エラー記録、単語帳、ブックマーク、バッジが含まれます。",
         "includedTitle": "含まれる内容",
         "includedProfile": "アカウント情報（メール、役割）",
         "includedSessions": "全作文セッションとエラー分析",
@@ -282,7 +302,38 @@
         "eventAssignmentCreated": "新しい課題の登録",
         "eventFeedbackReceived": "フィードバック受信",
         "eventBadgeEarned": "バッジ獲得",
-        "eventPeerReviewAssigned": "ピアレビューの割り当て"
+        "eventPeerReviewAssigned": "ピアレビューの割り当て",
+        "inbox": {
+          "title": "通知ボックス",
+          "subtitle": "週次学習提案など、アプリ内通知をまとめて確認できます。",
+          "empty": "通知はまだありません。",
+          "emptyUnread": "未読の通知はありません。",
+          "loading": "読み込み中…",
+          "refresh": "更新",
+          "markAll": "すべて既読にする",
+          "marking": "処理中…",
+          "filterAll": "すべて",
+          "filterUnread": "未読",
+          "open": "開く",
+          "unread": "未読",
+          "loadError": "通知を読み込めませんでした。"
+        }
+      },
+      "weeklySuggestions": {
+        "title": "週次学習提案",
+        "subtitle": "先週の活動を AI が振り返り、来週の学習ポイントを提案します。",
+        "empty": "まだ提案はありません。毎週月曜の朝 (09:00 KST=JST) に自動生成されます。",
+        "noHeadline": "(要約なし)",
+        "weekOf": "{date} の週",
+        "summary": "セッション {sessions}回 · エラー {errors}件",
+        "backToList": "一覧へ戻る",
+        "statSessions": "セッション",
+        "statErrors": "エラー",
+        "statImprovement": "改善率",
+        "focusAreas": "今週の重点ポイント",
+        "activities": "おすすめの活動",
+        "fossilization": "繰り返し発生中のエラー",
+        "fossilCount": "{count}回繰り返し"
       },
       "settings": {
         "title": "環境設定",
@@ -345,6 +396,7 @@
         "draftAriaLabel": "中国語テキスト入力",
         "confirmResubmit": "すでに提出済みの課題です。再提出すると以前の記録が上書きされます。続けますか？",
         "submitFailed": "提出に失敗しました",
+        "offlineQueued": "オフラインです — 接続が回復したら自動で再提出します。",
         "rubricTitle": "ルーブリック採点",
         "colCriterion": "項目",
         "colScore": "点数",
@@ -402,7 +454,7 @@
         "badgesTitle": "獲得バッジ",
         "goalsTitle": "学習目標",
         "goalProgress": "{current} / {target} ({pct}%)",
-        "generatedFooter": "Wunote.ai · {date}"
+        "generatedFooter": "errornote.ai · {date}"
       },
       "pronunciation": {
         "title": "発音練習",
@@ -440,6 +492,32 @@
         "errorConsonantError": "子音エラー",
         "langEnUS": "英語",
         "langKoKR": "韓国語"
+      },
+      "live": {
+        "pickerTitle": "ライブ授業",
+        "pickerSubtitle": "教員が授業を開始したら入室して作文できます。",
+        "emptyClasses": "受講中のクラスがありません。",
+        "badgeLive": "進行中",
+        "badgeIdle": "待機",
+        "enterRoom": "入室",
+        "roomTitle": "{className} — ライブ作文",
+        "weeklyFocus": "今週のポイント: {focus}",
+        "weeklyFocusEmpty": "今週のポイントは未指定です。",
+        "consentTitle": "リアルタイム共有への同意",
+        "consentBody": "授業中に作成中の本文が1秒ごとに教員へ共有されます。本文はサーバーに保存されず、同意はいつでも撤回できます。",
+        "consentAccept": "同意して開始",
+        "consentDecline": "あとで",
+        "consentSaving": "保存中…",
+        "consentRetry": "再試行",
+        "consentWithdraw": "同意を取り消す",
+        "consentRegrant": "再度同意する",
+        "notConsentedBlock": "同意を取り消しました。本文は教員に共有されません。",
+        "statusLive": "授業進行中",
+        "statusIdle": "授業待機",
+        "statusEnded": "授業終了",
+        "textareaLabel": "作文",
+        "textareaPlaceholder": "ここに中国語の文を書いてください…",
+        "broadcastingHint": "1秒ごとに教員画面へ共有されます。"
       }
     },
     "professor": {
@@ -643,7 +721,49 @@
         "sessionEmpty": "まだセッションが開始されていません。",
         "aggregateFail": "集計失敗 ({status})",
         "startFail": "開始失敗 ({status})",
-        "endFail": "終了失敗 ({status})"
+        "endFail": "終了失敗 ({status})",
+        "pickerTitle": "ライブ授業モード",
+        "pickerSubtitle": "リアルタイム作文ブロードキャストを開始するクラスを選択してください。",
+        "emptyClasses": "進行中のクラスがありません。",
+        "badgeActive": "進行中",
+        "badgeInactive": "終了",
+        "enrollCount": "受講生 {count}名",
+        "weeklyFocus": "今週のポイント: {focus}",
+        "weeklyFocusEmpty": "今週のポイントは未指定です。",
+        "enterRoom": "入室",
+        "roomTitle": "{className} — ライブ授業",
+        "startBtn": "授業開始",
+        "endBtn": "授業終了",
+        "starting": "開始中…",
+        "ending": "終了中…",
+        "sessionLive": "進行中",
+        "sessionIdle": "待機",
+        "consentedCount": "ブロードキャスト同意 {count}/{total}名",
+        "gridEmpty": "受講生がいません。",
+        "gridStudentNoText": "(まだ作文なし)",
+        "gridStudentTyping": "作文中…",
+        "gridStudentNotConsented": "未同意",
+        "fullviewClose": "閉じる",
+        "fullviewLastSeen": "最終更新",
+        "anonymous": "匿名",
+        "confirmEnd": "授業を終了しますか?"
+      },
+      "notifications": {
+        "inbox": {
+          "title": "通知",
+          "subtitle": "週次クラスレポートなど、アプリ内通知をまとめて確認できます。",
+          "empty": "通知はまだありません。",
+          "emptyUnread": "未読の通知はありません。",
+          "loading": "読み込み中…",
+          "refresh": "更新",
+          "markAll": "すべて既読にする",
+          "marking": "処理中…",
+          "filterAll": "すべて",
+          "filterUnread": "未読",
+          "open": "開く",
+          "unread": "未読",
+          "loadError": "通知を読み込めませんでした。"
+        }
       }
     },
     "marketplace": {
@@ -692,6 +812,15 @@
       }
     },
     "components": {
+      "companion": {
+        "ariaLabel": "学習コンパニオン",
+        "stage1": "误 たね",
+        "stage2": "误 なかま",
+        "stage3": "误 みちしるべ",
+        "stage4": "误 賢者",
+        "streak": "{days}日間いっしょにがんばっています",
+        "welcome": "今日もいっしょに始めましょう"
+      },
       "errorCard": {
         "typeVocab": "語彙",
         "typeGrammar": "文法",
@@ -729,6 +858,12 @@
         "analyzing": "解析中…",
         "submit": "再解析",
         "ariaLabel": "中国語の文を入力"
+      },
+      "offlineQueue": {
+        "queued": "オフラインです — {count}件の保留中。接続が回復すると自動送信します。",
+        "syncing": "保留中のリクエストを送信中…",
+        "synced": "{count}件の送信に成功しました。",
+        "failed": "{count}件の送信に失敗しました。再試行します。"
       }
     }
   }

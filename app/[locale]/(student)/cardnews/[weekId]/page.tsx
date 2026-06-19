@@ -7,7 +7,7 @@ import SendSelfButton from "./SendSelfButton";
 import type { CardnewsRecord } from "@/types/cardnews";
 
 interface Params {
-  params: { weekId: string };
+  params: Promise<{ weekId: string }>;
 }
 
 interface CardnewsRow {
@@ -58,7 +58,8 @@ async function loadWeek(weekStart: string): Promise<CardnewsRecord | null> {
   return toRecord(data as CardnewsRow);
 }
 
-export default async function CardnewsWeekPage({ params }: Params) {
+export default async function CardnewsWeekPage(props: Params) {
+  const params = await props.params;
   const weekStart = decodeURIComponent(params.weekId);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(weekStart)) notFound();
 

@@ -515,6 +515,11 @@ export type Database = {
           xp: number
           streak_days: number
           last_active_date: string | null
+          activity_coins: number
+          mastery_points: number
+          streak_protectors: number
+          last_protector_grant_date: string | null
+          longest_streak: number
           updated_at: string
         }
         Insert: {
@@ -524,6 +529,11 @@ export type Database = {
           xp?: number
           streak_days?: number
           last_active_date?: string | null
+          activity_coins?: number
+          mastery_points?: number
+          streak_protectors?: number
+          last_protector_grant_date?: string | null
+          longest_streak?: number
           updated_at?: string
         }
         Update: {
@@ -533,6 +543,11 @@ export type Database = {
           xp?: number
           streak_days?: number
           last_active_date?: string | null
+          activity_coins?: number
+          mastery_points?: number
+          streak_protectors?: number
+          last_protector_grant_date?: string | null
+          longest_streak?: number
           updated_at?: string
         }
         Relationships: []
@@ -717,6 +732,69 @@ export type Database = {
         }
         Relationships: []
       }
+      lti_platforms: {
+        Row: {
+          id: string
+          professor_id: string | null
+          class_id: string | null
+          name: string
+          issuer: string
+          client_id: string
+          deployment_id: string | null
+          auth_login_url: string
+          auth_token_url: string
+          jwks_uri: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          professor_id?: string | null
+          class_id?: string | null
+          name: string
+          issuer: string
+          client_id: string
+          deployment_id?: string | null
+          auth_login_url: string
+          auth_token_url: string
+          jwks_uri: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          professor_id?: string | null
+          class_id?: string | null
+          name?: string
+          issuer?: string
+          client_id?: string
+          deployment_id?: string | null
+          auth_login_url?: string
+          auth_token_url?: string
+          jwks_uri?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      lti_login_states: {
+        Row: {
+          state: string
+          nonce: string
+          issuer: string
+          created_at: string
+        }
+        Insert: {
+          state: string
+          nonce: string
+          issuer: string
+          created_at?: string
+        }
+        Update: {
+          state?: string
+          nonce?: string
+          issuer?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           id: string
@@ -856,8 +934,8 @@ export type Database = {
         Row: {
           id: string
           user_id: string
-          kakao_access_token: string | null
-          kakao_refresh_token: string | null
+          kakao_access_token_enc: string | null
+          kakao_refresh_token_enc: string | null
           kakao_user_id: string | null
           enabled_events: Json
           created_at: string
@@ -865,8 +943,8 @@ export type Database = {
         Insert: {
           id?: string
           user_id: string
-          kakao_access_token?: string | null
-          kakao_refresh_token?: string | null
+          kakao_access_token_enc?: string | null
+          kakao_refresh_token_enc?: string | null
           kakao_user_id?: string | null
           enabled_events?: Json
           created_at?: string
@@ -874,8 +952,8 @@ export type Database = {
         Update: {
           id?: string
           user_id?: string
-          kakao_access_token?: string | null
-          kakao_refresh_token?: string | null
+          kakao_access_token_enc?: string | null
+          kakao_refresh_token_enc?: string | null
           kakao_user_id?: string | null
           enabled_events?: Json
           created_at?: string
@@ -969,6 +1047,384 @@ export type Database = {
         }
         Relationships: []
       }
+      live_typing_consents: {
+        Row: {
+          id: string
+          class_id: string
+          student_id: string
+          granted_at: string
+          withdrawn_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          class_id: string
+          student_id: string
+          granted_at?: string
+          withdrawn_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          class_id?: string
+          student_id?: string
+          granted_at?: string
+          withdrawn_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      student_weekly_reports: {
+        Row: {
+          id: string
+          student_id: string
+          class_id: string
+          week_start: string
+          metrics: Json
+          suggestions: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          class_id: string
+          week_start: string
+          metrics?: Json
+          suggestions?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          class_id?: string
+          week_start?: string
+          metrics?: Json
+          suggestions?: Json
+          created_at?: string
+        }
+        Relationships: []
+      }
+      in_app_notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: string
+          title: string
+          body: string
+          link_url: string | null
+          payload: Json
+          read_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: string
+          title: string
+          body?: string
+          link_url?: string | null
+          payload?: Json
+          read_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: string
+          title?: string
+          body?: string
+          link_url?: string | null
+          payload?: Json
+          read_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      error_species: {
+        Row: {
+          id: string
+          code: string
+          category: 'vocab' | 'grammar'
+          name_zh: string
+          name_ko: string
+          hsk_level: number | null
+          description: string
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          code: string
+          category: 'vocab' | 'grammar'
+          name_zh: string
+          name_ko: string
+          hsk_level?: number | null
+          description?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string
+          category?: 'vocab' | 'grammar'
+          name_zh?: string
+          name_ko?: string
+          hsk_level?: number | null
+          description?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      user_dex_entries: {
+        Row: {
+          id: string
+          student_id: string
+          species_id: string
+          status: 'encountered' | 'tamed' | 'graduated'
+          encounter_count: number
+          first_encountered_at: string
+          tamed_at: string | null
+          graduated_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          species_id: string
+          status?: 'encountered' | 'tamed' | 'graduated'
+          encounter_count?: number
+          first_encountered_at?: string
+          tamed_at?: string | null
+          graduated_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          species_id?: string
+          status?: 'encountered' | 'tamed' | 'graduated'
+          encounter_count?: number
+          first_encountered_at?: string
+          tamed_at?: string | null
+          graduated_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      error_type_streaks: {
+        Row: {
+          id: string
+          student_id: string
+          species_id: string
+          no_error_days: number
+          best_days: number
+          last_advanced_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          species_id: string
+          no_error_days?: number
+          best_days?: number
+          last_advanced_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          species_id?: string
+          no_error_days?: number
+          best_days?: number
+          last_advanced_date?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reward_items: {
+        Row: {
+          id: string
+          code: string
+          category: 'sound_pack' | 'theme' | 'avatar' | 'sticker'
+          name_ko: string
+          name_zh: string
+          rarity: 'common' | 'rare' | 'epic'
+          icon: string
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          code: string
+          category: 'sound_pack' | 'theme' | 'avatar' | 'sticker'
+          name_ko: string
+          name_zh?: string
+          rarity?: 'common' | 'rare' | 'epic'
+          icon?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string
+          category?: 'sound_pack' | 'theme' | 'avatar' | 'sticker'
+          name_ko?: string
+          name_zh?: string
+          rarity?: 'common' | 'rare' | 'epic'
+          icon?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      reward_inventory: {
+        Row: {
+          id: string
+          student_id: string
+          item_id: string
+          acquired_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          item_id: string
+          acquired_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          item_id?: string
+          acquired_at?: string
+        }
+        Relationships: []
+      }
+      class_goals: {
+        Row: {
+          id: string
+          class_id: string
+          species_id: string
+          title: string
+          target_count: number
+          current_count: number
+          period_start: string
+          period_end: string
+          achieved: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          class_id: string
+          species_id: string
+          title?: string
+          target_count: number
+          current_count?: number
+          period_start: string
+          period_end: string
+          achieved?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          class_id?: string
+          species_id?: string
+          title?: string
+          target_count?: number
+          current_count?: number
+          period_start?: string
+          period_end?: string
+          achieved?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      league_points: {
+        Row: {
+          id: string
+          student_id: string
+          class_id: string
+          week_start: string
+          points: number
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          class_id: string
+          week_start: string
+          points?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          class_id?: string
+          week_start?: string
+          points?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mistake_feed: {
+        Row: {
+          id: string
+          student_id: string
+          original_ko: string
+          literal_zh: string
+          corrected_zh: string
+          is_public: boolean
+          likes: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          original_ko: string
+          literal_zh: string
+          corrected_zh?: string
+          is_public?: boolean
+          likes?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          original_ko?: string
+          literal_zh?: string
+          corrected_zh?: string
+          is_public?: boolean
+          likes?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      daily_quests: {
+        Row: {
+          id: string
+          student_id: string
+          quest_date: string
+          source: Json
+          missions: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          quest_date: string
+          source?: Json
+          missions?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          quest_date?: string
+          source?: Json
+          missions?: Json
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       professor_reports_latest: {
@@ -1010,6 +1466,96 @@ export type Database = {
       increment_corpus_download: {
         Args: { p_doc_id: string }
         Returns: number
+      }
+      kakao_set_tokens: {
+        Args: {
+          p_user_id: string
+          p_access: string | null
+          p_refresh: string | null
+          p_kakao_user_id: string | null
+          p_key: string
+        }
+        Returns: undefined
+      }
+      kakao_get_tokens: {
+        Args: { p_user_id: string; p_key: string }
+        Returns: {
+          access_token: string | null
+          refresh_token: string | null
+          kakao_user_id: string | null
+          enabled_events: Json
+        }[]
+      }
+      kakao_clear_tokens: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      award_currency: {
+        Args: { p_student_id: string; p_activity_delta?: number; p_mastery_delta?: number }
+        Returns: { activity_coins: number; mastery_points: number }[]
+      }
+      record_dex_encounter: {
+        Args: { p_student_id: string; p_code: string }
+        Returns: { status: 'encountered' | 'tamed' | 'graduated'; encounter_count: number }[]
+      }
+      record_dex_graduation: {
+        Args: { p_student_id: string; p_code: string }
+        Returns: { newly_graduated: boolean }[]
+      }
+      grant_weekly_streak_protector: {
+        Args: { p_student_id: string }
+        Returns: { streak_protectors: number; granted: boolean }[]
+      }
+      consume_streak_protector: {
+        Args: { p_student_id: string }
+        Returns: { streak_protectors: number; consumed: boolean }[]
+      }
+      advance_error_type_streak: {
+        Args: { p_student_id: string; p_code: string; p_had_error: boolean }
+        Returns: { no_error_days: number; best_days: number }[]
+      }
+      pull_gacha: {
+        Args: { p_student_id: string; p_cost: number }
+        Returns: {
+          item_code: string
+          item_id: string
+          rarity: 'common' | 'rare' | 'epic'
+          is_duplicate: boolean
+          activity_coins: number
+        }[]
+      }
+      contribute_class_goal: {
+        Args: { p_class_id: string; p_code: string }
+        Returns: { current_count: number; target_count: number; achieved: boolean }[]
+      }
+      add_league_points: {
+        Args: { p_student_id: string; p_class_id: string; p_week_start: string; p_points: number }
+        Returns: number
+      }
+      get_league_standings: {
+        Args: { p_class_id: string; p_week_start: string }
+        Returns: { rank: number; points: number; anon_seed: string; is_me: boolean }[]
+      }
+      get_public_mistake_feed: {
+        Args: { p_limit: number }
+        Returns: {
+          id: string
+          original_ko: string
+          literal_zh: string
+          corrected_zh: string
+          likes: number
+          anon_seed: string
+          is_me: boolean
+          created_at: string
+        }[]
+      }
+      register_push_subscription: {
+        Args: { p_endpoint: string; p_subscription: Json }
+        Returns: undefined
+      }
+      unregister_push_subscription: {
+        Args: { p_endpoint: string }
+        Returns: undefined
       }
     }
     Enums: {

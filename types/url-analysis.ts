@@ -1,4 +1,4 @@
-// Wunote URL 분석 — Phase 2
+// errornote URL 분석 — Phase 2
 // [소유자] feat/phase2-url-analyze 브랜치 전용. 공용 types/index.ts 를 건드리지 않기 위해 분리.
 // 학습자가 입력한 중국어 뉴스/SNS URL 을 Cheerio 로 본문 추출 후 Claude 가 어휘·문체 분석.
 

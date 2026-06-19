@@ -1,4 +1,4 @@
-// Wunote 공유 타입 — 오류 카드, Claude API 요청/응답, 화석화 감지
+// errornote 공유 타입 — 오류 카드, Claude API 요청/응답, 화석화 감지
 // [소유자] 창2 (feature/ai). 수정 시 커밋 메시지 앞에 [types] 태그 필수.
 
 export type ErrorType = 'vocab' | 'grammar'
@@ -176,4 +176,6 @@ export interface GamificationSnapshot {
   streak_days: number
   last_active_date: string | null
   next_level_xp: number | null
+  activity_coins: number
+  mastery_points: number
 }

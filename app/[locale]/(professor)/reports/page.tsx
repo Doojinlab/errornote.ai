@@ -22,11 +22,12 @@ function addDays(iso: string, days: number): string {
 
 export const dynamic = 'force-dynamic'
 
-export default async function ReportsListPage({
-  searchParams
-}: {
-  searchParams: { classId?: string }
-}) {
+export default async function ReportsListPage(
+  props: {
+    searchParams: Promise<{ classId?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createServerClient()
   const {
     data: { user }
@@ -107,7 +108,7 @@ export default async function ReportsListPage({
             아직 생성된 리포트가 없습니다. 위에서 주차를 선택해 생성하세요.
           </p>
         ) : (
-          <ul className="grid gap-3 sm:grid-cols-2">
+          <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
             {reports.map(r => (
               <li key={r.id}>
                 <Link href={`/reports/${r.id}`} className="block">

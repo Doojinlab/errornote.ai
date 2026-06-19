@@ -1,4 +1,4 @@
-// Wunote Phase 2 — 번역 역방향 비교 타입
+// errornote Phase 2 — 번역 역방향 비교 타입
 // [소유자] feat/phase2-goals-translate
 // 학습자가 입력한 한국어 문장을 DeepL / Papago / GPT 세 엔진으로 중국어로 번역한 뒤,
 // Claude 가 각 번역에 대해 오류 카드(AnalysisError) 형태의 학습 코멘트를 생성한다.

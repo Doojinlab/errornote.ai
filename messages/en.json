@@ -1,11 +1,12 @@
 {
   "meta": {
-    "appName": "Wunote",
+    "appName": "errornote",
     "tagline": "AI-powered Chinese error correction PWA"
   },
   "nav": {
     "student": {
       "learn": "Learn",
+      "quests": "Quests",
       "errors": "Error Log",
       "vocabulary": "Vocabulary",
       "bookmarks": "Bookmarks",
@@ -18,7 +19,10 @@
       "portfolio": "Portfolio",
       "peerReview": "Peer Review",
       "pronunciation": "Pronunciation",
-      "notifications": "Notifications",
+      "live": "Live class",
+      "weeklySuggestions": "Weekly suggestions",
+      "inbox": "Inbox",
+      "notifications": "Notification settings",
       "dataExport": "Export Data",
       "urlAnalyze": "URL Analysis",
       "settings": "Settings",
@@ -34,8 +38,10 @@
     "professor": {
       "dashboard": "Dashboard",
       "classes": "Classes",
+      "live": "Live class",
       "marketplace": "Marketplace",
       "reports": "Reports",
+      "inbox": "Inbox",
       "settings": "Settings",
       "dataExport": "Export Data",
       "apiKeys": "API Keys"
@@ -64,7 +70,9 @@
       "loading": "Creating…",
       "hasAccount": "Already have an account?",
       "goLogin": "Log in",
-      "errorGeneric": "Sign-up failed"
+      "errorGeneric": "Sign-up failed",
+      "agree": "I agree to the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>",
+      "agreeRequired": "You must agree to the Terms of Service and Privacy Policy to sign up"
     }
   },
   "landing": {
@@ -96,6 +104,17 @@
   },
   "pages": {
     "student": {
+      "quests": {
+        "title": "Today's Quests",
+        "subtitle": "Two-minute missions built from yesterday's mistakes. Tackle them with 误.",
+        "empty": "We couldn't prepare today's quests. Please try again shortly.",
+        "fromYesterday": "From your ‘{label}’ mistake yesterday",
+        "complete": "Done",
+        "done": "Completed",
+        "coinsEarned": "+{coins} stamps",
+        "allDone": "You finished all of today's missions! 🎉",
+        "failed": "Something went wrong. Please try again."
+      },
       "learn": {
         "noActiveClassTitle": "No active class",
         "noActiveClassBody": "Ask your professor for an invite code and join a class.",
@@ -103,6 +122,7 @@
         "analysisResult": "Analysis result",
         "editAgain": "Edit →",
         "analyzeFailedDefault": "Analysis request failed.",
+        "offlineQueued": "Offline — we'll re-analyze automatically once you're back online.",
         "unknownError": "An unknown error occurred.",
         "tabDoc": "Doc",
         "tabErrors": "Errors",
@@ -239,7 +259,7 @@
       },
       "dataExport": {
         "title": "Download my data",
-        "subtitle": "Export a complete copy of your personal data stored in Wunote.ai. Includes writing sessions, error records, vocabulary, bookmarks, and badges.",
+        "subtitle": "Export a complete copy of your personal data stored in errornote.ai. Includes writing sessions, error records, vocabulary, bookmarks, and badges.",
         "includedTitle": "What's included",
         "includedProfile": "Account profile (email, role)",
         "includedSessions": "All writing sessions and error analyses",
@@ -282,7 +302,38 @@
         "eventAssignmentCreated": "New assignment posted",
         "eventFeedbackReceived": "Feedback received",
         "eventBadgeEarned": "Badge earned",
-        "eventPeerReviewAssigned": "Peer review assigned"
+        "eventPeerReviewAssigned": "Peer review assigned",
+        "inbox": {
+          "title": "Inbox",
+          "subtitle": "Weekly study suggestions and other in-app notifications.",
+          "empty": "No notifications yet.",
+          "emptyUnread": "No unread notifications.",
+          "loading": "Loading…",
+          "refresh": "Refresh",
+          "markAll": "Mark all read",
+          "marking": "Marking…",
+          "filterAll": "All",
+          "filterUnread": "Unread",
+          "open": "Open",
+          "unread": "Unread",
+          "loadError": "Failed to load notifications."
+        }
+      },
+      "weeklySuggestions": {
+        "title": "Weekly study suggestions",
+        "subtitle": "Each week, our AI reviews your past week and suggests what to focus on next.",
+        "empty": "No suggestions yet. Reports are generated every Monday morning (09:00 KST).",
+        "noHeadline": "(no summary)",
+        "weekOf": "Week of {date}",
+        "summary": "{sessions} sessions · {errors} errors",
+        "backToList": "Back to list",
+        "statSessions": "Sessions",
+        "statErrors": "Errors",
+        "statImprovement": "Improvement rate",
+        "focusAreas": "This week's focus areas",
+        "activities": "Recommended activities",
+        "fossilization": "Recurring errors to watch",
+        "fossilCount": "{count}× recurring"
       },
       "settings": {
         "title": "Settings",
@@ -345,6 +396,7 @@
         "draftAriaLabel": "Chinese text input",
         "confirmResubmit": "You have already submitted this assignment. Resubmitting will overwrite your previous record. Continue?",
         "submitFailed": "Submission failed",
+        "offlineQueued": "Offline — we'll resubmit automatically once you're back online.",
         "rubricTitle": "Rubric scoring",
         "colCriterion": "Criterion",
         "colScore": "Score",
@@ -402,7 +454,7 @@
         "badgesTitle": "Badges Earned",
         "goalsTitle": "Learning Goals",
         "goalProgress": "{current} / {target} ({pct}%)",
-        "generatedFooter": "Wunote.ai · {date}"
+        "generatedFooter": "errornote.ai · {date}"
       },
       "pronunciation": {
         "title": "Pronunciation Practice",
@@ -440,6 +492,32 @@
         "errorConsonantError": "Consonant Error",
         "langEnUS": "English",
         "langKoKR": "Korean"
+      },
+      "live": {
+        "pickerTitle": "Live class",
+        "pickerSubtitle": "Once your professor starts a live session, enter to write your draft.",
+        "emptyClasses": "You are not enrolled in any class.",
+        "badgeLive": "Live",
+        "badgeIdle": "Idle",
+        "enterRoom": "Enter",
+        "roomTitle": "{className} — Live writing",
+        "weeklyFocus": "This week's focus: {focus}",
+        "weeklyFocusEmpty": "No focus set for this week.",
+        "consentTitle": "Consent to live sharing",
+        "consentBody": "Your draft text will be broadcast to your professor every second while you type. The text is not stored on the server, and you can withdraw consent at any time.",
+        "consentAccept": "Agree and continue",
+        "consentDecline": "Not now",
+        "consentSaving": "Saving…",
+        "consentRetry": "Retry",
+        "consentWithdraw": "Withdraw consent",
+        "consentRegrant": "Re-grant consent",
+        "notConsentedBlock": "You have withdrawn consent. Your draft is not shared with the professor.",
+        "statusLive": "Class in session",
+        "statusIdle": "Waiting to start",
+        "statusEnded": "Class ended",
+        "textareaLabel": "Your draft",
+        "textareaPlaceholder": "Write your Chinese sentences here…",
+        "broadcastingHint": "Shared with the professor every 1 second."
       }
     },
     "professor": {
@@ -643,7 +721,49 @@
         "sessionEmpty": "No session started yet.",
         "aggregateFail": "Aggregate failed ({status})",
         "startFail": "Start failed ({status})",
-        "endFail": "End failed ({status})"
+        "endFail": "End failed ({status})",
+        "pickerTitle": "Live class mode",
+        "pickerSubtitle": "Pick a class to start a live writing broadcast.",
+        "emptyClasses": "No active classes.",
+        "badgeActive": "Active",
+        "badgeInactive": "Ended",
+        "enrollCount": "{count} students",
+        "weeklyFocus": "This week's focus: {focus}",
+        "weeklyFocusEmpty": "No focus set for this week.",
+        "enterRoom": "Enter",
+        "roomTitle": "{className} — Live class",
+        "startBtn": "Start class",
+        "endBtn": "End class",
+        "starting": "Starting…",
+        "ending": "Ending…",
+        "sessionLive": "Live",
+        "sessionIdle": "Idle",
+        "consentedCount": "Broadcast consent {count}/{total}",
+        "gridEmpty": "No students enrolled.",
+        "gridStudentNoText": "(no text yet)",
+        "gridStudentTyping": "typing…",
+        "gridStudentNotConsented": "Not consented",
+        "fullviewClose": "Close",
+        "fullviewLastSeen": "Last update",
+        "anonymous": "Anonymous",
+        "confirmEnd": "End the class?"
+      },
+      "notifications": {
+        "inbox": {
+          "title": "Notifications",
+          "subtitle": "In-app notifications and weekly report alerts.",
+          "empty": "No notifications yet.",
+          "emptyUnread": "No unread notifications.",
+          "loading": "Loading…",
+          "refresh": "Refresh",
+          "markAll": "Mark all read",
+          "marking": "Marking…",
+          "filterAll": "All",
+          "filterUnread": "Unread",
+          "open": "Open",
+          "unread": "Unread",
+          "loadError": "Failed to load notifications."
+        }
       }
     },
     "marketplace": {
@@ -692,6 +812,15 @@
       }
     },
     "components": {
+      "companion": {
+        "ariaLabel": "Learning companion",
+        "stage1": "误 Seed",
+        "stage2": "误 Buddy",
+        "stage3": "误 Guide",
+        "stage4": "误 Sage",
+        "streak": "{days} days together and counting",
+        "welcome": "Let's start together today"
+      },
       "errorCard": {
         "typeVocab": "Vocabulary",
         "typeGrammar": "Grammar",
@@ -729,6 +858,12 @@
         "analyzing": "Analyzing…",
         "submit": "Re-analyze",
         "ariaLabel": "Chinese sentence input"
+      },
+      "offlineQueue": {
+        "queued": "Offline — {count} request(s) waiting. They'll be sent automatically when you reconnect.",
+        "syncing": "Sending queued requests…",
+        "synced": "{count} request(s) sent successfully.",
+        "failed": "{count} request(s) failed. We'll retry."
       }
     }
   }

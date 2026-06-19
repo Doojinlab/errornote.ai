@@ -27,11 +27,12 @@ function Stars({ value, ariaLabel }: { value: number; ariaLabel: string }) {
 
 export const dynamic = 'force-dynamic'
 
-export default async function MarketplacePage({
-  searchParams
-}: {
-  searchParams: { q?: string; sort?: string }
-}) {
+export default async function MarketplacePage(
+  props: {
+    searchParams: Promise<{ q?: string; sort?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const t = await getTranslations('pages.marketplace.list')
   const q = searchParams.q?.trim() ?? ''
   const sort = parseSort(searchParams.sort)
@@ -89,7 +90,7 @@ export default async function MarketplacePage({
           {t('emptyState')}
         </p>
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {items.map(item => (
             <li key={item.id}>
               <Link href={`/marketplace/${item.id}`} className="block">

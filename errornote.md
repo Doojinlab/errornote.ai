@@ -1,4 +1,4 @@
-# CLAUDE.md — Wunote (AI 중국어 오류 교정 플랫폼)
+# errornote — 제품 명세 (AI 중국어 오류 교정 플랫폼)
 
 ## 프로젝트 개요
 
@@ -658,7 +658,7 @@ Claude API로 어휘·문체 분석
 - 전국 중문과 교수자 네트워크 효과 형성
 
 ### API 공개 (Phase 3)
-- Wunote 오류 분석 기능을 외부 LMS(Canvas·Moodle)에서 API 호출
+- errornote 오류 분석 기능을 외부 LMS(Canvas·Moodle)에서 API 호출
 - 인증: API Key 발급 방식
 - 문서: /api/docs 자동 생성 (Swagger)
 
@@ -724,7 +724,7 @@ Claude API로 어휘·문체 분석
 - [x] 예문 북마크
 - [x] 학습 목표 설정·추적
 - [x] 번역 역방향 비교 (DeepL·Papago·GPT)
-- [ ] URL 분석 모드 (뉴스·SNS)
+- [x] URL 분석 모드 (뉴스·SNS)
 - [x] HSK 급수 태그
 - [x] 개인 성장 대시보드·학기 간 비교
 - [x] 교수자 간 마켓플레이스
@@ -771,8 +771,8 @@ Claude API로 어휘·문체 분석
 
 ```json
 {
-  "name": "Wunote — AI 중국어 오류 교정",
-  "short_name": "Wunote",
+  "name": "errornote — AI 중국어 오류 교정",
+  "short_name": "errornote",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -844,7 +844,15 @@ KAKAO_API_KEY=
 
 ## Phase 4 (계획)
 
-- 모바일 앱 (React Native)
-- LTI 1.3 표준 연동
-- 다국어 UI
-- AI 튜터 고도화
+- [x] 다국어 UI (next-intl ko/en/ja) — PR #11, #33, #39
+- [x] 실시간 수업 모드 강화 (Supabase Realtime + typing broadcast) — PR #27
+- [x] 주간 AI 학습 제안 + 인앱 알림 인박스 — PR #28
+- [x] PWA 강화 (IndexedDB offline queue, SW v2, iOS splash) — PR #25, #26, #34
+- [x] 보안 (Kakao OAuth 토큰 pgcrypto 암호화) — PR #35
+- [x] AI 모델 라우터 + dispatchJSON wrapper + 1h prompt cache — PR #22, #23, #29, #31
+- [x] 개인정보 처리방침 / 이용약관 페이지 — `app/[locale]/(legal)/{privacy,terms}`, 회원가입 동의 화면에서 링크 (#49)
+- [x] 테스트 커버리지 게이트 — CI(`.github/workflows/ci.yml`) + `vitest.config.ts` thresholds (#51, #73)
+- [x] 운영 모니터링 코어 — `lib/monitoring.ts` + Realtime quota 평가·알림(`lib/realtime-quota.ts`) (#50, #74) · 외부 Sentry 연동만 잔여
+- [~] AI 튜터 고도화 — 진행 중: 멀티턴 컨텍스트 강화(#75), 적응형 난이도(#76) · 잔여 범위 정의 필요 (#48)
+- [ ] 모바일 앱 (React Native) — 미착수, 우선순위 결정 필요 (#46)
+- [ ] LTI 1.3 표준 연동 (Canvas/Moodle) — 미착수, LMS API 위에 어댑터 추가 (#47)

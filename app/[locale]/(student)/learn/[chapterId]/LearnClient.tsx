@@ -6,6 +6,7 @@ import AnnotatedText from "@/components/learn/AnnotatedText";
 import ErrorPanel from "@/components/learn/ErrorPanel";
 import TutorChat from "@/components/learn/TutorChat";
 import { useSound } from "@/components/gamification/SoundManager";
+import { fetchOrEnqueue, isQueuedSentinel } from "@/lib/offline-queue";
 import type { AnalysisResponse, AnalyzeRequest } from "@/types";
 
 type Tab = "doc" | "errors" | "chat";
@@ -26,7 +27,7 @@ export default function LearnClient({ classId, chapterId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [focusedErrorId, setFocusedErrorId] = useState<number | null>(null);
   // 한 번이라도 분석 결과를 받은 적이 있으면 다음 분석은 "수정고" 로 간주.
-  // (오류 0개 수정고 → correct.mp3, Wunote.md 559)
+  // (오류 0개 수정고 → correct.mp3, errornote.md 559)
   const [hasSubmittedBefore, setHasSubmittedBefore] = useState(false);
 
   async function analyze() {
@@ -40,11 +41,21 @@ export default function LearnClient({ classId, chapterId }: Props) {
         chapterNumber,
         draftText: draft,
       };
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+      const res = await fetchOrEnqueue(
+        "/api/analyze",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        },
+        { kind: "analyze", label: `오류카드 — ${chapterId}과` }
+      );
+      if (isQueuedSentinel(res)) {
+        // Network unreachable — request stashed in IDB; the global flusher
+        // toast will tell the user. Bail out without setting analysis state.
+        setError(t("offlineQueued"));
+        return;
+      }
       if (!res.ok) {
         const msg = (await res.json().catch(() => null))?.error ?? t("analyzeFailedDefault");
         throw new Error(msg);
