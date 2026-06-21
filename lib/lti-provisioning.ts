@@ -80,12 +80,12 @@ export async function resolveOrProvisionIdentity(
     .update({
       role: mapLtiRole(params.isInstructor),
       ...(params.name ? { name: params.name } : {}),
-    } as never)
+    })
     .eq('id', userId)
 
   const { error: linkErr } = await admin
     .from('lti_identities')
-    .insert({ issuer: params.issuer, sub: params.sub, user_id: userId } as never)
+    .insert({ issuer: params.issuer, sub: params.sub, user_id: userId })
   if (linkErr) {
     // 경쟁 삽입(unique 충돌) 가능 — 재조회로 수렴.
     const raced = await lookupIdentity(admin, params.issuer, params.sub)

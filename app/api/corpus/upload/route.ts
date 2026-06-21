@@ -101,7 +101,6 @@ export async function POST(req: Request) {
     ? parsed.text.slice(0, MAX_STORED_TEXT_CHARS)
     : parsed.text
 
-  // TODO(deps): ssr/supabase-js 타입 경로 미스매치 해소 후 as never 제거. (lib/sessions.ts 주석 참조)
   const { data: inserted, error: insertErr } = await supabase
     .from('corpus_documents')
     .insert({
@@ -111,7 +110,7 @@ export async function POST(req: Request) {
       file_type: parsed.fileType,
       content: storedText,
       is_public: isPublic
-    } as never)
+    })
     .select('id')
     .single()
 

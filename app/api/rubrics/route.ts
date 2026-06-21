@@ -4,6 +4,7 @@ import { createServerClient } from '@/lib/supabase'
 import { listMyRubrics } from '@/lib/assignments'
 import { validateCriteria } from '@/lib/rubrics'
 import type { Rubric } from '@/types/assignments'
+import type { Json } from '@/types/database'
 
 export const runtime = 'nodejs'
 
@@ -51,14 +52,13 @@ export async function POST(req: Request) {
   if (!validation.ok) return NextResponse.json({ error: validation.reason }, { status: 400 })
 
   const supabase = createServerClient()
-  // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회
   const { data, error } = await supabase
     .from('rubrics')
     .insert({
       professor_id: auth.userId,
       name,
-      criteria: validation.criteria as unknown as never
-    } as never)
+      criteria: validation.criteria as unknown as Json
+    })
     .select('id, professor_id, name, criteria, created_at')
     .single()
 

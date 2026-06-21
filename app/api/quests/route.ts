@@ -6,6 +6,7 @@ import { processGraduations } from '@/lib/graduation'
 import { awardActivityCoins } from '@/lib/gamification'
 import { contributeClassGoal } from '@/lib/class-goals'
 import type { DailyQuestMission } from '@/types/daily-quests'
+import type { Json } from '@/types/database'
 
 export const runtime = 'nodejs'
 
@@ -115,10 +116,9 @@ export async function POST(req: Request) {
   let awardedCoins = 0
   if (!missions[idx].done) {
     missions[idx] = { ...missions[idx], done: true }
-    // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회(프로젝트 공통).
     const { error: updErr } = await supabase
       .from('daily_quests')
-      .update({ missions } as never)
+      .update({ missions: missions as unknown as Json })
       .eq('id', row.id)
     if (updErr) {
       console.error('[api/quests POST update]', updErr)

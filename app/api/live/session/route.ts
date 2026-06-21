@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { requireAuth, AuthError } from '@/lib/auth'
 import { createServerClient } from '@/lib/supabase'
+import type { Json } from '@/types/database'
 import type {
   DbWithLive,
   EndLiveSessionRequest,
@@ -87,7 +88,7 @@ export async function POST(req: Request) {
         class_id: classId,
         professor_id: auth.userId,
         grammar_focus: grammarFocus
-      } as never)
+      })
       .select('*')
       .single()
     if (insErr || !inserted) {
@@ -157,7 +158,7 @@ export async function PATCH(req: Request) {
 
     const { data: updated, error: updErr } = await supabase
       .from('live_sessions')
-      .update({ ended_at: endedAt, summary: summary as unknown as Record<string, unknown> } as never)
+      .update({ ended_at: endedAt, summary: summary as unknown as Json })
       .eq('id', sessionId)
       .select('*')
       .single()

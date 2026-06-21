@@ -73,7 +73,6 @@ export async function POST(req: Request) {
   }
 
   const supabase = createServerClient()
-  // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회
   const { data, error } = await supabase
     .from('bookmarks')
     .insert({
@@ -81,7 +80,7 @@ export async function POST(req: Request) {
       sentence: input.sentence,
       note: input.note ?? null,
       error_card_id: input.error_card_id ?? null
-    } as never)
+    })
     .select('id, student_id, error_card_id, sentence, note, created_at')
     .single()
 

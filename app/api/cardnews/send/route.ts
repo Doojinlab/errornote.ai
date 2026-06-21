@@ -227,7 +227,7 @@ async function deliverOne(
   if (anySuccess) {
     await admin
       .from('weekly_cardnews')
-      .update({ is_sent: true } as never)
+      .update({ is_sent: true })
       .eq('id', record.id)
   }
 

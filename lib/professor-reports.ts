@@ -3,6 +3,7 @@
 
 import { dispatchJSON } from './ai/dispatch'
 import { createServerClient } from './supabase'
+import type { Database } from '@/types/database'
 import { extractFirstJsonObject } from './parser'
 import { FOSSILIZATION_THRESHOLD } from './fossilization'
 import type {
@@ -388,7 +389,9 @@ export async function generateWeeklyReport(
 
   const { data, error } = await supabase
     .from('professor_reports')
-    .upsert(payload as never, { onConflict: 'class_id,week_start' })
+    .upsert(payload as unknown as Database['public']['Tables']['professor_reports']['Insert'], {
+      onConflict: 'class_id,week_start',
+    })
     .select('id, created_at')
     .single()
 

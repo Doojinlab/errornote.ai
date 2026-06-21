@@ -64,7 +64,7 @@ export async function resolveClassForContext(
       semester: 'LTI',
       invite_code: deriveInviteCode(params.issuer, params.contextId),
       is_active: true,
-    } as never)
+    })
     .select('id')
     .single()
   if (error || !created) {
@@ -74,7 +74,7 @@ export async function resolveClassForContext(
 
   const { error: linkErr } = await admin
     .from('lti_context_links')
-    .insert({ issuer: params.issuer, context_id: params.contextId, class_id: classId } as never)
+    .insert({ issuer: params.issuer, context_id: params.contextId, class_id: classId })
   if (linkErr) {
     const raced = await lookupContext(admin, params.issuer, params.contextId)
     if (raced) return { classId: raced, created: false }
@@ -91,7 +91,7 @@ export async function ensureEnrollment(
 ): Promise<void> {
   const { error } = await admin
     .from('enrollments')
-    .insert({ class_id: classId, student_id: studentId } as never)
+    .insert({ class_id: classId, student_id: studentId })
   // unique(class_id, student_id) 충돌은 "이미 등록됨" — 정상.
   if (error && !/duplicate|unique/i.test(error.message)) {
     throw new Error(`수강 등록 실패: ${error.message}`)

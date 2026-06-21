@@ -495,7 +495,7 @@ export async function upsertCardnewsRecord(
   }
   const { data, error } = await supabase
     .from('weekly_cardnews')
-    .upsert(row as never, { onConflict: 'student_id,week_start' })
+    .upsert(row, { onConflict: 'student_id,week_start' })
     .select('id, created_at')
     .single()
   if (error || !data) {

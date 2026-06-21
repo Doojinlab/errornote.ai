@@ -258,7 +258,6 @@ export async function POST(req: Request) {
     const getTranslation = (e: TranslateEngine) =>
       engineResults.find(r => r.engine === e && r.status === 'ok')?.translation ?? null
 
-    // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회
     const { data, error } = await supabase
       .from('translation_logs')
       .insert({
@@ -271,7 +270,7 @@ export async function POST(req: Request) {
           analyses: payload.analyses,
           recommendation: payload.recommendation
         })
-      } as never)
+      })
       .select('id')
       .single()
 

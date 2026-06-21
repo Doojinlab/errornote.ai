@@ -159,7 +159,7 @@ export async function handleAddToVocab(
     chinese: input.chinese,
     pinyin: input.pinyin ?? null,
     korean: input.korean ?? null,
-  } as never)
+  })
   if (error) {
     return { content: `단어장 저장 실패: ${error.message}`, isError: true }
   }

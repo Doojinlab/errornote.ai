@@ -91,10 +91,9 @@ export async function PATCH(req: Request, props: Ctx) {
     }
   }
 
-  // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회
   const { data, error } = await supabase
     .from('learning_goals')
-    .update(input as never)
+    .update(input)
     .eq('id', id)
     .eq('student_id', auth.userId)
     .select(GOAL_COLUMNS)

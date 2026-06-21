@@ -64,13 +64,12 @@ async function fetchOrInitStats(
   }
 
   // 최초 생성
-  // TODO(deps): ssr/supabase-js 타입 경로 미스매치 해소 후 as never 제거.
   const { error: insertErr } = await supabase.from('gamification_stats').insert({
     student_id: studentId,
     level: 1,
     xp: 0,
     streak_days: 0
-  } as never)
+  })
   if (insertErr) {
     throw new Error(`gamification_stats 초기화 실패: ${insertErr.message}`)
   }
@@ -95,14 +94,13 @@ export async function addXp(studentId: string, amount: number): Promise<AddXpRes
   const newLevel = calculateLevel(newXp)
   const levelUp = newLevel > current.level
 
-  // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회
   const { error } = await supabase
     .from('gamification_stats')
     .update({
       xp: newXp,
       level: newLevel,
       updated_at: new Date().toISOString()
-    } as never)
+    })
     .eq('student_id', studentId)
 
   if (error) {
@@ -161,14 +159,13 @@ export async function updateStreak(studentId: string): Promise<UpdateStreakResul
     newStreak = 1
   }
 
-  // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회
   const { error } = await supabase
     .from('gamification_stats')
     .update({
       streak_days: newStreak,
       last_active_date: today,
       updated_at: new Date().toISOString()
-    } as never)
+    })
     .eq('student_id', studentId)
 
   if (error) {

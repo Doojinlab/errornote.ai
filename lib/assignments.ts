@@ -1,4 +1,5 @@
 import { createServerClient } from './supabase'
+import type { Database, Json } from '@/types/database'
 import type {
   Assignment,
   AssignmentCreateInput,
@@ -234,7 +235,6 @@ export async function createAssignment(
   input: AssignmentCreateInput
 ): Promise<Assignment> {
   const supabase = createServerClient()
-  // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회
   const { data, error } = await supabase
     .from('assignments')
     .insert({
@@ -244,7 +244,7 @@ export async function createAssignment(
       prompt_text: input.prompt_text,
       due_date: input.due_date ?? null,
       rubric_id: input.rubric_id ?? null
-    } as never)
+    })
     .select(ASSIGNMENT_COLS)
     .single()
   if (error || !data) {
@@ -258,7 +258,7 @@ export async function updateAssignment(
   input: AssignmentUpdateInput
 ): Promise<Assignment> {
   const supabase = createServerClient()
-  const patch: Record<string, unknown> = {}
+  const patch: Database['public']['Tables']['assignments']['Update'] = {}
   if (input.title !== undefined) patch.title = input.title
   if (input.prompt_text !== undefined) patch.prompt_text = input.prompt_text
   if (input.due_date !== undefined) patch.due_date = input.due_date
@@ -266,7 +266,7 @@ export async function updateAssignment(
 
   const { data, error } = await supabase
     .from('assignments')
-    .update(patch as never)
+    .update(patch)
     .eq('id', id)
     .select(ASSIGNMENT_COLS)
     .single()
@@ -303,10 +303,10 @@ export async function saveRubricEvaluation(params: {
       .from('rubric_evaluations')
       .update({
         rubric_id: params.rubricId,
-        scores: params.scores as unknown as never,
+        scores: params.scores as unknown as Json,
         total_score: params.totalScore,
         ai_feedback: params.aiFeedback
-      } as never)
+      })
       .eq('id', id)
     if (error) throw new Error(`rubric_evaluations update 실패: ${error.message}`)
     return id
@@ -317,10 +317,10 @@ export async function saveRubricEvaluation(params: {
     .insert({
       session_id: params.sessionId,
       rubric_id: params.rubricId,
-      scores: params.scores as unknown as never,
+      scores: params.scores as unknown as Json,
       total_score: params.totalScore,
       ai_feedback: params.aiFeedback
-    } as never)
+    })
     .select('id')
     .single()
   if (error || !data) {
