@@ -82,7 +82,15 @@ export type Database = {
           current_grammar_focus?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'classes_professor_id_fkey'
+            columns: ['professor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       enrollments: {
         Row: {
@@ -103,7 +111,22 @@ export type Database = {
           student_id?: string
           enrolled_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'enrollments_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'enrollments_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       corpus_documents: {
         Row: {
@@ -151,7 +174,22 @@ export type Database = {
           rating_count?: number
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'corpus_documents_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'corpus_documents_professor_id_fkey'
+            columns: ['professor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       chapter_prompts: {
         Row: {
@@ -178,7 +216,15 @@ export type Database = {
           icl_examples?: Json
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'chapter_prompts_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+        ]
       }
       rubrics: {
         Row: {
@@ -202,7 +248,15 @@ export type Database = {
           criteria?: Json
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'rubrics_professor_id_fkey'
+            columns: ['professor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       assignments: {
         Row: {
@@ -235,7 +289,29 @@ export type Database = {
           rubric_id?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'assignments_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'assignments_professor_id_fkey'
+            columns: ['professor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'assignments_rubric_id_fkey'
+            columns: ['rubric_id']
+            isOneToOne: false
+            referencedRelation: 'rubrics'
+            referencedColumns: ['id']
+          },
+        ]
       }
       sessions: {
         Row: {
@@ -274,7 +350,29 @@ export type Database = {
           assignment_id?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'sessions_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'sessions_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'fk_sessions_assignment_id'
+            columns: ['assignment_id']
+            isOneToOne: false
+            referencedRelation: 'assignments'
+            referencedColumns: ['id']
+          },
+        ]
       }
       error_cards: {
         Row: {
@@ -328,7 +426,22 @@ export type Database = {
           fossilization_count?: number
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'error_cards_session_id_fkey'
+            columns: ['session_id']
+            isOneToOne: false
+            referencedRelation: 'sessions'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'error_cards_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       bookmarks: {
         Row: {
@@ -355,7 +468,22 @@ export type Database = {
           note?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'bookmarks_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'bookmarks_error_card_id_fkey'
+            columns: ['error_card_id']
+            isOneToOne: false
+            referencedRelation: 'error_cards'
+            referencedColumns: ['id']
+          },
+        ]
       }
       vocabulary: {
         Row: {
@@ -391,7 +519,22 @@ export type Database = {
           next_review_at?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'vocabulary_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'vocabulary_source_error_id_fkey'
+            columns: ['source_error_id']
+            isOneToOne: false
+            referencedRelation: 'error_cards'
+            referencedColumns: ['id']
+          },
+        ]
       }
       quiz_results: {
         Row: {
@@ -415,7 +558,22 @@ export type Database = {
           is_correct?: boolean
           answered_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'quiz_results_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'quiz_results_error_card_id_fkey'
+            columns: ['error_card_id']
+            isOneToOne: false
+            referencedRelation: 'error_cards'
+            referencedColumns: ['id']
+          },
+        ]
       }
       translation_logs: {
         Row: {
@@ -448,7 +606,15 @@ export type Database = {
           claude_analysis?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'translation_logs_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       url_analysis_logs: {
         Row: {
@@ -478,7 +644,15 @@ export type Database = {
           analysis_result?: Json
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'url_analysis_logs_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       badges: {
         Row: {
@@ -505,7 +679,15 @@ export type Database = {
           badge_icon?: string | null
           earned_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'badges_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       gamification_stats: {
         Row: {
@@ -550,7 +732,15 @@ export type Database = {
           longest_streak?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'gamification_stats_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       learning_goals: {
         Row: {
@@ -592,7 +782,22 @@ export type Database = {
           achieved_at?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'learning_goals_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'learning_goals_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+        ]
       }
       rubric_evaluations: {
         Row: {
@@ -622,7 +827,22 @@ export type Database = {
           ai_feedback?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'rubric_evaluations_session_id_fkey'
+            columns: ['session_id']
+            isOneToOne: false
+            referencedRelation: 'sessions'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'rubric_evaluations_rubric_id_fkey'
+            columns: ['rubric_id']
+            isOneToOne: false
+            referencedRelation: 'rubrics'
+            referencedColumns: ['id']
+          },
+        ]
       }
       weekly_cardnews: {
         Row: {
@@ -664,7 +884,22 @@ export type Database = {
           is_sent?: boolean
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'weekly_cardnews_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'weekly_cardnews_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+        ]
       }
       professor_reports: {
         Row: {
@@ -706,7 +941,22 @@ export type Database = {
           metrics?: Json
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'professor_reports_professor_id_fkey'
+            columns: ['professor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'professor_reports_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+        ]
       }
       push_subscriptions: {
         Row: {
@@ -730,7 +980,15 @@ export type Database = {
           subscription?: Json
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'push_subscriptions_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       lti_platforms: {
         Row: {
@@ -772,7 +1030,22 @@ export type Database = {
           jwks_uri?: string
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'lti_platforms_professor_id_fkey'
+            columns: ['professor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'lti_platforms_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+        ]
       }
       lti_login_states: {
         Row: {
@@ -817,7 +1090,15 @@ export type Database = {
           user_id?: string
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'lti_identities_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       lti_context_links: {
         Row: {
@@ -841,7 +1122,15 @@ export type Database = {
           class_id?: string
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'lti_context_links_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+        ]
       }
       api_keys: {
         Row: {
@@ -880,7 +1169,15 @@ export type Database = {
           created_at?: string
           is_active?: boolean
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'api_keys_professor_id_fkey'
+            columns: ['professor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       live_sessions: {
         Row: {
@@ -913,7 +1210,22 @@ export type Database = {
           summary?: Json
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'live_sessions_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'live_sessions_professor_id_fkey'
+            columns: ['professor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       corpus_ratings: {
         Row: {
@@ -943,7 +1255,22 @@ export type Database = {
           created_at?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'corpus_ratings_corpus_document_id_fkey'
+            columns: ['corpus_document_id']
+            isOneToOne: false
+            referencedRelation: 'corpus_documents'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'corpus_ratings_professor_id_fkey'
+            columns: ['professor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       pronunciation_sessions: {
         Row: {
@@ -976,7 +1303,15 @@ export type Database = {
           language?: 'en-US' | 'ko-KR'
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'pronunciation_sessions_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       notification_settings: {
         Row: {
@@ -1030,7 +1365,22 @@ export type Database = {
           status?: 'pending' | 'in_progress' | 'completed'
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'peer_review_requests_assignment_id_fkey'
+            columns: ['assignment_id']
+            isOneToOne: false
+            referencedRelation: 'assignments'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'peer_review_requests_requester_id_fkey'
+            columns: ['requester_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       peer_reviews: {
         Row: {
@@ -1072,7 +1422,22 @@ export type Database = {
           created_at?: string
           completed_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'peer_reviews_request_id_fkey'
+            columns: ['request_id']
+            isOneToOne: false
+            referencedRelation: 'peer_review_requests'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'peer_reviews_reviewer_id_fkey'
+            columns: ['reviewer_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       portfolios: {
         Row: {
@@ -1093,7 +1458,15 @@ export type Database = {
           generated_at?: string
           snapshot?: Json
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'portfolios_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       live_typing_consents: {
         Row: {
@@ -1120,7 +1493,22 @@ export type Database = {
           withdrawn_at?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'live_typing_consents_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'live_typing_consents_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       student_weekly_reports: {
         Row: {
@@ -1150,7 +1538,22 @@ export type Database = {
           suggestions?: Json
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'student_weekly_reports_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'student_weekly_reports_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+        ]
       }
       in_app_notifications: {
         Row: {
@@ -1186,7 +1589,15 @@ export type Database = {
           read_at?: string | null
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'in_app_notifications_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       error_species: {
         Row: {
@@ -1258,7 +1669,22 @@ export type Database = {
           graduated_at?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'user_dex_entries_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_dex_entries_species_id_fkey'
+            columns: ['species_id']
+            isOneToOne: false
+            referencedRelation: 'error_species'
+            referencedColumns: ['id']
+          },
+        ]
       }
       error_type_streaks: {
         Row: {
@@ -1288,7 +1714,22 @@ export type Database = {
           last_advanced_date?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'error_type_streaks_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'error_type_streaks_species_id_fkey'
+            columns: ['species_id']
+            isOneToOne: false
+            referencedRelation: 'error_species'
+            referencedColumns: ['id']
+          },
+        ]
       }
       reward_items: {
         Row: {
@@ -1345,7 +1786,22 @@ export type Database = {
           item_id?: string
           acquired_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'reward_inventory_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'reward_inventory_item_id_fkey'
+            columns: ['item_id']
+            isOneToOne: false
+            referencedRelation: 'reward_items'
+            referencedColumns: ['id']
+          },
+        ]
       }
       class_goals: {
         Row: {
@@ -1384,7 +1840,22 @@ export type Database = {
           achieved?: boolean
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'class_goals_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'class_goals_species_id_fkey'
+            columns: ['species_id']
+            isOneToOne: false
+            referencedRelation: 'error_species'
+            referencedColumns: ['id']
+          },
+        ]
       }
       league_points: {
         Row: {
@@ -1411,7 +1882,22 @@ export type Database = {
           points?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'league_points_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'league_points_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['id']
+          },
+        ]
       }
       mistake_feed: {
         Row: {
@@ -1444,7 +1930,15 @@ export type Database = {
           likes?: number
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'mistake_feed_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       daily_quests: {
         Row: {
@@ -1471,7 +1965,15 @@ export type Database = {
           missions?: Json
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'daily_quests_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
     }
     Views: {

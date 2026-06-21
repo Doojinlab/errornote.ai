@@ -88,7 +88,8 @@ export async function PATCH(req: Request, props: Ctx) {
     console.error('[api/rubrics/[id] PATCH]', error)
     return NextResponse.json({ error: '루브릭 수정 실패' }, { status: 500 })
   }
-  return NextResponse.json({ rubric: data as Rubric })
+  // jsonb 컬럼(criteria)은 DB 타입상 Json 이라 Rubric 으로 좁힌다(런타임 형태는 동일).
+  return NextResponse.json({ rubric: data as unknown as Rubric })
 }
 
 export async function DELETE(_req: Request, props: Ctx) {

@@ -67,6 +67,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: '루브릭 생성 실패' }, { status: 500 })
   }
 
-  const row = data as Rubric
+  // jsonb 컬럼(criteria)은 DB 타입상 Json 이라 Rubric 으로 좁힌다(런타임 형태는 동일).
+  const row = data as unknown as Rubric
   return NextResponse.json({ rubric: row }, { status: 201 })
 }
