@@ -4,6 +4,7 @@ import { createServerClient } from '@/lib/supabase'
 import { getOrCreateTodayQuest, ymd, QUEST_DONE_COINS } from '@/lib/daily-quests'
 import { processGraduations } from '@/lib/graduation'
 import { awardActivityCoins } from '@/lib/gamification'
+import { contributeClassGoal } from '@/lib/class-goals'
 import type { DailyQuestMission } from '@/types/daily-quests'
 
 export const runtime = 'nodejs'
@@ -35,6 +36,31 @@ export async function GET() {
     } catch (gErr) {
       console.error('[api/quests processGraduations]', gErr)
     }
+
+    // 닫힘 루프: 졸업한 오류 유형은 수강 중인 반의 협동 목표에 +1 기여(긍정적 상호의존).
+    // 활성 목표가 없으면 RPC 가 조용히 no-op. 비치명적 — 실패해도 퀘스트 반환은 막지 않는다.
+    if (graduated.length > 0) {
+      try {
+        const supabase = createServerClient()
+        const { data: enr } = await supabase
+          .from('enrollments')
+          .select('class_id')
+          .eq('student_id', a.userId)
+        const classIds = ((enr as { class_id: string }[] | null) ?? []).map((e) => e.class_id)
+        await Promise.all(
+          classIds.flatMap((classId) =>
+            graduated.map((g) =>
+              contributeClassGoal(classId, g.code).catch((cErr) => {
+                console.error('[api/quests contributeClassGoal]', classId, g.code, cErr)
+              })
+            )
+          )
+        )
+      } catch (cErr) {
+        console.error('[api/quests classGoals]', cErr)
+      }
+    }
+
     return NextResponse.json({ quest, graduated })
   } catch (err) {
     console.error('[api/quests GET]', err)

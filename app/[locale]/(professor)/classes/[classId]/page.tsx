@@ -232,6 +232,9 @@ export default async function ClassDetailPage(
           <Link href={`/reports?classId=${info.id}`} className="text-indigo-600 hover:underline">
             {t('reportsLink')}
           </Link>
+          <Link href={`/classes/${info.id}/goals`} className="text-indigo-600 hover:underline">
+            {t('goalsLink')}
+          </Link>
         </div>
       </header>
 
