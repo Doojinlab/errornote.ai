@@ -35,17 +35,21 @@
 2. ✅ **적응형 난이도** — `assessDifficulty`(화석화 부하·HSK 범위 → foundational/standard/
    advanced) + 난이도별 지시 섹션. 프로필 1회 집계로 함께 주입.
    - ※ 원래 3순위였으나, 아래 tool use 가 런타임 검증을 요해 순서를 앞당겼다(순수 로직이라 검증 용이).
-3. 🔶 **Tool use** — 도구 계층 분리 구현(검증 가능 부분 완료).
+3. ✅ **Tool use** — 도구 계층 + 스트리밍 통합 완료.
    - ✅ `lib/tutor-tools.ts`: `add_to_vocab`(단어장 insert)·`generate_quiz`(객관식 정규화)
      도구 정의 + 입력 검증 + 핸들러 + 디스패처(`runTutorTool`, 오류를 `isError`로 감쌈).
    - ✅ `lib/tutor-tools.test.ts`: 16 케이스(스키마·검증·핸들러(mock supabase)·디스패치).
-   - ✅ `lib/tutor-tool-loop.ts`: `runToolConversation` — tool_use 멀티턴 오케스트레이터
-     (모델 호출 주입형, 요청→tool_use→`runTutorTool`→tool_result→재요청, `MAX_TOOL_ROUNDS` 상한).
-     `lib/tutor-tool-loop.test.ts` 5 케이스(스크립트 모델로 루프 검증).
-   - ⏳ **프로덕션 바인딩 잔여**: `callModel` 을 Anthropic `tools` 호출에 연결 + 스트리밍 챗
-     연동. `streamText`(텍스트 전용)는 tool_use 블록을 다루지 못해 `complete()` 기반 또는
-     스트리밍 tool 이벤트 처리가 필요하며 **실제 Claude API 런타임 검증이 필요**. 통합 시
-     `add_to_vocab` 는 로그인 학습자의 RLS 클라이언트로 호출(본인 단어장).
+   - ✅ `lib/tutor-tool-loop.ts`: `runToolConversation` — tool_use 멀티턴 오케스트레이터(비스트리밍).
+   - ✅ **프로덕션 바인딩 완료** (PR #97): `lib/tutor-stream.ts` 의 `streamTutorConversation` 가
+     tool_use 스트리밍 루프 + NDJSON 이벤트(텍스트/도구/done/error)를 제공하고, `app/api/chat` 가
+     `TUTOR_TOOLS` + `runTutorTool`(로그인 학습자 RLS 클라이언트)로 연결. `TutorChat`/`TutorQuizCard`
+     가 도구 산출물을 렌더. 루프는 주입 클라이언트로 단위 검증(`lib/tutor-stream.test.ts`).
+     실제 Claude API 동시 스트리밍+도구 동작은 키 환경에서 1회 런타임 확인 권장.
+
+## 상태: 종료 가능
+
+A(멀티턴 컨텍스트) → C(적응형 난이도) → B(tool use 스트리밍 통합, PR #97) 모두 완료.
+**#48 의 핵심 범위는 해소됨.** 아래 비범위 항목만 향후 별도 트랙으로 남는다.
 
 ## 비범위(이 트랙 밖)
 

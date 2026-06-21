@@ -9,6 +9,7 @@ export type StudentNavKey =
   | 'bookmarks'
   | 'progress'
   | 'cardnews'
+  | 'mistakeFeed'
   | 'assignments'
   | 'badges'
   | 'goals'
@@ -40,7 +41,8 @@ export const STUDENT_NAV_GROUPS: ReadonlyArray<StudentNavGroupDef> = [
       { href: '/vocabulary', key: 'vocabulary' },
       { href: '/bookmarks', key: 'bookmarks' },
       { href: '/progress', key: 'progress' },
-      { href: '/cardnews', key: 'cardnews' }
+      { href: '/cardnews', key: 'cardnews' },
+      { href: '/mistake-feed', key: 'mistakeFeed' }
     ]
   },
   {

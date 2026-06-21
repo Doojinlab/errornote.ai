@@ -12,6 +12,7 @@
       "bookmarks": "Bookmarks",
       "progress": "Progress",
       "cardnews": "Card News",
+      "mistakeFeed": "Funny Mistakes",
       "assignments": "Assignments",
       "badges": "Badges",
       "goals": "Goals",
@@ -173,12 +174,6 @@
         "tierGold": "Gold",
         "myTier": "Your tier",
         "pointsValue": "{points}P"
-      },
-      "classGoalsCard": {
-        "title": "Our class goals",
-        "untitled": "Co-op goal",
-        "achieved": "Achieved",
-        "hint": "When you graduate an error type, it helps the class goal."
       },
       "learn": {
         "noActiveClassTitle": "No active class",
@@ -595,6 +590,36 @@
         "textareaLabel": "Your draft",
         "textareaPlaceholder": "Write your Chinese sentences here…",
         "broadcastingHint": "Shared with the professor every 1 second."
+      },
+      "classGoalsCard": {
+        "title": "Our class goals",
+        "untitled": "Co-op goal",
+        "achieved": "Achieved",
+        "hint": "When you graduate an error type, it helps the class goal."
+      },
+      "mistakeFeed": {
+        "title": "Funny Mistakes",
+        "subtitle": "Save funny literal translations as a “mistake of the day.” Private by default; shared anonymously only if you opt in.",
+        "tabSubmit": "Add",
+        "tabMine": "Mine",
+        "tabPublic": "Public feed",
+        "labelOriginalKo": "Korean original",
+        "placeholderOriginalKo": "e.g. 발이 넓다",
+        "labelLiteralZh": "Literal translation (Chinese)",
+        "placeholderLiteralZh": "e.g. 脚很宽",
+        "labelCorrectedZh": "Correct expression (optional)",
+        "placeholderCorrectedZh": "e.g. 交际广",
+        "publicConsent": "I agree to share this anonymously in the public feed.",
+        "submit": "Add",
+        "submitting": "Adding…",
+        "submitFailed": "Couldn't add it. Please try again.",
+        "emptyMine": "You haven't added any yet. Share your first one.",
+        "emptyPublic": "Nothing shared yet.",
+        "statusPublic": "Public",
+        "statusPrivate": "Private",
+        "makePublic": "Make public",
+        "makePrivate": "Make private",
+        "me": "You"
       }
     },
     "professor": {
