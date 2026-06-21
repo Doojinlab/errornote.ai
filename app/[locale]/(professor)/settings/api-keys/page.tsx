@@ -37,6 +37,7 @@ export default function ApiKeysPage() {
     setLoading(false)
   }, [t])
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트 시 1회 데이터 로드(비동기 fetch)
   useEffect(() => { fetchKeys() }, [fetchKeys])
 
   async function handleCreate(e: React.FormEvent) {

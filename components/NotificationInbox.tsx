@@ -53,6 +53,7 @@ export default function NotificationInbox({ labels }: Props) {
   }, [unreadOnly, labels.loadError])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트/필터 변경 시 데이터 로드(비동기 fetch)
     load()
   }, [load])
 
@@ -84,6 +85,7 @@ export default function NotificationInbox({ labels }: Props) {
       })
     }
     if (item.link_url) {
+      // eslint-disable-next-line react-hooks/immutability -- 브라우저 네비게이션(window.location)은 React 값 변경이 아님
       window.location.href = item.link_url
     }
   }

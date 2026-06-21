@@ -48,6 +48,7 @@ export default function LiveClassPage(props: PageProps) {
   const lastPulledAtRef = useRef<number>(0)
   const pendingRef = useRef(false)
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- ref 기반 debounce 로 의도적으로 안정 참조를 유지(컴파일러 메모이제이션 비대상)
   const refresh = useCallback(async () => {
     const now = Date.now()
     if (now - lastPulledAtRef.current < 800) {

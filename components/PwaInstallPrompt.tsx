@@ -53,6 +53,7 @@ export default function PwaInstallPrompt() {
     })
     const iosSafari = isIosSafari(navigator.userAgent)
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 클라이언트 전용 판별(standalone/UA)을 마운트 후 1회 반영
     setMode(decidePromptMode({ standalone, dismissed, canInstall: false, iosSafari }))
 
     const onBeforeInstall = (e: Event) => {

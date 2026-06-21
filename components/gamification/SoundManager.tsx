@@ -66,6 +66,7 @@ export function SoundProvider({ children }: ProviderProps) {
 
   // 초기 환경설정 로드
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage(클라이언트 전용) 환경설정을 마운트 후 1회 로드
     setPref(loadSoundPreference())
   }, [])
 

@@ -37,6 +37,7 @@ export default function LtiPlatformsPage() {
   const [origin, setOrigin] = useState('')
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 클라이언트 전용 값(window.location)을 마운트 후 1회 반영
     setOrigin(window.location.origin)
   }, [])
 
@@ -55,6 +56,7 @@ export default function LtiPlatformsPage() {
   }, [t])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트 시 1회 데이터 로드(비동기 fetch)
     fetchPlatforms()
   }, [fetchPlatforms])
 
