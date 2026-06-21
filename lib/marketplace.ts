@@ -2,6 +2,7 @@
 // Supabase 쿼리 래퍼. Route Handler / Server Component 양쪽에서 호출된다.
 
 import { createServerClient } from './supabase'
+import type { Database } from '@/types/database'
 import type {
   MarketplaceItem,
   MarketplaceDetail,
@@ -155,8 +156,8 @@ export async function downloadMarketplaceDoc(docId: string): Promise<{
   if (!doc) return null
 
   const { data: countData, error: rpcErr } = await supabase.rpc(
-    'increment_corpus_download' as never,
-    { p_doc_id: docId } as never
+    'increment_corpus_download',
+    { p_doc_id: docId }
   )
   if (rpcErr) {
     throw new Error(`download_count 증가 실패: ${rpcErr.message}`)
@@ -207,7 +208,7 @@ export async function upsertRating(
 
   const { error: upsertErr } = await supabase
     .from('corpus_ratings')
-    .upsert(payload as never, { onConflict: 'corpus_document_id,professor_id' })
+    .upsert(payload, { onConflict: 'corpus_document_id,professor_id' })
   if (upsertErr) {
     throw new Error(`평점 저장 실패: ${upsertErr.message}`)
   }
@@ -278,7 +279,9 @@ export async function updatePublishState(
   input: { id: string; is_public: boolean; title?: string; description?: string }
 ): Promise<void> {
   const supabase = createServerClient()
-  const patch: Record<string, unknown> = { is_public: input.is_public }
+  const patch: Database['public']['Tables']['corpus_documents']['Update'] = {
+    is_public: input.is_public,
+  }
   if (typeof input.title === 'string') patch.title = input.title.trim() || null
   if (typeof input.description === 'string') {
     patch.description = input.description.trim() || null
@@ -286,7 +289,7 @@ export async function updatePublishState(
 
   const { error } = await supabase
     .from('corpus_documents')
-    .update(patch as never)
+    .update(patch)
     .eq('id', input.id)
     .eq('professor_id', professorId)
   if (error) {

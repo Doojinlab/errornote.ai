@@ -137,7 +137,6 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   // 3) DB 저장 — RLS 가 student_id = auth.uid() 를 강제한다.
-  // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회 (translate-compare 와 동일 패턴).
   const supabase = createServerClient()
   const { data: inserted, error: insertErr } = await supabase
     .from('url_analysis_logs')
@@ -147,7 +146,7 @@ export async function POST(req: Request): Promise<Response> {
       source_type: extracted.source_type,
       content_text: extracted.content_text,
       analysis_result: analysis as unknown as import('@/types/database').Json
-    } as never)
+    })
     .select('id, student_id, url, source_type, content_text, analysis_result, created_at')
     .single<InsertedRow>()
 

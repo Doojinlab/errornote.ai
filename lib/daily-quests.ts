@@ -208,7 +208,7 @@ export async function getOrCreateTodayQuest(studentId: string): Promise<DailyQue
       quest_date: today,
       source: source as unknown as Json,
       missions: missions as unknown as Json
-    } as never)
+    })
     .select('id, student_id, quest_date, source, missions, created_at')
     .single()
   if (insErr || !inserted) {

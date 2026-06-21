@@ -22,9 +22,6 @@ export async function createSession(params: CreateSessionParams): Promise<string
 
   const supabase = createServerClient()
 
-  // TODO(deps): @supabase/ssr 0.5.2 가 @supabase/supabase-js/dist/module/lib/types 경로에서
-  // GenericSchema 를 import 하는데, supabase-js 2.103+ 에서 해당 경로가 사라져 Insert 페이로드가
-  // never 로 추론된다. ssr 버전을 supabase-js 와 호환되는 것으로 올리면 as never 를 제거할 수 있다.
   const { data, error } = await supabase
     .from('sessions')
     .insert({
@@ -34,7 +31,7 @@ export async function createSession(params: CreateSessionParams): Promise<string
       draft_text: params.draftText,
       draft_error_count: params.draftErrorCount ?? null,
       assignment_id: params.assignmentId ?? null
-    } as never)
+    })
     .select('id')
     .single()
 
@@ -64,7 +61,7 @@ export async function updateSessionRevision(params: UpdateSessionRevisionParams)
     .update({
       revision_text: params.revisionText,
       revision_error_count: params.revisionErrorCount
-    } as never)
+    })
     .eq('id', params.sessionId)
 
   if (error) {

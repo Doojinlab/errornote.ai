@@ -38,7 +38,7 @@ async function handle(params: URLSearchParams): Promise<NextResponse> {
   const { state, nonce } = createLoginState()
   const { error: insErr } = await supabase
     .from('lti_login_states')
-    .insert({ state, nonce, issuer: iss } as never)
+    .insert({ state, nonce, issuer: iss })
   if (insErr) {
     return NextResponse.json({ error: 'failed to persist login state' }, { status: 500 })
   }

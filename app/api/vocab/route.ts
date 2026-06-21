@@ -75,7 +75,6 @@ export async function POST(req: Request) {
   }
 
   const supabase = createServerClient()
-  // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회
   const { data, error } = await supabase
     .from('vocabulary')
     .insert({
@@ -84,7 +83,7 @@ export async function POST(req: Request) {
       pinyin: input.pinyin ?? null,
       korean: input.korean ?? null,
       source_error_id: input.source_error_id ?? null
-    } as never)
+    })
     .select('id, student_id, chinese, pinyin, korean, source_error_id, review_count, next_review_at, created_at')
     .single()
 

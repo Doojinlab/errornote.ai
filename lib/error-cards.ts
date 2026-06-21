@@ -1,4 +1,5 @@
 import type { AnalysisError } from '@/types'
+import type { Json } from '@/types/database'
 import { createServerClient } from './supabase'
 
 export interface SaveErrorCardsResult {
@@ -59,15 +60,14 @@ export async function saveErrorCards(
       error_subtype: subtype || null,
       correction: e.correction,
       explanation: e.explanation,
-      cot_reasoning: e.cot_reasoning,
+      cot_reasoning: e.cot_reasoning as unknown as Json,
       similar_example: e.similar_example,
       hsk_level: e.hsk_level,
       fossilization_count: next
     }
   })
 
-  // TODO(deps): ssr/supabase-js 타입 경로 미스매치 해소 후 as never 제거. (lib/sessions.ts 주석 참조)
-  const { error: insertErr } = await supabase.from('error_cards').insert(rows as never)
+  const { error: insertErr } = await supabase.from('error_cards').insert(rows)
   if (insertErr) {
     throw new Error(`error_cards insert 실패: ${insertErr.message}`)
   }

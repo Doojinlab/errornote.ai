@@ -94,7 +94,6 @@ export async function POST(req: Request) {
   }
 
   const supabase = createServerClient()
-  // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회. lib/sessions.ts 참조.
   const { data, error } = await supabase
     .from('learning_goals')
     .insert({
@@ -103,7 +102,7 @@ export async function POST(req: Request) {
       goal_type: input.goal_type,
       target_value: input.target_value,
       deadline: input.deadline ?? null
-    } as never)
+    })
     .select(GOAL_COLUMNS)
     .single()
 

@@ -4,6 +4,7 @@ import { createServerClient } from '@/lib/supabase'
 import { validateCriteria } from '@/lib/rubrics'
 import { getRubric } from '@/lib/assignments'
 import type { Rubric } from '@/types/assignments'
+import type { Database, Json } from '@/types/database'
 
 export const runtime = 'nodejs'
 
@@ -59,7 +60,7 @@ export async function PATCH(req: Request, props: Ctx) {
   }
   const obj = body as Record<string, unknown>
 
-  const patch: Record<string, unknown> = {}
+  const patch: Database['public']['Tables']['rubrics']['Update'] = {}
   if ('name' in obj) {
     if (typeof obj.name !== 'string' || !obj.name.trim()) {
       return NextResponse.json({ error: 'name 은 공백일 수 없습니다' }, { status: 400 })
@@ -69,7 +70,7 @@ export async function PATCH(req: Request, props: Ctx) {
   if ('criteria' in obj) {
     const v = validateCriteria(obj.criteria)
     if (!v.ok) return NextResponse.json({ error: v.reason }, { status: 400 })
-    patch.criteria = v.criteria as unknown as never
+    patch.criteria = v.criteria as unknown as Json
   }
   if (Object.keys(patch).length === 0) {
     return NextResponse.json({ error: '변경할 필드가 없습니다' }, { status: 400 })
@@ -78,7 +79,7 @@ export async function PATCH(req: Request, props: Ctx) {
   const supabase = createServerClient()
   const { data, error } = await supabase
     .from('rubrics')
-    .update(patch as never)
+    .update(patch)
     .eq('id', params.id)
     .eq('professor_id', auth.userId)
     .select('id, professor_id, name, criteria, created_at')

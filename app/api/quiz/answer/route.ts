@@ -58,12 +58,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: '권한이 없습니다' }, { status: 403 })
   }
 
-  // TODO(deps): as never — ssr/supabase-js 타입 미스매치 우회
   const { error: insertErr } = await supabase.from('quiz_results').insert({
     student_id: auth.userId,
     error_card_id: input.error_card_id,
     is_correct: input.is_correct
-  } as never)
+  })
 
   if (insertErr) {
     console.error('[api/quiz/answer] quiz_results insert 실패:', insertErr)
