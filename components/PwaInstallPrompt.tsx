@@ -5,7 +5,7 @@
 //  - iOS Safari: 설치 프롬프트 미지원 → "공유 → 홈 화면에 추가" 안내(+ 설치형 푸시 안내).
 //  - 이미 설치(standalone)이거나 사용자가 닫으면 표시하지 않음(localStorage 기억).
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   PWA_DISMISS_KEY,
@@ -15,6 +15,7 @@ import {
   isStandalone,
   type PromptMode,
 } from '@/lib/pwa-install'
+import { sendClientMetric } from '@/lib/client-metrics'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -25,6 +26,16 @@ export default function PwaInstallPrompt() {
   const t = useTranslations('pages.components.pwaInstall')
   const [mode, setMode] = useState<PromptMode>('none')
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null)
+  // 노출 메트릭은 모드별 1회만 — 같은 배너 재렌더로 중복 집계되지 않도록 기억한다.
+  const shownRef = useRef<PromptMode | null>(null)
+
+  // 배너가 실제로 보이는 모드로 바뀌면 노출 전환 메트릭을 1회 전송한다(#86).
+  useEffect(() => {
+    if ((mode === 'install' || mode === 'ios-guide') && shownRef.current !== mode) {
+      shownRef.current = mode
+      sendClientMetric('pwa_install_prompt_shown', { mode })
+    }
+  }, [mode])
 
   useEffect(() => {
     const standalone = isStandalone({
@@ -60,6 +71,7 @@ export default function PwaInstallPrompt() {
   }, [])
 
   function dismiss() {
+    sendClientMetric('pwa_install_dismissed', { source: 'banner', mode })
     try {
       localStorage.setItem(PWA_DISMISS_KEY, '1')
     } catch {
@@ -71,7 +83,11 @@ export default function PwaInstallPrompt() {
   async function install() {
     if (!deferred) return
     await deferred.prompt()
-    await deferred.userChoice
+    const choice = await deferred.userChoice
+    sendClientMetric(
+      choice.outcome === 'accepted' ? 'pwa_install_accepted' : 'pwa_install_dismissed',
+      { source: 'prompt' }
+    )
     setDeferred(null)
     setMode('none')
   }
