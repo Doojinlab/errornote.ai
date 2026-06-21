@@ -15,16 +15,19 @@ function detectFileType(fileName: string): CorpusFileType {
 }
 
 async function parsePdf(buf: Buffer): Promise<string> {
-  // pdf-parse 는 CommonJS 모듈이며, index.js 가 테스트 파일을 읽으려 시도해 서버리스에서
-  // 에러가 나는 경우가 있어 내부 구현 파일을 직접 로드한다.
-  const mod: unknown = await import('pdf-parse/lib/pdf-parse.js')
-  const candidate = (mod as { default?: unknown }).default ?? mod
-  if (typeof candidate !== 'function') {
-    throw new Error('pdf-parse 모듈을 로드할 수 없습니다')
+  // pdf-parse v2 는 PDFParse 클래스 기반 API(pdfjs-dist). Buffer 를 Uint8Array data 로
+  // 넘겨 getText() 로 페이지 텍스트를 추출하고, 사용 후 destroy() 로 문서를 해제한다.
+  const { PDFParse } = await import('pdf-parse')
+  const parser = new PDFParse({ data: new Uint8Array(buf) })
+  try {
+    const result = await parser.getText()
+    // result.text 는 페이지마다 "-- N of M --" 구분자를 끼워 넣으므로(코퍼스 오염),
+    // 마커 없는 페이지별 텍스트(pages[].text)를 직접 이어 붙인다.
+    const text = result.pages.map((p) => p.text).join('\n\n')
+    return normalizeText(text)
+  } finally {
+    await parser.destroy()
   }
-  const pdfParse = candidate as (data: Buffer) => Promise<{ text: string }>
-  const result = await pdfParse(buf)
-  return normalizeText(result.text)
 }
 
 async function parseDocx(buf: Buffer): Promise<string> {

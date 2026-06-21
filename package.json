@@ -30,7 +30,7 @@
     "mammoth": "^1.8.0",
     "next": "16.2.9",
     "next-intl": "^4.11.0",
-    "pdf-parse": "^1.1.1",
+    "pdf-parse": "^2.4.5",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
@@ -42,7 +42,6 @@
     "@playwright/test": "^1.49.0",
     "@types/howler": "^2.2.12",
     "@types/node": "^20.17.6",
-    "@types/pdf-parse": "^1.1.4",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitest/coverage-v8": "^4.1.5",
