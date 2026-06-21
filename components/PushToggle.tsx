@@ -8,7 +8,7 @@
 //  - 활성화: 권한 요청 → pushManager.subscribe(VAPID) → register_push_subscription RPC.
 //  - 해제: 구독 unsubscribe → unregister_push_subscription RPC.
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createBrowserClient } from '@/lib/supabase-browser'
@@ -19,6 +19,7 @@ import {
   urlBase64ToUint8Array,
   type PushUiState,
 } from '@/lib/web-push-client'
+import { sendClientMetric } from '@/lib/client-metrics'
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
 
@@ -42,6 +43,8 @@ export default function PushToggle() {
   const [state, setState] = useState<PushUiState>('unsupported')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // 상태별 노출 메트릭은 1회만 — refresh 가 반복 호출돼도 중복 집계되지 않게 기억(#86).
+  const trackedRef = useRef<PushUiState | null>(null)
 
   const refresh = useCallback(async () => {
     const supported = pushSupported()
@@ -62,7 +65,14 @@ export default function PushToggle() {
       }
     }
     const permission = supported ? Notification.permission : 'default'
-    setState(decidePushUiState({ supported, iosSafari, standalone, permission, subscribed }))
+    const next = decidePushUiState({ supported, iosSafari, standalone, permission, subscribed })
+    setState(next)
+    // iOS 설치 안내/차단 노출을 전환율 관찰용으로 1회 집계한다.
+    if (trackedRef.current !== next) {
+      trackedRef.current = next
+      if (next === 'ios-needs-install') sendClientMetric('pwa_push_ios_needs_install')
+      else if (next === 'blocked') sendClientMetric('pwa_push_blocked')
+    }
   }, [])
 
   useEffect(() => {
@@ -89,6 +99,8 @@ export default function PushToggle() {
         p_subscription: json as unknown as Json,
       })
       if (rpcErr) throw new Error(rpcErr.message)
+      trackedRef.current = 'enabled'
+      sendClientMetric('pwa_push_enabled')
       setState('enabled')
     } catch (e) {
       setError(e instanceof Error ? e.message : t('failed'))
