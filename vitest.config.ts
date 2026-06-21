@@ -21,13 +21,13 @@ export default defineConfig({
       reporter: ['text-summary'],
       // 회귀 게이트(#51): 현재 lib/ 커버리지를 *바닥*으로 고정한다. 커버리지가 이 아래로
       // 떨어지면(=테스트 없는 코드 유입) CI 가 막는다. 테스트가 쌓이면 이 값을 점진적으로
-      // 올린다(ratchet). 2026-06 측정값: stmts 43.7 / branch 36.5 / func 45.3 / lines 44.6.
-      // (parser·rubrics·lms-formatter 순수로직 단위 테스트 누적 → 임계 상향. 측정값 대비 ~1.5% 헤드룸.)
+      // 올린다(ratchet). 2026-06 측정값: stmts 45.5 / branch 38.0 / func 47.0 / lines 46.5.
+      // (parser·rubrics·lms-formatter·sounds·security-log·corpus-parser·legal-content 누적 → 임계 상향. ~1.5% 헤드룸.)
       thresholds: {
-        statements: 42,
-        branches: 34,
-        functions: 43,
-        lines: 42
+        statements: 44,
+        branches: 36,
+        functions: 45,
+        lines: 45
       }
     }
   },
