@@ -104,7 +104,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: '오늘 퀘스트가 없습니다' }, { status: 404 })
   }
 
-  const row = data as { id: string; missions: DailyQuestMission[] }
+  // jsonb 컬럼(missions)은 DB 타입상 Json 이라 앱 타입으로 좁힌다(런타임 형태는 동일).
+  const row = data as unknown as { id: string; missions: DailyQuestMission[] }
   const missions = (row.missions ?? []) as DailyQuestMission[]
   const idx = missions.findIndex((m) => m.id === missionId)
   if (idx < 0) {
