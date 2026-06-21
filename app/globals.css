@@ -1,6 +1,20 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* content 경로 명시(v4 는 자동 감지하나 범위를 좁혀 불필요한 스캔을 줄인다). */
+@source "../app";
+@source "../components";
+
+/* v4 호환: 색 미지정 border/divide 기본색이 v3(gray-200) → v4(currentColor) 로 바뀌어
+   외형이 달라진다. v3 동작을 보존해 시각 회귀를 막는다(공식 업그레이드 가이드 권장). */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
 
 /* 가챠 결과 등장 연출 (app/[locale]/(student)/gacha). */
 @keyframes gachaPop {
