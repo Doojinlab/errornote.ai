@@ -14,15 +14,14 @@ const eslintConfig = [
   },
   ...next,
   {
-    // eslint-config-next 16 은 eslint-plugin-react-hooks v6(React Compiler 인지) 의 신규
-    // 규칙을 error 로 켠다. 기존(config-next 14)엔 없던 규칙으로, 버그가 아니라 스타일/성능
-    // 권고다. 이번 PR 은 "버전 업그레이드" 범위이므로 이들을 warn 으로 낮춰 기존 lint
-    // 베이스라인을 유지한다(규칙 채택·코드 정리는 별도 후속 PR). 동시에 App Router 에서
-    // 오탐하는 legacy pages-router 규칙(no-html-link-for-pages)은 끈다.
+    // eslint-plugin-react-hooks v6(React Compiler 인지) 신규 규칙. 기존 위반 15건은 모두
+    // 해소했으므로(OfflineIndicator → useSyncExternalStore + 나머지는 사유 명시 disable)
+    // error 로 승격해 신규 코드에 강제한다. App Router 에서 오탐하는 legacy
+    // pages-router 규칙(no-html-link-for-pages)은 끈다.
     rules: {
-      'react-hooks/set-state-in-effect': 'warn',
-      'react-hooks/preserve-manual-memoization': 'warn',
-      'react-hooks/immutability': 'warn',
+      'react-hooks/set-state-in-effect': 'error',
+      'react-hooks/preserve-manual-memoization': 'error',
+      'react-hooks/immutability': 'error',
       '@next/next/no-html-link-for-pages': 'off',
     },
   },

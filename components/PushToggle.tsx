@@ -76,6 +76,7 @@ export default function PushToggle() {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트 시 권한/구독 상태(브라우저 API)를 1회 조회
     refresh()
   }, [refresh])
 

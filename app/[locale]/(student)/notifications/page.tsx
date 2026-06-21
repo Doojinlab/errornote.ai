@@ -67,6 +67,7 @@ export default function NotificationsPage() {
     const params = new URLSearchParams(window.location.search)
     const kakaoResult = params.get('kakao')
     if (kakaoResult === 'connected') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- OAuth 콜백 URL 파라미터를 마운트 시 1회 처리
       showToast('success', t('toastConnected'))
       window.history.replaceState({}, '', '/notifications')
     } else if (kakaoResult === 'error') {
@@ -76,6 +77,7 @@ export default function NotificationsPage() {
   }, [t])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트 시 1회 데이터 로드(비동기 fetch)
     fetchStatus()
   }, [fetchStatus])
 

@@ -31,6 +31,7 @@ export default function OfflineQueueFlusher() {
   // When the queue grows from zero, show the "queued" toast.
   useEffect(() => {
     if (pending > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 큐 길이(외부 스토어) 변화에 토스트를 동기화하는 의도적 effect
       setToast({ kind: 'queued', count: pending })
     }
   }, [pending])

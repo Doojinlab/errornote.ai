@@ -1,25 +1,29 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
+
+// 온라인/오프라인은 외부 스토어(navigator + online/offline 이벤트)이므로
+// useSyncExternalStore 로 구독한다 — effect 내 setState 를 피하고 hydration 안전.
+function subscribeOnline(callback: () => void): () => void {
+  window.addEventListener('online', callback)
+  window.addEventListener('offline', callback)
+  return () => {
+    window.removeEventListener('online', callback)
+    window.removeEventListener('offline', callback)
+  }
+}
 
 export default function OfflineIndicator() {
-  const [isOffline, setIsOffline] = useState(false)
+  const isOffline = useSyncExternalStore(
+    subscribeOnline,
+    () => !navigator.onLine, // client snapshot
+    () => false // server snapshot: SSR 에서는 온라인으로 가정
+  )
 
+  // 서비스워커 등록은 표시 상태와 무관한 1회성 부수효과 — 별도 effect 로 유지.
   useEffect(() => {
-    setIsOffline(!navigator.onLine)
-
-    const goOffline = () => setIsOffline(true)
-    const goOnline = () => setIsOffline(false)
-    window.addEventListener('offline', goOffline)
-    window.addEventListener('online', goOnline)
-
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
-    }
-
-    return () => {
-      window.removeEventListener('offline', goOffline)
-      window.removeEventListener('online', goOnline)
     }
   }, [])
 

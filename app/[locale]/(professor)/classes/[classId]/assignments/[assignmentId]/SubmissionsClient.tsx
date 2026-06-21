@@ -57,6 +57,7 @@ export default function SubmissionsClient({
   // 선택된 제출물이 바뀌면 편집 버퍼를 갱신
   useEffect(() => {
     if (!selected) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 선택 변경(외부 입력)에 편집 버퍼를 동기화하는 의도적 effect
       setDraftScores(null);
       setDraftFeedback("");
       return;

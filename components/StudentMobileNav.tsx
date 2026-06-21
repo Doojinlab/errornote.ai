@@ -26,6 +26,7 @@ export default function StudentMobileNav({
   const pathname = usePathname()
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 라우트 변경(외부 입력) 시 모바일 메뉴를 닫는 의도적 effect
     setOpen(false)
   }, [pathname])
 
