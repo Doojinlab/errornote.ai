@@ -1,0 +1,129 @@
+/* ============================================================
+   AI오답노트 landing page styles
+   Ported from the Claude Design handoff (tokens.css + section
+   <style> blocks). Design tokens are scoped to `.landing-root`
+   so they never leak into the rest of the app. @font-face and
+   @keyframes are global (they cannot be scoped).
+   ============================================================ */
+
+/* ---------- LOCAL FONTS ---------- */
+@font-face { font-family: 'Pretendard'; font-weight: 300; src: url('/fonts/Pretendard-Light.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'Pretendard'; font-weight: 400; src: url('/fonts/Pretendard-Regular.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'Pretendard'; font-weight: 500; src: url('/fonts/Pretendard-Medium.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'Pretendard'; font-weight: 600; src: url('/fonts/Pretendard-SemiBold.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'Pretendard'; font-weight: 700; src: url('/fonts/Pretendard-Bold.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'Pretendard'; font-weight: 800; src: url('/fonts/Pretendard-ExtraBold.otf') format('opentype'); font-display: swap; }
+
+@font-face { font-family: 'Paperlogy'; font-weight: 400; src: url('/fonts/Paperlogy-4Regular.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Paperlogy'; font-weight: 500; src: url('/fonts/Paperlogy-5Medium.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Paperlogy'; font-weight: 600; src: url('/fonts/Paperlogy-6SemiBold.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Paperlogy'; font-weight: 700; src: url('/fonts/Paperlogy-7Bold.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Paperlogy'; font-weight: 800; src: url('/fonts/Paperlogy-8ExtraBold.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Paperlogy'; font-weight: 900; src: url('/fonts/Paperlogy-9Black.ttf') format('truetype'); font-display: swap; }
+
+/* ---------- TOKENS (scoped) ----------
+   `--font-noto-sc` / `--font-jetbrains` are injected by next/font
+   on the .landing-root element (see page.tsx). */
+.landing-root {
+  /* paper / ink */
+  --paper:        #FCFAF7;
+  --paper-2:      #F5F1E8;
+  --paper-3:      #ECE6D6;
+  --ink:          #1A1614;
+  --ink-2:        #3A3431;
+  --ink-mute:     #6B6056;
+  --ink-faint:    #A9A096;
+  --line:         #E8E2D6;
+  --line-strong:  #D9D1BE;
+
+  /* accent — china red, restrained */
+  --red:          #D7263D;
+  --red-deep:     #A81C2E;
+  --red-soft:     #FBE9EC;
+  --red-line:     #F2C2C9;
+
+  /* signal */
+  --green:        #2E7D5A;
+  --gold:         #C49A2C;
+  --indigo:       #2D3E78;
+
+  /* type */
+  --display: 'Paperlogy', 'Pretendard', system-ui, sans-serif;
+  --body:    'Pretendard', system-ui, sans-serif;
+  --hanzi:   var(--font-noto-sc, 'Noto Sans SC'), 'Pretendard', sans-serif;
+  --mono:    var(--font-jetbrains, 'JetBrains Mono'), ui-monospace, Menlo, monospace;
+
+  /* radii / shadow */
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --shadow-sm: 0 1px 2px rgba(26,22,20,.04), 0 1px 1px rgba(26,22,20,.03);
+  --shadow-md: 0 4px 16px rgba(26,22,20,.06), 0 1px 3px rgba(26,22,20,.04);
+  --shadow-lg: 0 24px 60px rgba(26,22,20,.10), 0 6px 16px rgba(26,22,20,.05);
+
+  /* layout */
+  --max-w: 1280px;
+  --pad-x: clamp(20px, 4vw, 48px);
+
+  font-family: var(--body);
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'ss01', 'tnum';
+  min-height: 100dvh;
+}
+
+.landing-root :lang(zh),
+.landing-root .hanzi { font-family: var(--hanzi); }
+.landing-root .display { font-family: var(--display); letter-spacing: -0.02em; }
+.landing-root a { color: inherit; text-decoration: none; }
+.landing-root button { font-family: inherit; cursor: pointer; }
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes ennPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(0.7);} }
+@keyframes ennFadeInUnderline { from { text-decoration-color: transparent; } to {} }
+@keyframes ennRevealUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.landing-root .pulse-dot {
+  width: 8px; height: 8px; border-radius: 999px; background: var(--red);
+  display: inline-block; animation: ennPulse 1s infinite;
+}
+.landing-root .pulse-dot-3,
+.landing-root .pulse-dot-3::before,
+.landing-root .pulse-dot-3::after {
+  content: ''; width: 6px; height: 6px; border-radius: 999px;
+  background: var(--ink-faint); display: inline-block; margin: 0 3px;
+  animation: ennPulse 0.9s infinite;
+}
+.landing-root .pulse-dot-3::before { animation-delay: -.3s; }
+.landing-root .pulse-dot-3::after  { animation-delay: -.6s; }
+.landing-root .staggerIn { animation: ennRevealUp .45s ease both; }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 920px) { .landing-root .hero-grid { grid-template-columns: 1fr !important; } }
+@media (max-width: 900px) {
+  .landing-root .demo-grid { grid-template-columns: 1fr !important; }
+  .landing-root .gam-grid  { grid-template-columns: 1fr !important; }
+  .landing-root .prof-grid { grid-template-columns: 1fr !important; }
+  .landing-root .partners-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 1100px) {
+  .landing-root .flow-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .landing-root .flow-arrow { display: none; }
+}
+@media (max-width: 1024px) { .landing-root .value-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+@media (max-width: 800px) {
+  .landing-root .nav-links { display: none !important; }
+  .landing-root .hide-on-mobile { display: none !important; }
+  .landing-root .footer-grid { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 560px) {
+  .landing-root .value-grid { grid-template-columns: 1fr !important; }
+  .landing-root .flow-grid  { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 480px) { .landing-root .footer-grid { grid-template-columns: 1fr !important; } }

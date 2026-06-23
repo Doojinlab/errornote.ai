@@ -1,34 +1,57 @@
-import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/routing";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { setRequestLocale } from 'next-intl/server'
+import { Noto_Sans_SC, JetBrains_Mono } from 'next/font/google'
+import Nav from '@/components/landing/Nav'
+import Hero from '@/components/landing/Hero'
+import PartnerStrip from '@/components/landing/PartnerStrip'
+import CoreValues from '@/components/landing/CoreValues'
+import Demo3Pane from '@/components/landing/Demo3Pane'
+import FlowSection from '@/components/landing/FlowSection'
+import GamificationSection from '@/components/landing/GamificationSection'
+import ProfessorSection from '@/components/landing/ProfessorSection'
+import PartnersSection from '@/components/landing/PartnersSection'
+import { CTASection, Footer } from '@/components/landing/CTAFooter'
+import '@/components/landing/landing.css'
 
-export default async function LandingPage() {
-  const [t, tMeta] = await Promise.all([
-    getTranslations("landing"),
-    getTranslations("meta"),
-  ]);
+// Noto Sans SC carries the Simplified-Chinese glyphs (hanzi); JetBrains Mono is
+// used for the monospace technical chips. Both are exposed as CSS variables that
+// landing.css maps onto --hanzi / --mono. CJK fonts can't be fully preloaded, so
+// preload is disabled to avoid Next's preload warning.
+const notoSC = Noto_Sans_SC({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '900'],
+  variable: '--font-noto-sc',
+  display: 'swap',
+  preload: false,
+})
+
+const jetBrains = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-jetbrains',
+  display: 'swap',
+})
+
+interface Props {
+  params: Promise<{ locale: string }>
+}
+
+export default async function LandingPage({ params }: Props) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-slate-50 p-6 text-center">
-      <div className="absolute right-4 top-4">
-        <LanguageSwitcher />
-      </div>
-      <h1 className="text-2xl font-bold text-slate-900">{tMeta("appName")}</h1>
-      <p className="max-w-md text-sm text-slate-700">{t("heading")}</p>
-      <p className="max-w-md text-xs text-slate-500">{t("subheading")}</p>
-      <div className="flex gap-3">
-        <Link
-          href="/login"
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500"
-        >
-          {t("ctaLogin")}
-        </Link>
-        <Link
-          href="/signup"
-          className="rounded-md border border-indigo-600 px-4 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-50"
-        >
-          {t("ctaSignup")}
-        </Link>
-      </div>
-    </main>
-  );
+    <div className={`landing-root ${notoSC.variable} ${jetBrains.variable}`}>
+      <Nav />
+      <Hero />
+      <PartnerStrip />
+      <CoreValues />
+      <Demo3Pane />
+      <FlowSection />
+      <GamificationSection />
+      <ProfessorSection />
+      <PartnersSection />
+      <CTASection />
+      <Footer />
+    </div>
+  )
 }

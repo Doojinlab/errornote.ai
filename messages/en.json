@@ -82,10 +82,85 @@
     }
   },
   "landing": {
-    "heading": "AI error correction for Korean university learners of Chinese",
-    "subheading": "Claude analyzes your Chinese writing and returns 4-field error cards",
-    "ctaLogin": "Log in",
-    "ctaSignup": "Get started"
+    "nav": { "features": "Features", "demo": "Workspace", "flow": "How it works", "gamification": "Gamification", "professor": "For professors", "partners": "Partner universities", "login": "Log in", "start": "Start free" },
+    "hero": {
+      "badge": "Real-time error analysis powered by Claude API",
+      "headline": "Make mistakes — that's fine.\nAI remembers them all for you.",
+      "subhead": "Your Chinese writing, analyzed and organized into error cards. A personal mistake notebook that gets smarter the more you write.",
+      "ctaPrimary": "Start free", "ctaSecondary": "See the professor demo",
+      "liveBadge": "LIVE analysis", "muteToggle": "Sound on/off",
+      "caption": "→ The time-duration complement goes after the verb.",
+      "stats": [ { "n": "Complete error analysis", "l": "Error cards + CoT reasoning" }, { "n": "HSK 1–6", "l": "Automatic tagging" }, { "n": "Real-time", "l": "In-class error aggregation" } ],
+      "floatingCard": { "type": "Word-order error", "grade": "", "rangeLabel": "Error range", "fixLabel": "Suggested fix", "explain": "A time-duration complement must come after the verb." }
+    },
+    "partnerStrip": { "label": "Universities building this with us", "partners": [ { "ko": "Kyonggi University", "sub": "Dept. of Chinese Language & Literature" }, { "ko": "Sogang University", "sub": "Dept. of Chinese Culture" }, { "ko": "Seoul National University", "sub": "Dept. of Chinese Language & Literature" }, { "ko": "Duksung Women's University", "sub": "Dept. of Chinese Language & Literature" } ] },
+    "coreValues": {
+      "eyebrow": "Core values", "title": "Four systems that turn\nyour mistakes into assets",
+      "kicker": "Writing, analysis, accumulation, and growth all run in one place. A personal mistake notebook for learners, a class-management toolkit for professors.",
+      "items": [
+        { "title": "AI mistake notebook", "body": "Your error records build up automatically → personal DB → a virtuous cycle of better feedback. The more you use it, the smarter it gets.", "bullets": ["4-field error cards + CoT", "Automatic fossilization detection", "Weekly card-news digest"] },
+        { "title": "Flipped learning", "body": "Write first drafts at home; do AI practice, theory, and revisions in class. Focus professors' time on what matters most.", "bullets": ["Assignments & rubrics", "Real-time in-class mode", "Instant TOP 3 errors"] },
+        { "title": "Gamification", "body": "Badges, levels, streaks, and sound effects keep learners motivated. Even day-one students start having fun.", "bullets": ["初学者→汉语达人", "6 badges / sound effects", "Daily learning streaks"] },
+        { "title": "Custom chatbot", "body": "Uses the professor's corpus as a RAG knowledge base. Becomes a different AI tutor for each class.", "bullets": ["Upload professor corpus", "Auto-injected error-card context", "Web search integration"] }
+      ]
+    },
+    "demo": {
+      "eyebrow": "Three-panel workspace", "title": "Here's how it flows — AI analyzes in real time",
+      "kicker": "Write on the left, error cards top-right, AI tutor chat bottom-right. As the learner types, analysis, highlights, cards, and solutions appear in sequence.",
+      "windowTitle": "wunote.app · Writing — Intermediate Chinese Writing (CHIN-301)",
+      "saved": "Saved", "draftTitle": "Write your draft", "analyzeBtn": "AI analysis", "analyzing": "Analyzing…", "analyzingTip": "Claude API is analyzing your sentences…",
+      "countLabel": "characters", "errorsLabel": "errors", "hskAvgLabel": "HSK average", "hskAvgValue": "Level 4",
+      "errorCardTitle": "Error cards", "cardEmpty": "Start writing and your error cards will appear here",
+      "errSubtype": "Word-order error", "hskTag": "HSK 4", "fossilTag": "Fossilized 1×",
+      "rangeLabel": "Error range", "fixLabel": "Suggested fix", "explainLabel": "Explanation", "explainText": "A time-duration complement must come after the verb.",
+      "cotToggle": "▶ Show CoT reasoning steps ({count} steps)", "tutorTitle": "AI tutor", "contextInjected": "Context auto-injected · {subtype}", "waiting": "Waiting",
+      "chatAiQuestion": "Would you like me to explain in more detail why this is a word-order error? I can also show you similar time-duration-complement examples.",
+      "chatMyReply": "Yes, tell me more", "chatSolPre": "Right. The time-duration complement", "chatSolMid": " comes after the verb", "chatSolExamplesLabel": "Similar examples:",
+      "chatPlaceholder": "Ask me anything — grammar, vocabulary, whatever…",
+      "seq1": "1. Type", "seq2": "2. Analyze", "seq3": "3. Highlight", "seq4": "4. Error card", "seq5": "5. AI solution"
+    },
+    "flow": {
+      "eyebrow": "How it works", "title": "A growth cycle that runs\nin five steps",
+      "kicker": "Not write-once-and-done, but a virtuous cycle where data accumulates and feedback gets sharper every time you write.",
+      "steps": [
+        { "title": "Write", "body": "The learner enters Chinese text they wrote themselves — assignment submissions or free writing, either works.", "tag": "TipTap editor" },
+        { "title": "Analyze", "body": "Claude API identifies vocabulary and grammar errors and builds its rationale through CoT step-by-step reasoning.", "tag": "Claude Sonnet 4.6" },
+        { "title": "Error cards", "body": "Cards generated with 4 fields (range / type / fix / explanation) plus HSK tags and fossilization warnings.", "tag": "Kang (2025), Table 8" },
+        { "title": "Accumulate", "body": "Error cards build up in a personal DB, automatically detecting fossilization and weak areas.", "tag": "Supabase" },
+        { "title": "Report", "body": "A weekly card-news digest is emailed out, and your semester growth graph updates.", "tag": "Resend + Recharts" }
+      ]
+    },
+    "gamification": {
+      "eyebrow": "Gamification", "title": "So leveling up\nmeans skilling up",
+      "kicker": "Badges, levels, streaks, and sound effects keep learners motivated. Even first-years just starting out can jump in with ease.",
+      "levelsTitle": "Level system",
+      "levels": [ { "sub": "Beginner", "xp": "Start" }, { "sub": "Progressing", "xp": "XP 500" }, { "sub": "Top student", "xp": "XP 2,000" }, { "sub": "Chinese master", "xp": "XP 5,000" } ],
+      "progressLabel": "Current progress", "badgesTitle": "Badge collection",
+      "badges": [ { "name": "Perfect correction", "cond": "Zero errors on revision" }, { "name": "7-day streak", "cond": "7-day streak" }, { "name": "Wordbook 100", "cond": "100 words saved" }, { "name": "把-sentence master", "cond": "Zero 把-sentence errors 3×" }, { "name": "Explorer", "cond": "50 AI chats" }, { "name": "Quiz champion", "cond": "10 quizzes correct in a row" } ],
+      "soundNote": "Sound effect plays on unlock — correct.mp3 / streak.mp3 / level-up.mp3"
+    },
+    "professor": {
+      "eyebrow": "For professors", "title": "Secure feedback quality\nwithout any student data.",
+      "kicker": "Once a professor uploads a corpus, it works as a per-class RAG knowledge base from that day on. Real-time mode and the marketplace help you run your classes.",
+      "cards": [
+        { "title": "Corpus upload", "body": "Practical Modern Chinese Grammar PDFs, lecture-material DOCX, HSK writing-corpus TXT — auto-inserted into that class's Claude prompt the moment you upload.", "chip": "PDF · TXT · DOCX · 20 per class" },
+        { "title": "Real-time in-class mode", "body": "Hit Start class → live aggregation of every student's error types every 5 seconds. The TOP 3 errors are shown instantly for use in board work and follow-up explanations.", "chip": "Supabase Realtime · 5-second refresh" },
+        { "title": "Resource marketplace", "body": "Search, download, and instantly apply other professors' public corpora and ICL examples. Creates a network effect across Chinese departments nationwide.", "chip": "Downloads · ratings · instant apply" }
+      ]
+    },
+    "partners": {
+      "eyebrow": "Partner universities", "title": "Built together with\nChinese departments nationwide",
+      "kicker": "We incorporate feedback from professors and learners in the field every week. The goal isn't one school's tool, but infrastructure for Chinese-language education across Korea.",
+      "badge": "Participating", "ctaStrong": "We're looking for schools to join us.", "ctaRest": "We provide pre-semester workshops, professor corpus setup, and free pilot programs.", "ctaLink": "Get in touch →",
+      "universities": [ { "ko": "Kyonggi University", "en": "Kyonggi University", "dept": "Dept. of Chinese Language & Literature" }, { "ko": "Sogang University", "en": "Sogang University", "dept": "Dept. of Chinese Culture" }, { "ko": "Seoul National University", "en": "Seoul National University", "dept": "Dept. of Chinese Language & Literature" }, { "ko": "Duksung Women's University", "en": "Duksung Women's University", "dept": "Dept. of Chinese Language & Literature" } ],
+      "videoUniversities": "Kyonggi University × Sogang University × Seoul National University × Duksung Women's University"
+    },
+    "cta": { "titlePre": "From today, your ", "titleHighlight": "mistakes", "titlePost": " are an asset.", "sub": "Free for students. Professors can upload a corpus and run a class the moment they open it. With PWA, it works the same on mobile.", "ctaStudent": "Start as a student", "ctaProfessor": "Request professor demo" },
+    "footer": {
+      "desc": "An AI-powered Chinese error-correction PWA for undergraduate Chinese majors at Korean universities.",
+      "affiliation": "Kyonggi University Dept. of Chinese Language & Literature × Sogang University Dept. of Chinese Culture\n© 2026 Wunote / AI오답노트",
+      "columns": [ { "title": "Product", "items": ["Learner app", "Professor tools", "Marketplace", "Roadmap"] }, { "title": "Resources", "items": ["Kang (2025) paper", "Technical development plan", "Prompt design", "Privacy"] }, { "title": "Contact", "items": ["Request a demo", "Partnerships", "Conference talks", "press@wunote.app"] } ]
+    }
   },
   "common": {
     "save": "Save",
