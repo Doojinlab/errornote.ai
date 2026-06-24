@@ -1,4 +1,4 @@
-export const ROUTER_OPUS = 'claude-opus-4-7' as const
+export const ROUTER_OPUS = 'claude-opus-4-8' as const
 export const ROUTER_HAIKU = 'claude-haiku-4-5' as const
 
 export type RouterModel = typeof ROUTER_OPUS | typeof ROUTER_HAIKU
