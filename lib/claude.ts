@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 
-export const MODEL_ID = 'claude-opus-4-7' as const
+export const MODEL_ID = 'claude-opus-4-8' as const
 
 let _client: Anthropic | null = null
 
