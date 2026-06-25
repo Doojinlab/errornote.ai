@@ -3,6 +3,8 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import PwaInstallPrompt from '@/components/PwaInstallPrompt'
+import OfflineIndicator from '@/components/OfflineIndicator'
+import OfflineQueueFlusher from '@/components/OfflineQueueFlusher'
 
 // 거의 모든 라우트가 Supabase 세션(쿠키) 기반으로 개인화된다. @supabase/ssr 의
 // async 쿠키 어댑터를 통해 cookies() 가 호출되면 Next 16 의 정적 분석이 이를 감지하지
@@ -31,6 +33,11 @@ export default async function LocaleLayout({ children, params }: Props) {
     <NextIntlClientProvider locale={locale} messages={messages}>
       {children}
       <PwaInstallPrompt />
+      {/* Offline chrome must live inside NextIntlClientProvider — OfflineQueueFlusher
+          calls useTranslations(). Rendering it from the root layout (outside the
+          provider) throws "context not found" and 500s every page. */}
+      <OfflineIndicator />
+      <OfflineQueueFlusher />
     </NextIntlClientProvider>
   )
 }
