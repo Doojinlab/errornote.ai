@@ -4,15 +4,118 @@
 @source "../app";
 @source "../components";
 
-/* v4 호환: 색 미지정 border/divide 기본색이 v3(gray-200) → v4(currentColor) 로 바뀌어
-   외형이 달라진다. v3 동작을 보존해 시각 회귀를 막는다(공식 업그레이드 가이드 권장). */
+/* ───────────────────────────────────────────────────────────────────────────
+   디자인 토큰 (errornote 학생 UI 리디자인) — Tailwind v4 @theme
+   스펙: docs/errornote-ui-redesign.md §2. 인라인 hex 금지, 토큰만 사용.
+   ─────────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* 폰트 — 한글 전부 Pretendard, 중국어 예문/브랜드만 Noto Serif SC */
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-cn: "Noto Serif SC", serif;
+
+  /* 캔버스 / 텍스트 */
+  --color-ivory: #faf8f3; /* Hanji Ivory 캔버스 */
+  --color-ink: #1c1917;
+  --color-bodytx: #57534e;
+  --color-muted: #8b847b;
+  --color-hairline: #efeae1;
+
+  /* 메인 액션 */
+  --color-blue: #3b6fb6;
+  --color-blue-dark: #2e5894;
+  --color-blue-soft: #eaf1fa;
+
+  /* 성공 / 교정 / 동료리뷰 */
+  --color-jade: #1d9e75;
+  --color-jade-dark: #178a66;
+  --color-jade-soft: #e5f6ef;
+
+  /* 오류 마킹 · 마감 경고 전용 (화면의 5% 이하) */
+  --color-terra: #d97757;
+  --color-terra-dark: #c25e3e;
+  --color-terra-soft: #fbeee7;
+
+  /* 연속 학습 불꽃 / 트로피 */
+  --color-gold: #e59a35;
+  --color-gold-dark: #c77f1f;
+  --color-gold-soft: #fbf0dc;
+
+  /* 보석 */
+  --color-gem: #2fb5a6;
+  --color-gem-dark: #259488;
+  --color-gem-soft: #e1f5f2;
+
+  /* 라운드 */
+  --radius-xl2: 20px;
+  --radius-xl3: 24px;
+  --radius-xl4: 26px;
+}
+
 @layer base {
+  /* v4 호환: 색 미지정 border/divide 기본색이 v3(gray-200) → v4(currentColor) 로
+     바뀌어 외형이 달라진다. v3 동작을 보존해 시각 회귀를 막는다. */
   *,
   ::after,
   ::before,
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
+  }
+
+  /* 한글 전역 Pretendard 강제 — 시스템 폰트 누수 방지(스펙 §1.1).
+     중국어는 .font-cn / [lang="zh"] 로 예외 처리. */
+  html,
+  body,
+  button,
+  input,
+  textarea,
+  select {
+    font-family: var(--font-sans);
+  }
+}
+
+/* 중국어 예문 / 브랜드 글자에만 */
+.font-cn,
+[lang="zh"] {
+  font-family: var(--font-cn);
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   인터랙션 (스펙 §1.2)
+   - card-pop : 모든 카드/박스 hover 시 "볼록 튀어나오는" 효과
+   - lip      : 듀오링고식 입체 버튼 눌림
+   ─────────────────────────────────────────────────────────────────────────── */
+@layer components {
+  .card-pop {
+    transition:
+      transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1),
+      box-shadow 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+    box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04);
+    will-change: transform;
+  }
+  .card-pop:hover {
+    transform: translateY(-5px) scale(1.018);
+    box-shadow:
+      0 18px 34px rgba(28, 25, 23, 0.13),
+      0 5px 12px rgba(28, 25, 23, 0.07);
+  }
+  .card-pop:active {
+    transform: translateY(-1px) scale(1);
+    transition-duration: 0.08s;
+  }
+
+  .lip {
+    transition:
+      transform 0.08s ease,
+      filter 0.15s ease;
+  }
+  .lip:hover {
+    filter: brightness(1.04);
+    transform: translateY(-1px);
+  }
+  .lip:active {
+    transform: translateY(3px);
   }
 }
 
@@ -31,7 +134,17 @@
   }
 }
 
+/* 모션 최소화 선호 시 모든 효과 제거 (접근성 필수, 스펙 §1.2/§7). */
 @media (prefers-reduced-motion: reduce) {
+  .card-pop,
+  .card-pop:hover,
+  .card-pop:active,
+  .lip,
+  .lip:hover,
+  .lip:active {
+    transform: none;
+    transition: none;
+  }
   .animate-\[gachaPop_0\.4s_ease-out\] {
     animation: none;
   }

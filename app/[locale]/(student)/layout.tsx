@@ -1,19 +1,9 @@
-import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
+import { User } from "lucide-react";
 import { createServerClient } from "@/lib/supabase";
-import LevelBar from "@/components/gamification/LevelBar";
-import StreakCounter from "@/components/gamification/StreakCounter";
-import Companion from "@/components/gamification/Companion";
 import StudentSoundShell from "@/components/gamification/StudentSoundShell";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import StudentMobileNav from "@/components/StudentMobileNav";
-import StudentDesktopNav from "@/components/nav/StudentDesktopNav";
-import {
-  STUDENT_NAV_GROUPS,
-  type StudentNavGroupKey,
-  type StudentNavKey,
-} from "@/components/nav/studentNavGroups";
-import { companionStage, companionEmoji } from "@/lib/companion";
+import { BottomNav, StatChip } from "@/components/student-ui";
 
 interface GameStats {
   level: 1 | 2 | 3 | 4;
@@ -54,34 +44,17 @@ async function loadEarnedBadgeIds(): Promise<string[]> {
   return rows.map((r) => r.badge_type);
 }
 
-const ALL_NAV_KEYS: StudentNavKey[] = STUDENT_NAV_GROUPS.flatMap((g) =>
-  g.items.map((i) => i.key),
-);
-const ALL_GROUP_KEYS: StudentNavGroupKey[] = STUDENT_NAV_GROUPS.map((g) => g.key);
-
-export default async function StudentLayout({ children }: { children: React.ReactNode }) {
-  const [stats, earnedBadgeIds, t, tGroups] = await Promise.all([
+// 학생 셸 — 모바일 퍼스트(max 420px 중앙) + 하단 4탭(스펙 §3/§7).
+// 상단 22개 가로 메뉴는 폐기, 사운드/게임화 사이드이펙트는 StudentSoundShell 로 유지.
+export default async function StudentLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [stats, earnedBadgeIds] = await Promise.all([
     loadStats(),
     loadEarnedBadgeIds(),
-    getTranslations("nav.student"),
-    getTranslations("nav.student.groups"),
   ]);
-  const tMeta = await getTranslations("meta");
-
-  const labels = Object.fromEntries(
-    ALL_NAV_KEYS.map((k) => [k, t(k)]),
-  ) as Record<StudentNavKey, string>;
-  const groupLabels = Object.fromEntries(
-    ALL_GROUP_KEYS.map((k) => [k, tGroups(k)]),
-  ) as Record<StudentNavGroupKey, string>;
-  const tCompanion = await getTranslations("pages.components.companion");
-
-  // 误 동반자: 진화 단계는 mastery_points 기반, 문구는 무벌점 톤.
-  const companionStageNum = companionStage(stats?.mastery_points ?? 0);
-  const companionSubtitle =
-    stats && stats.streak_days > 0
-      ? tCompanion("streak", { days: stats.streak_days })
-      : tCompanion("welcome");
 
   return (
     <StudentSoundShell
@@ -89,39 +62,32 @@ export default async function StudentLayout({ children }: { children: React.Reac
       streakDays={stats?.streak_days ?? null}
       earnedBadgeIds={earnedBadgeIds}
     >
-      <div className="flex min-h-dvh flex-col bg-slate-100">
-        <header className="flex items-center gap-3 border-b bg-white px-4 py-2">
-          <StudentMobileNav
-            labels={labels}
-            groupLabels={groupLabels}
-            openLabel={t("menuOpen")}
-            closeLabel={t("menuClose")}
-          />
-          <Link href="/learn/1" className="text-sm font-bold text-indigo-600">
-            {tMeta("appName")}
-          </Link>
-          <StudentDesktopNav
-            labels={labels}
-            groupLabels={groupLabels}
-            ariaLabel={tMeta("appName")}
-          />
-          <div className="ml-auto flex items-center gap-3">
-            <LanguageSwitcher />
-            <Companion
-              emoji={companionEmoji(companionStageNum)}
-              title={tCompanion(`stage${companionStageNum}`)}
-              subtitle={companionSubtitle}
-              ariaLabel={tCompanion("ariaLabel")}
-            />
-            {stats && <StreakCounter days={stats.streak_days} />}
-            {stats && (
-              <div className="hidden w-56 sm:block">
-                <LevelBar level={stats.level} xp={stats.xp} />
-              </div>
-            )}
-          </div>
-        </header>
-        <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+      <div className="min-h-dvh bg-ivory text-ink">
+        <div className="mx-auto flex min-h-dvh w-full max-w-[420px] flex-col bg-ivory">
+          <header className="sticky top-0 z-30 flex items-center gap-2 border-b border-hairline bg-ivory/90 px-4 py-3 backdrop-blur">
+            <Link
+              href="/learn"
+              className="text-base font-extrabold tracking-tight text-ink"
+            >
+              error<span className="text-blue">note</span>
+            </Link>
+            <div className="ml-auto flex items-center gap-2">
+              <StatChip type="flame" value={stats?.streak_days ?? 0} />
+              <LanguageSwitcher />
+              <Link
+                href="/settings"
+                aria-label="프로필"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-white text-bodytx"
+              >
+                <User size={18} aria-hidden />
+              </Link>
+            </div>
+          </header>
+
+          <main className="flex-1 px-4 pb-[90px] pt-4">{children}</main>
+
+          <BottomNav />
+        </div>
       </div>
     </StudentSoundShell>
   );
