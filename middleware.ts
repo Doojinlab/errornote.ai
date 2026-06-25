@@ -149,7 +149,11 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // 정적·Next 내부·사운드·API 제외. 나머지 경로에 로케일/인증 미들웨어 적용.
-    '/((?!_next/static|_next/image|favicon.ico|manifest.json|sw.js|icon-.*\\.png|sounds/|api/).*)',
+    // Next 내부·API·확장자 있는 정적 파일(.png/.mp4/.ttf/.json/.html 등) 전부 제외.
+    // 나머지(확장자 없는 페이지 경로)에만 로케일/인증 미들웨어 적용.
+    // 이전 패턴은 manifest.json·sw.js·루트 icon-*.png·sounds/ 만 제외해
+    // /video/·/icons/·/fonts/·/offline.html 등 하위 정적 자산이 미들웨어에
+    // 가로채여 404 났다(예: 히어로 영상 미표시). 점(.) 포함 경로를 일괄 제외해 해결.
+    '/((?!_next/static|_next/image|api/|.*\\..*).*)',
   ],
 }
