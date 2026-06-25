@@ -62,6 +62,7 @@ npm run test:e2e     # Playwright e2e
 
 - **[errornote.md](errornote.md)** — 전체 제품 명세 (DB 스키마, 라우트, Phase별 진행도)
 - **[CLAUDE.md](CLAUDE.md)** — 개발자 가이드 (디렉토리 구조, env vars, 코딩 규칙)
+- **[docs/deployment-vercel.md](docs/deployment-vercel.md)** — Vercel 배포 절차 + 환경변수 체크리스트
 
 ---
 
