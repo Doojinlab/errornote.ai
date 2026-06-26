@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Icon, LinkButton } from './primitives'
+import { assetUrl } from '@/lib/asset-url'
 
 function HeadlineLines({ text }: { text: string }) {
   return (
@@ -93,7 +94,7 @@ function FloatingErrorCard() {
   )
 }
 
-export default function Hero({ video = '/video/hero.mp4' }: { video?: string }) {
+export default function Hero({ video = assetUrl('/video/hero.mp4') }: { video?: string }) {
   const t = useTranslations('landing.hero')
   const videoRef = useRef<HTMLVideoElement>(null)
   const [muted, setMuted] = useState(true)
