@@ -17,12 +17,10 @@ jobs:
           node-version: 20
           cache: npm
 
-      # npm ci 가 아닌 npm install 을 쓴다: 현재 package-lock.json 이 package.json 과
-      # 어긋나 있고(next 16 bump 시 lock 미재생성 → @swc/helpers 등 transitive 드리프트),
-      # npm 버전에 따라 resolve 결과가 달라 npm ci(엄격)는 환경 간 불안정하다.
-      # lock 을 표준 npm 으로 재생성해 동기화하면 npm ci 로 전환 가능(후속 과제).
+      # lock 동기화 완료 — package-lock.json 을 표준 npm 으로 재생성해 package.json 과
+      # 일치시켰으므로 npm ci(엄격, 결정적)로 재현 가능한 설치를 보장한다.
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci
 
       - name: Typecheck
         run: npm run typecheck
@@ -34,6 +32,10 @@ jobs:
       # 떨어지면 실패한다(vitest.config.ts thresholds). 임계는 점진적으로 올린다.
       - name: Unit tests + coverage gate
         run: npm run test:coverage
+
+      # 빌드 게이트 — 빌드 실패가 Vercel 배포에서 처음 드러나는 일을 막는다(#).
+      - name: Build
+        run: npm run build
 
       # 정보성(차단 안 함): high+ 취약점을 로그로 노출하되 머지는 막지 않는다.
       # 진짜 게이트는 typecheck/lint/test. 신뢰되는 lock 정착 후 차단형으로 승격 가능.

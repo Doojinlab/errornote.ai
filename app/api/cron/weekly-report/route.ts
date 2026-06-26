@@ -13,6 +13,7 @@
 // 무거운 케이스에 대비해 timeout 60초 설정 권장 (vercel.json 의 maxDuration).
 
 import { NextResponse } from 'next/server'
+import { timingSafeEqual } from 'crypto'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from '@/lib/supabase'
 import {
@@ -57,15 +58,24 @@ interface EnrollmentJoin {
   profiles: ProfileMini | ProfileMini[] | null
 }
 
+/** 상수시간 문자열 비교 — 길이가 다르면 안전하게 false. */
+function safeEqual(a: string, b: string): boolean {
+  const ab = Buffer.from(a)
+  const bb = Buffer.from(b)
+  if (ab.length !== bb.length) return false
+  return timingSafeEqual(ab, bb)
+}
+
 function verifySecret(req: Request): boolean {
   const expected = process.env.CRON_SECRET
   if (!expected) return false
   // Vercel Cron 은 Authorization 헤더로 secret 을 보냄.
   const auth = req.headers.get('authorization') ?? ''
-  if (auth === `Bearer ${expected}`) return true
+  if (auth.startsWith('Bearer ') && safeEqual(auth.slice(7), expected)) return true
   // 수동 테스트용 query string 폴백.
   const url = new URL(req.url)
-  if (url.searchParams.get('secret') === expected) return true
+  const q = url.searchParams.get('secret')
+  if (q !== null && safeEqual(q, expected)) return true
   return false
 }
 

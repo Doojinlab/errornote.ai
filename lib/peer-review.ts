@@ -15,6 +15,15 @@ const REVIEW_COLS =
 
 const REVIEWERS_PER_REQUEST = 2
 
+/** 교수자가 소유하지 않은 수업의 리뷰에 접근하려 할 때 발생 (403). */
+export class PeerReviewAccessError extends Error {
+  status = 403
+  constructor(message = '해당 수업에 대한 권한이 없습니다') {
+    super(message)
+    this.name = 'PeerReviewAccessError'
+  }
+}
+
 // peer_review_* tables are not yet reflected in the generated Database type,
 // so we cast to bypass the generic constraint while keeping application-level types.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -318,8 +327,18 @@ async function syncRequestStatus(requestId: string): Promise<void> {
 // 교수자용: 수업 전체 리뷰 현황
 // ──────────────────────────────────────────────────────────────
 
-export async function listClassPeerReviews(classId: string) {
+export async function listClassPeerReviews(classId: string, professorId: string) {
   const d = db()
+
+  // ★ 소유권 검증 — admin 클라이언트(RLS 우회)를 쓰므로 호출자가 이 수업의
+  //   담당 교수인지 반드시 확인한다. 누락 시 다른 반 UUID 로 열람 가능(IDOR).
+  const { data: owned } = await d
+    .from('classes')
+    .select('id')
+    .eq('id', classId)
+    .eq('professor_id', professorId)
+    .maybeSingle()
+  if (!owned) throw new PeerReviewAccessError()
 
   // 해당 수업의 assignment ID 목록 먼저 조회
   const { data: assignments, error: aErr } = await d

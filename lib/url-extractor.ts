@@ -4,9 +4,12 @@
 // 의존성: `cheerio` 패키지가 별도로 설치되어 있어야 한다 (PR 본문에서 사용자에게 별도 안내).
 // 동적 import 를 사용해 프로덕션 빌드 시 패키지 미설치여도 라우트 자체가 오류 없이 빌드되도록 한다.
 
+import { lookup } from 'node:dns/promises'
+import net from 'node:net'
 import type { ExtractedContent, UrlSourceType } from '@/types/url-analysis'
 
 const FETCH_TIMEOUT_MS = 10_000
+const MAX_REDIRECTS = 5
 const MAX_BYTES = 2_000_000 // 2 MB
 const MAX_CHARS = 12_000 // Claude 호출 직전 슬라이스 — 비용·토큰 보호
 // 일반적인 모바일/데스크톱 브라우저 UA. 일부 SNS 가 서버 응답 시 봇을 차단하므로 위장.
@@ -110,20 +113,98 @@ function normalizeWhitespace(s: string): string {
     .trim()
 }
 
+// ── SSRF 방어 ────────────────────────────────────────────────
+// 사용자가 제출한 임의 URL 을 서버가 fetch 하므로, 내부망/클라우드 메타데이터
+// (169.254.169.254 등) 로의 요청을 막아야 한다. 호스트네임을 DNS 해석해 모든
+// 결과 IP 가 공인(public)인지 확인하고, 리다이렉트도 매 홉마다 재검증한다.
+
+function isPrivateIpv4(ip: string): boolean {
+  const parts = ip.split('.').map(Number)
+  if (parts.length !== 4 || parts.some(p => Number.isNaN(p) || p < 0 || p > 255)) return true
+  const [a, b, c] = parts
+  if (a === 0 || a === 10 || a === 127) return true            // this-net / private / loopback
+  if (a === 169 && b === 254) return true                       // link-local + 클라우드 메타데이터
+  if (a === 172 && b >= 16 && b <= 31) return true              // private
+  if (a === 192 && b === 168) return true                       // private
+  if (a === 192 && b === 0 && c === 0) return true              // IETF protocol assignments
+  if (a === 100 && b >= 64 && b <= 127) return true             // CGNAT
+  if (a === 198 && (b === 18 || b === 19)) return true          // benchmarking
+  if (a >= 224) return true                                     // multicast(224-239) + reserved(240-255)
+  return false
+}
+
+function isPrivateIpv6(ip: string): boolean {
+  const lower = ip.toLowerCase()
+  if (lower === '::1' || lower === '::') return true            // loopback / unspecified
+  const mapped = lower.match(/^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/)
+  if (mapped) return isPrivateIpv4(mapped[1])                   // IPv4-mapped
+  const head = parseInt(lower.split(':')[0] || '0', 16)
+  if ((head & 0xfe00) === 0xfc00) return true                   // fc00::/7 unique-local
+  if ((head & 0xffc0) === 0xfe80) return true                   // fe80::/10 link-local
+  return false
+}
+
+function isDisallowedIp(ip: string): boolean {
+  const kind = net.isIP(ip)
+  if (kind === 4) return isPrivateIpv4(ip)
+  if (kind === 6) return isPrivateIpv6(ip)
+  return true // IP 가 아니면 안전 측으로 차단
+}
+
+async function assertPublicHost(host: string): Promise<void> {
+  if (net.isIP(host)) {
+    if (isDisallowedIp(host)) {
+      throw new UrlExtractError('내부/사설 주소로의 요청은 허용되지 않습니다', 400)
+    }
+    return
+  }
+  let addrs: Array<{ address: string }>
+  try {
+    addrs = await lookup(host, { all: true })
+  } catch {
+    throw new UrlExtractError('호스트 주소를 확인할 수 없습니다', 400)
+  }
+  if (!addrs.length) throw new UrlExtractError('호스트 주소를 확인할 수 없습니다', 400)
+  for (const { address } of addrs) {
+    if (isDisallowedIp(address)) {
+      throw new UrlExtractError('내부/사설 주소로의 요청은 허용되지 않습니다', 400)
+    }
+  }
+}
+
 async function fetchHtml(url: string): Promise<string> {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
   try {
-    const res = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'User-Agent': USER_AGENT,
-        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'zh-CN,zh;q=0.9,ko;q=0.8,en;q=0.7'
-      },
-      signal: controller.signal,
-      redirect: 'follow'
-    })
+    // 리다이렉트를 수동으로 따라가며 매 홉마다 호스트를 재검증한다(공인 URL → 내부망 302 우회 차단).
+    let current = new URL(url)
+    let res: Response
+    for (let hop = 0; ; hop++) {
+      if (current.protocol !== 'http:' && current.protocol !== 'https:') {
+        throw new UrlExtractError('http(s) URL 만 지원합니다', 400)
+      }
+      await assertPublicHost(current.hostname.toLowerCase())
+      res = await fetch(current.toString(), {
+        method: 'GET',
+        headers: {
+          'User-Agent': USER_AGENT,
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'zh-CN,zh;q=0.9,ko;q=0.8,en;q=0.7'
+        },
+        signal: controller.signal,
+        redirect: 'manual'
+      })
+      const location = res.headers.get('location')
+      if (res.status >= 300 && res.status < 400 && location) {
+        if (hop >= MAX_REDIRECTS) {
+          throw new UrlExtractError('리다이렉트가 너무 많습니다', 502)
+        }
+        await res.body?.cancel()
+        current = new URL(location, current) // 상대 경로 리다이렉트 해석
+        continue
+      }
+      break
+    }
     if (!res.ok) {
       throw new UrlExtractError(`URL 요청 실패: HTTP ${res.status}`, 502)
     }

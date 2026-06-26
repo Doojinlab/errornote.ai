@@ -14,6 +14,8 @@ import type {
 } from '@/types/translate'
 
 export const runtime = 'nodejs'
+// DeepL+Papago+OpenAI 번역 후 Claude 분석까지 연쇄 호출하므로 기본 타임아웃 504 방지.
+export const maxDuration = 60
 
 const MAX_INPUT_LEN = 1500
 

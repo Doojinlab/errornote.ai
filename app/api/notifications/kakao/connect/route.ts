@@ -3,6 +3,7 @@
 // DELETE /api/notifications/kakao/connect       — 카카오 연동 해제 (토큰 폐기)
 
 import { NextRequest, NextResponse } from 'next/server'
+import { randomBytes } from 'crypto'
 import { createServerClient, createAdminClient } from '@/lib/supabase'
 import {
   buildKakaoAuthUrl,
@@ -14,11 +15,17 @@ import { logSecurityEvent } from '@/lib/security-log'
 
 export const runtime = 'nodejs'
 
-/** 현재 요청 host로부터 redirect_uri를 동적으로 생성한다. */
-function getRedirectUri(req: NextRequest): string {
-  const host = req.headers.get('host') ?? 'localhost:3000'
-  const protocol = host.startsWith('localhost') ? 'http' : 'https'
-  return `${protocol}://${host}/api/notifications/kakao/connect`
+const STATE_COOKIE = 'kakao_oauth_state'
+
+/**
+ * redirect_uri 를 신뢰 가능한 환경변수로부터 구성한다.
+ * Host 헤더는 위조 가능하므로 사용하지 않는다.
+ */
+function getRedirectUri(): string {
+  const explicit = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI
+  if (explicit) return explicit
+  const base = (process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+  return `${base}/api/notifications/kakao/connect`
 }
 
 export async function GET(req: NextRequest) {
@@ -31,13 +38,34 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL('/notifications?kakao=error', req.url))
   }
 
+  const redirectUri = getRedirectUri()
+
   if (!code) {
-    const redirectUri = getRedirectUri(req)
-    const authUrl = buildKakaoAuthUrl(redirectUri)
-    return NextResponse.redirect(authUrl)
+    // OAuth 시작 — 계정 바인딩 CSRF 방지용 암호학적 랜덤 state 생성 후 쿠키에 저장.
+    const state = randomBytes(32).toString('hex')
+    const authUrl = new URL(buildKakaoAuthUrl(redirectUri))
+    authUrl.searchParams.set('state', state)
+    const res = NextResponse.redirect(authUrl.toString())
+    res.cookies.set(STATE_COOKIE, state, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 600,
+    })
+    return res
   }
 
-  // OAuth 콜백 — code 있음
+  // OAuth 콜백 — code 있음. 먼저 state 일치 검증 (CSRF 방지).
+  const expectedState = req.cookies.get(STATE_COOKIE)?.value ?? null
+  const receivedState = searchParams.get('state')
+  if (!expectedState || !receivedState || expectedState !== receivedState) {
+    logSecurityEvent({ tag: 'kakao_token', event: 'state_mismatch' })
+    const res = NextResponse.redirect(new URL('/notifications?kakao=error', req.url))
+    res.cookies.delete(STATE_COOKIE)
+    return res
+  }
+
   const supabase = createServerClient()
   const {
     data: { user },
@@ -45,10 +73,10 @@ export async function GET(req: NextRequest) {
   } = await supabase.auth.getUser()
 
   if (authError || !user) {
-    return NextResponse.redirect(new URL('/login', req.url))
+    const res = NextResponse.redirect(new URL('/login', req.url))
+    res.cookies.delete(STATE_COOKIE)
+    return res
   }
-
-  const redirectUri = getRedirectUri(req)
 
   try {
     const tokens = await exchangeCodeForToken(code, redirectUri)
@@ -68,7 +96,9 @@ export async function GET(req: NextRequest) {
       kakao_user_id: String(kakaoUser.id),
     })
 
-    return NextResponse.redirect(new URL('/notifications?kakao=connected', req.url))
+    const res = NextResponse.redirect(new URL('/notifications?kakao=connected', req.url))
+    res.cookies.delete(STATE_COOKIE)
+    return res
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('Kakao OAuth 처리 실패:', message)
@@ -78,7 +108,9 @@ export async function GET(req: NextRequest) {
       user_id: user.id,
       error: message.slice(0, 200),
     })
-    return NextResponse.redirect(new URL('/notifications?kakao=error', req.url))
+    const res = NextResponse.redirect(new URL('/notifications?kakao=error', req.url))
+    res.cookies.delete(STATE_COOKIE)
+    return res
   }
 }
 

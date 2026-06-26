@@ -9,6 +9,8 @@ import type { DailyQuestMission } from '@/types/daily-quests'
 import type { Json } from '@/types/database'
 
 export const runtime = 'nodejs'
+// GET 이 오늘자 퀘스트 생성 시 Claude 를 호출하므로 기본 타임아웃 504 방지(다른 AI 라우트 관례에 맞춤).
+export const maxDuration = 60
 
 async function auth() {
   return requireAuth('student')

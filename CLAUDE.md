@@ -11,7 +11,7 @@ Students submit Chinese text → Claude API returns structured error cards → p
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 14 (App Router, `[locale]` route segment) |
+| Framework | Next.js 16 (App Router, `[locale]` route segment) |
 | Styling | Tailwind CSS — slate/indigo palette |
 | Auth + DB | Supabase (PostgreSQL, RLS, Realtime) |
 | AI | Claude API via `@anthropic-ai/sdk` |
