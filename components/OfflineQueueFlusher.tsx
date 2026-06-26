@@ -19,7 +19,7 @@ type Toast =
   | { kind: 'failed'; count: number }
 
 export default function OfflineQueueFlusher() {
-  const t = useTranslations('components.offlineQueue')
+  const t = useTranslations('pages.components.offlineQueue')
   const [pending, setPending] = useState(0)
   const [toast, setToast] = useState<Toast | null>(null)
 

@@ -27,10 +27,17 @@ export async function DELETE(_req: Request, props: Ctx) {
   }
 
   const supabase = createServerClient() as unknown as SupabaseClient<Database>
-  const { error } = await supabase.from('class_goals').delete().eq('id', id)
+  const { error, count } = await supabase
+    .from('class_goals')
+    .delete({ count: 'exact' })
+    .eq('id', id)
   if (error) {
     console.error('[api/class-goals DELETE]', error)
     return NextResponse.json({ error: '목표 삭제 실패' }, { status: 500 })
+  }
+  // RLS(owns_class) 로 차단됐거나 존재하지 않으면 0건 — 항상 success 로 가리지 않는다.
+  if (!count) {
+    return NextResponse.json({ error: '목표를 찾을 수 없습니다' }, { status: 404 })
   }
   return NextResponse.json({ success: true })
 }

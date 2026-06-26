@@ -5,6 +5,7 @@ import {
   listAssignedReviews,
   listClassPeerReviews,
   listReceivedReviews,
+  PeerReviewAccessError,
   updateReview,
 } from '@/lib/peer-review'
 
@@ -36,7 +37,7 @@ export async function GET(req: Request) {
       if (!classId || !UUID_RE.test(classId)) {
         return NextResponse.json({ error: 'class_id 가 필요합니다' }, { status: 400 })
       }
-      const data = await listClassPeerReviews(classId)
+      const data = await listClassPeerReviews(classId, auth.userId)
       return NextResponse.json({ data })
     }
 
@@ -46,6 +47,8 @@ export async function GET(req: Request) {
     ])
     return NextResponse.json({ assigned, received })
   } catch (err) {
+    if (err instanceof PeerReviewAccessError)
+      return NextResponse.json({ error: err.message }, { status: err.status })
     console.error('[api/peer-review GET]', err)
     const msg = err instanceof Error ? err.message : '조회 실패'
     return NextResponse.json({ error: msg }, { status: 500 })

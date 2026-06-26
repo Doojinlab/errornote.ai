@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { timingSafeEqual } from 'crypto'
 import { requireAuth, AuthError } from '@/lib/auth'
 import { createServerClient, createAdminClient } from '@/lib/supabase'
 import { renderCardnewsEmail, sendEmail, EmailError } from '@/lib/email'
@@ -52,6 +53,14 @@ function toRecord(row: TargetRow): CardnewsRecord {
   }
 }
 
+/** 상수시간 문자열 비교 — 길이가 다르면 안전하게 false. */
+function safeEqual(a: string, b: string): boolean {
+  const ab = Buffer.from(a)
+  const bb = Buffer.from(b)
+  if (ab.length !== bb.length) return false
+  return timingSafeEqual(ab, bb)
+}
+
 function appUrl(weekStart: string): string {
   const base = process.env.NEXT_PUBLIC_APP_URL ?? 'https://errornote.ai'
   return `${base.replace(/\/$/, '')}/cardnews/${encodeURIComponent(weekStart)}`
@@ -66,7 +75,7 @@ function appUrl(weekStart: string): string {
 export async function POST(req: Request): Promise<Response> {
   const cronSecret = process.env.CRON_SECRET
   const headerSecret = req.headers.get('x-cron-secret')
-  const isCron = Boolean(cronSecret && headerSecret && cronSecret === headerSecret)
+  const isCron = Boolean(cronSecret && headerSecret && safeEqual(headerSecret, cronSecret))
 
   const body = (await req.json().catch(() => ({}))) as SendRequestBody
   const channels: Channel[] = Array.isArray(body.channels) && body.channels.length > 0

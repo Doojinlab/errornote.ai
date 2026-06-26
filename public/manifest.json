@@ -2,7 +2,7 @@
   "name": "errornote — AI 중국어 오류 교정",
   "short_name": "errornote",
   "description": "학습자의 중국어 작문을 AI가 분석해 오류 카드 형태로 피드백을 제공하는 PWA.",
-  "start_url": "/",
+  "start_url": "/ko",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
