@@ -9,8 +9,9 @@
 //  5. 클래스 단위 professor_reports 도 함께 갱신 (lib/professor-reports 재사용)
 //  6. JSON 통계 응답
 //
-// 한 클래스에서 학생이 많아도 직렬 처리한다. Claude 호출은 학생당 1회로 제한.
-// 무거운 케이스에 대비해 timeout 60초 설정 권장 (vercel.json 의 maxDuration).
+// 한 클래스의 학생은 제한된 동시성(WEEKLY_REPORT_CONCURRENCY, 기본 5)으로 병렬 처리한다.
+// Claude 호출은 학생당 1회(Haiku)로 제한. 직렬이면 80명 규모에서 maxDuration(300s)에
+// 근접하므로 워커 풀로 벽시계를 줄인다(vercel.json 의 maxDuration 참고).
 
 import { NextResponse } from 'next/server'
 import { timingSafeEqual } from 'crypto'
@@ -20,7 +21,8 @@ import {
   aggregateStudentsForWeek,
   generateStudentSuggestions,
   previousWeekStart,
-  upsertStudentWeeklyReport
+  upsertStudentWeeklyReport,
+  type StudentAggregate
 } from '@/lib/weekly-reports'
 import {
   createInAppNotification,
@@ -169,6 +171,119 @@ interface Counters {
   kakao_failed: number
 }
 
+// 학생당 Claude(Haiku) 호출은 독립적이므로 제한된 동시성으로 처리한다.
+// 직렬(80명×~1.5s)이면 maxDuration(300s)에 근접하므로 워커 풀로 벽시계를 줄인다.
+// 동시성은 Claude rate limit 을 고려해 보수적으로 잡고, env 로 조정 가능.
+const DEFAULT_STUDENT_CONCURRENCY = 5
+
+function studentConcurrency(): number {
+  const raw = Number(process.env.WEEKLY_REPORT_CONCURRENCY)
+  if (Number.isInteger(raw) && raw >= 1 && raw <= 20) return raw
+  return DEFAULT_STUDENT_CONCURRENCY
+}
+
+/** 고정 크기 워커 풀 — 동시에 최대 `limit` 개만 실행. 단일 스레드라 idx 증가는 안전. */
+async function runWithConcurrency<T>(
+  items: T[],
+  limit: number,
+  worker: (item: T) => Promise<void>
+): Promise<void> {
+  let idx = 0
+  const size = Math.min(Math.max(1, limit), items.length)
+  const runners = Array.from({ length: size }, async () => {
+    while (idx < items.length) {
+      const item = items[idx++]
+      await worker(item)
+    }
+  })
+  await Promise.all(runners)
+}
+
+/** 학생 1명 처리 — 제안 생성·저장·알림. 에러는 격리해 errors 에 누적(throw 안 함). */
+async function processStudent(
+  admin: Admin,
+  cls: ClassRow,
+  weekStart: string,
+  skipNotify: boolean,
+  agg: StudentAggregate,
+  studentNames: Map<string, string>,
+  errors: CronWeeklyReportResponse['errors'],
+  counters: Counters
+): Promise<void> {
+  try {
+    const studentName = studentNames.get(agg.student_id) ?? '학생'
+    const suggestions = await generateStudentSuggestions({
+      studentName,
+      className: cls.name,
+      weekStart,
+      metrics: agg.metrics
+    })
+    await upsertStudentWeeklyReport(admin, {
+      studentId: agg.student_id,
+      classId: cls.id,
+      weekStart,
+      metrics: agg.metrics,
+      suggestions
+    })
+    counters.students_processed += 1
+
+    if (!skipNotify) {
+      // 인앱 알림 — 무벌점 톤(활동 없으면 복귀 환영).
+      try {
+        const copy = buildWeeklyReportNotificationCopy({
+          totalSessions: agg.metrics.total_sessions,
+          headline: suggestions.headline
+        })
+        await createInAppNotification(admin, {
+          userId: agg.student_id,
+          type: 'weekly_report',
+          title: copy.title,
+          body: copy.body,
+          linkUrl: `/weekly-suggestions/${weekStart}/${cls.id}`,
+          payload: { class_id: cls.id, week_start: weekStart }
+        })
+        counters.in_app += 1
+      } catch (notifErr) {
+        errors.push({
+          scope: `notify_inapp:${agg.student_id}`,
+          message: notifErr instanceof Error ? notifErr.message : String(notifErr)
+        })
+      }
+
+      // 카카오 (옵션 — 연동 안되어 있으면 silent skip)
+      try {
+        const result = await notifyWeeklyReportKakao(
+          admin,
+          agg.student_id,
+          buildWeeklyReportTemplate({
+            studentName,
+            headline: suggestions.headline
+          })
+        )
+        if (result.sent) counters.kakao += 1
+        else if (result.error && !result.error.includes('카카오 연동 안됨')) {
+          counters.kakao_failed += 1
+          errors.push({
+            scope: `notify_kakao:${agg.student_id}`,
+            message: result.error
+          })
+        }
+      } catch (kErr) {
+        counters.kakao_failed += 1
+        errors.push({
+          scope: `notify_kakao:${agg.student_id}`,
+          message: kErr instanceof Error ? kErr.message : String(kErr)
+        })
+      }
+    }
+  } catch (err) {
+    errors.push({
+      scope: `student:${agg.student_id}`,
+      message: err instanceof Error ? err.message : String(err)
+    })
+  }
+}
+
 async function processClass(
   admin: Admin,
   cls: ClassRow,
@@ -196,80 +311,10 @@ async function processClass(
   // 한 번에 학생별 집계.
   const aggregates = await aggregateStudentsForWeek(admin, cls.id, targetIds, weekStart)
 
-  for (const agg of aggregates) {
-    try {
-      const studentName = studentNames.get(agg.student_id) ?? '학생'
-      const suggestions = await generateStudentSuggestions({
-        studentName,
-        className: cls.name,
-        weekStart,
-        metrics: agg.metrics
-      })
-      await upsertStudentWeeklyReport(admin, {
-        studentId: agg.student_id,
-        classId: cls.id,
-        weekStart,
-        metrics: agg.metrics,
-        suggestions
-      })
-      counters.students_processed += 1
-
-      if (!skipNotify) {
-        // 인앱 알림 — 무벌점 톤(활동 없으면 복귀 환영).
-        try {
-          const copy = buildWeeklyReportNotificationCopy({
-            totalSessions: agg.metrics.total_sessions,
-            headline: suggestions.headline
-          })
-          await createInAppNotification(admin, {
-            userId: agg.student_id,
-            type: 'weekly_report',
-            title: copy.title,
-            body: copy.body,
-            linkUrl: `/weekly-suggestions/${weekStart}/${cls.id}`,
-            payload: { class_id: cls.id, week_start: weekStart }
-          })
-          counters.in_app += 1
-        } catch (notifErr) {
-          errors.push({
-            scope: `notify_inapp:${agg.student_id}`,
-            message: notifErr instanceof Error ? notifErr.message : String(notifErr)
-          })
-        }
-
-        // 카카오 (옵션 — 연동 안되어 있으면 silent skip)
-        try {
-          const result = await notifyWeeklyReportKakao(
-            admin,
-            agg.student_id,
-            buildWeeklyReportTemplate({
-              studentName,
-              headline: suggestions.headline
-            })
-          )
-          if (result.sent) counters.kakao += 1
-          else if (result.error && !result.error.includes('카카오 연동 안됨')) {
-            counters.kakao_failed += 1
-            errors.push({
-              scope: `notify_kakao:${agg.student_id}`,
-              message: result.error
-            })
-          }
-        } catch (kErr) {
-          counters.kakao_failed += 1
-          errors.push({
-            scope: `notify_kakao:${agg.student_id}`,
-            message: kErr instanceof Error ? kErr.message : String(kErr)
-          })
-        }
-      }
-    } catch (err) {
-      errors.push({
-        scope: `student:${agg.student_id}`,
-        message: err instanceof Error ? err.message : String(err)
-      })
-    }
-  }
+  // 학생 처리 — 제한된 동시성(기본 5). 직렬 대비 벽시계 대폭 단축.
+  await runWithConcurrency(aggregates, studentConcurrency(), (agg) =>
+    processStudent(admin, cls, weekStart, skipNotify, agg, studentNames, errors, counters)
+  )
 
   // 교수자 클래스 단위 리포트 — service-role 인지 변형(generateWeeklyReportAdmin) 사용.
   try {
