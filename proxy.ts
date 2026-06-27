@@ -54,8 +54,11 @@ function localize(locale: string, path: string): string {
   return `/${locale}${path === '/' ? '' : path}`
 }
 
-export async function middleware(request: NextRequest) {
-  // LMS API — API key 인증 전용. 세션/로케일 미들웨어 모두 건너뜀.
+// Next.js 16: `middleware.ts`/`middleware` 는 deprecated → `proxy.ts`/`proxy` 로 이전.
+// 동작은 동일(요청마다 실행되는 엣지 함수). config.matcher 도 그대로 적용된다.
+// https://nextjs.org/docs/messages/middleware-to-proxy
+export async function proxy(request: NextRequest) {
+  // LMS API — API key 인증 전용. 세션/로케일 proxy 모두 건너뜀.
   if (request.nextUrl.pathname.startsWith('/api/lms/')) {
     return NextResponse.next()
   }

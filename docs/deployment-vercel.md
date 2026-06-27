@@ -80,7 +80,7 @@ Vercel **Settings → Environment Variables** 에 입력한다. 권위 있는 �
 
 - [ ] 운영 도메인 루트 접속 → 로케일 리다이렉트(`/ko`) 정상
 - [ ] `/ko/login` 매직링크 발송 → 콜백(`/api/auth/callback`) 로그인 성공
-- [ ] 로그인 후 역할 가드 동작(학생→`/learn`, 교수→`/dashboard`) — `middleware.ts`
+- [ ] 로그인 후 역할 가드 동작(학생→`/learn`, 교수→`/dashboard`) — `proxy.ts`
 - [ ] 학생 글 제출 → `/api/analyze` 에서 Claude 오답 카드 반환
 - [ ] PWA: HTTPS 에서 설치 프롬프트 노출([pwa-ios-validation.md](pwa-ios-validation.md))
 
@@ -110,7 +110,7 @@ Vercel **Settings → Environment Variables** 에 입력한다. 권위 있는 �
 `next build` 시 다음 경고가 나오지만 빌드는 성공하며 동작에 영향 없다:
 
 - **Sentry 동적 import 2건** (`app/global-error.tsx`, `instrumentation-client.ts`) — `@sentry/nextjs` 미설치 시의 의도된 회피 코드. Sentry 를 쓰려면 패키지를 설치한다.
-- **`middleware` → `proxy` deprecation** — Next.js 16 에서 `middleware.ts` 가 deprecated 되고 `proxy.ts` 권장. 현재는 정상 동작하며, 후속 과제로 이전한다.
+> `middleware` → `proxy` 이전은 완료됨(`proxy.ts`). Next.js 16 deprecation 경고 해소.
 
 ---
 
