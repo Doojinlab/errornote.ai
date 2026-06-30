@@ -1,132 +1,59 @@
 /**
- * auth.spec.ts — Login / signup form tests and unauthenticated redirect.
+ * auth.spec.ts — Google-only auth flow and unauthenticated redirect guards.
+ *
+ * 로그인/회원가입은 Google OAuth 전용이다. 이메일/비밀번호 경로는 제거되었고,
+ * /signup 은 /login 으로 통합(리다이렉트)된다.
  *
  * These tests run without a pre-existing session (no storageState).
- * Supabase auth endpoints are mocked at the browser level via page.route().
  * Server-side middleware redirect tests rely on no valid session cookie being
  * present, which is guaranteed because no storageState is set for this project.
  */
 import { test, expect } from '@playwright/test'
-import {
-  mockSupabaseSignIn,
-  mockSupabaseSignInFail,
-  MOCK_STUDENT,
-  MOCK_PROFESSOR,
-} from './helpers/mocks'
 
 // ---------------------------------------------------------------------------
-// Login
+// Login (Google only)
 // ---------------------------------------------------------------------------
 
 test.describe('Login page', () => {
-  test('renders email, password fields and submit button', async ({ page }) => {
+  test('renders the Google sign-in button', async ({ page }) => {
     await page.goto('/login')
 
-    await expect(page.locator('#email')).toBeVisible()
-    await expect(page.locator('#password')).toBeVisible()
-    await expect(page.locator('button[type="submit"]')).toContainText('로그인')
+    await expect(page.getByRole('button', { name: /Google/ })).toBeVisible()
   })
 
-  test('shows error when form is submitted empty', async ({ page }) => {
+  test('no longer renders email / password fields', async ({ page }) => {
     await page.goto('/login')
-    await page.click('button[type="submit"]')
 
-    await expect(page.locator('[role="alert"]')).toContainText(
-      '이메일과 비밀번호를 입력하세요'
-    )
+    await expect(page.locator('#email')).toHaveCount(0)
+    await expect(page.locator('#password')).toHaveCount(0)
   })
 
-  test('shows error for wrong credentials', async ({ page }) => {
-    await mockSupabaseSignInFail(page)
-
-    await page.goto('/login')
-    await page.fill('#email', 'nobody@example.com')
-    await page.fill('#password', 'wrongpassword')
-    await page.click('button[type="submit"]')
-
-    await expect(page.locator('[role="alert"]')).toContainText(
-      '이메일 또는 비밀번호가 올바르지 않습니다'
-    )
-  })
-
-  test('submit button shows loading text while submitting', async ({ page }) => {
-    // Delay the Supabase response so we can catch the in-flight state
-    await page.route('**/auth/v1/token*', async (route) => {
-      await new Promise((r) => setTimeout(r, 600))
-      await route.fulfill({
-        status: 400,
-        contentType: 'application/json',
-        body: JSON.stringify({ error: 'invalid_grant', error_description: 'Invalid' }),
-      })
+  test('Google button starts the OAuth flow with the callback redirect', async ({ page }) => {
+    // signInWithOAuth navigates to Supabase's authorize endpoint. Intercept it so
+    // the browser doesn't leave for Google, and assert the OAuth params.
+    let authorizeUrl: string | null = null
+    await page.route('**/auth/v1/authorize*', async (route) => {
+      authorizeUrl = route.request().url()
+      await route.fulfill({ status: 200, contentType: 'text/html', body: 'ok' })
     })
 
     await page.goto('/login')
-    await page.fill('#email', 'test@example.com')
-    await page.fill('#password', 'password123')
-    await page.click('button[type="submit"]')
+    await page.getByRole('button', { name: /Google/ }).click()
 
-    // The button text changes to "로그인 중…" while the Server Action runs
-    await expect(page.locator('button[type="submit"]')).toContainText('로그인 중')
+    await expect.poll(() => authorizeUrl).toContain('provider=google')
+    expect(decodeURIComponent(authorizeUrl!)).toContain('/api/auth/callback')
   })
 })
 
 // ---------------------------------------------------------------------------
-// Signup
+// Signup is consolidated into login
 // ---------------------------------------------------------------------------
 
 test.describe('Signup page', () => {
-  test('renders name, email, password fields', async ({ page }) => {
+  test('/signup redirects to /login', async ({ page }) => {
     await page.goto('/signup')
-
-    await expect(page.locator('#name')).toBeVisible()
-    await expect(page.locator('#email')).toBeVisible()
-    await expect(page.locator('#password')).toBeVisible()
-    await expect(page.locator('button[type="submit"]')).toContainText('가입하기')
-  })
-
-  test('shows error when required fields are missing', async ({ page }) => {
-    await page.goto('/signup')
-    await page.click('button[type="submit"]')
-
-    await expect(page.locator('[role="alert"]')).toContainText(
-      '이름, 이메일, 비밀번호를 모두 입력하세요'
-    )
-  })
-
-  test('shows error for password shorter than 8 characters', async ({ page }) => {
-    await page.goto('/signup')
-    await page.fill('#name', '테스트 사용자')
-    await page.fill('#email', 'test@example.com')
-    await page.fill('#password', 'short')
-    await page.click('button[type="submit"]')
-
-    await expect(page.locator('[role="alert"]')).toContainText('비밀번호는 8자 이상')
-  })
-
-  test('student role radio is selected by default', async ({ page }) => {
-    await page.goto('/signup')
-
-    // The role radio buttons are visually styled; we check the hidden input value
-    const studentRadio = page.locator('input[name="role"][value="student"]')
-    await expect(studentRadio).toBeChecked()
-  })
-
-  test('selecting professor role hides student ID field', async ({ page }) => {
-    await page.goto('/signup')
-
-    // Student ID field visible by default (student role)
-    await expect(page.locator('#student_id')).toBeVisible()
-
-    // Switch to professor
-    await page.locator('input[name="role"][value="professor"]').click({ force: true })
-
-    await expect(page.locator('#student_id')).not.toBeVisible()
-  })
-
-  test('has link to login page', async ({ page }) => {
-    await page.goto('/signup')
-    await page.click('a:has-text("로그인")')
-    await expect(page).toHaveURL(/\/login/)
+    await page.waitForURL(/\/login/, { timeout: 10_000 })
+    await expect(page.getByRole('button', { name: /Google/ })).toBeVisible()
   })
 })
 
