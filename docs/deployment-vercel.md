@@ -23,8 +23,47 @@ Vercel 배포는 동작하는 Supabase 운영 프로젝트를 전제로 한다.
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon` public key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `service_role` key → `SUPABASE_SERVICE_ROLE_KEY` (서버 전용, 절대 노출 금지)
-4. **Authentication → URL Configuration** 에서 운영 도메인을 Site URL / Redirect URLs 에 추가
-   (매직링크·OAuth 콜백 `/api/auth/callback` 이 동작하려면 필요).
+4. **Authentication → URL Configuration**
+   - **Site URL**: 운영 도메인 (예: `https://errornote.ai`)
+   - **Redirect URLs**(allowlist)에 앱 콜백을 추가한다. 미등록 시 로그인 후 리다이렉트가 거부된다:
+     - `https://errornote.ai/api/auth/callback`
+     - 로컬 개발용 `http://localhost:3000/api/auth/callback` (선택)
+   - 와일드카드가 필요하면 `https://errornote.ai/**` 형태로 등록한다.
+
+---
+
+## 1-A. Google OAuth 프로바이더 설정 (로그인 필수)
+
+로그인/회원가입은 **Google OAuth 전용**이다(`app/[locale]/(auth)/login/LoginForm.tsx` 의 `signInWithOAuth({ provider: 'google' })`).
+아래 설정이 누락되면 운영에서 **로그인 자체가 동작하지 않는다(배포 블로커)**. Google Client ID/Secret 은 앱 env 가 아니라 **Supabase 대시보드**에 입력한다.
+
+로그인 흐름(2단 리다이렉트):
+`앱 → Supabase authorize → Google 동의 → Supabase /auth/v1/callback → 앱 /api/auth/callback(코드 교환)`
+
+### (1) Google Cloud Console — OAuth 클라이언트 생성
+
+1. [console.cloud.google.com](https://console.cloud.google.com) → 프로젝트 선택/생성
+2. **APIs & Services → OAuth consent screen** 구성(External, 앱 이름·지원 이메일·도메인). 운영 전 게시(Publish) 권장 — Testing 상태면 등록한 테스트 사용자만 로그인 가능.
+3. **APIs & Services → Credentials → Create Credentials → OAuth client ID**
+   - Application type: **Web application**
+   - **Authorized JavaScript origins**: `https://errornote.ai`
+   - **Authorized redirect URIs**: **Supabase 콜백** 을 등록한다(앱 콜백이 아님):
+     - `https://<PROJECT_REF>.supabase.co/auth/v1/callback`
+     - 정확한 값은 아래 (2) Supabase Google 프로바이더 화면에 그대로 표시된다 — 복사해 붙여넣는다.
+4. 생성된 **Client ID** 와 **Client Secret** 을 확보한다.
+
+### (2) Supabase — Google 프로바이더 활성화
+
+1. **Authentication → Providers → Google** → **Enable** 토글 ON
+2. (1)에서 얻은 **Client ID** / **Client Secret** 입력 후 저장
+3. 화면에 표시된 **Callback URL (for OAuth)** = `https://<PROJECT_REF>.supabase.co/auth/v1/callback` 이 (1)-3 의 Authorized redirect URIs 와 **정확히 일치**하는지 확인
+
+### (3) 동작 확인
+
+- 운영 도메인 `/login` → "Google 계정으로 계속하기" 클릭 → Google 동의 → `/learn`(학생) 또는 `/dashboard`(교수)로 진입하면 성공.
+- 신규 Google 사용자는 DB 트리거 `handle_new_user()` 가 `profiles` 행을 생성하며 **기본 역할은 `student`**, 이름은 Google 프로필에서 채워진다. 교수 계정은 가입 후 DB 에서 `profiles.role` 을 `professor` 로 수동 승격한다.
+
+> 흔한 실패: (a) Redirect URI 불일치(`redirect_uri_mismatch`) → (1)-3 ↔ (2)-3 값 대조, (b) 앱 콜백 미등록 → §1-4 Redirect URLs 에 `/api/auth/callback` 추가, (c) consent screen Testing 상태 → 게시 또는 테스트 사용자 등록.
 
 ---
 
@@ -79,7 +118,7 @@ Vercel **Settings → Environment Variables** 에 입력한다. 권위 있는 �
 ## 4. 배포 후 스모크 체크
 
 - [ ] 운영 도메인 루트 접속 → 로케일 리다이렉트(`/ko`) 정상
-- [ ] `/ko/login` 매직링크 발송 → 콜백(`/api/auth/callback`) 로그인 성공
+- [ ] `/ko/login` "Google 계정으로 계속하기" → Google 동의 → 콜백(`/api/auth/callback`) 로그인 성공 (§1-A)
 - [ ] 로그인 후 역할 가드 동작(학생→`/learn`, 교수→`/dashboard`) — `proxy.ts`
 - [ ] 학생 글 제출 → `/api/analyze` 에서 Claude 오답 카드 반환
 - [ ] PWA: HTTPS 에서 설치 프롬프트 노출([pwa-ios-validation.md](pwa-ios-validation.md))
@@ -116,6 +155,7 @@ Vercel **Settings → Environment Variables** 에 입력한다. 권위 있는 �
 
 ## 7. 참고
 
+- **사전배포 체크리스트(1장 요약)**: [pre-deploy-checklist.md](pre-deploy-checklist.md)
 - 로컬 개발 셋업·명령어: [../CLAUDE.md](../CLAUDE.md)
 - 환경변수 원본: [../.env.example](../.env.example)
 - 런타임 검증 런북: [verification-runbook.md](verification-runbook.md)
