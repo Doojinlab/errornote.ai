@@ -1,9 +1,8 @@
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/routing";
 import LoginForm from "./LoginForm";
 
 interface Props {
-  searchParams: Promise<{ redirect?: string; verify?: string }>;
+  searchParams: Promise<{ redirect?: string }>;
 }
 
 export default async function LoginPage(props: Props) {
@@ -21,16 +20,7 @@ export default async function LoginPage(props: Props) {
           </h1>
           <p className="mt-1 text-xs text-slate-500">{tMeta("tagline")}</p>
         </div>
-        <LoginForm
-          redirectTo={searchParams.redirect}
-          verified={searchParams.verify === "1"}
-        />
-        <p className="text-center text-xs text-slate-500">
-          {t("noAccount")}{" "}
-          <Link href="/signup" className="font-medium text-indigo-600 hover:underline">
-            {t("goSignup")}
-          </Link>
-        </p>
+        <LoginForm redirectTo={searchParams.redirect} />
       </div>
     </main>
   );

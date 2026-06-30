@@ -56,29 +56,7 @@
   "auth": {
     "login": {
       "title": "ログイン",
-      "email": "メールアドレス",
-      "password": "パスワード",
-      "submit": "ログイン",
-      "loading": "ログイン中…",
-      "noAccount": "アカウントをお持ちでないですか？",
-      "goSignup": "新規登録",
-      "errorInvalid": "メールアドレスまたはパスワードが正しくありません"
-    },
-    "signup": {
-      "title": "新規登録",
-      "name": "名前",
-      "email": "メールアドレス",
-      "password": "パスワード",
-      "role": "役割",
-      "roleStudent": "学生",
-      "roleProfessor": "教員",
-      "submit": "登録する",
-      "loading": "登録中…",
-      "hasAccount": "すでにアカウントをお持ちですか？",
-      "goLogin": "ログイン",
-      "errorGeneric": "登録に失敗しました",
-      "agree": "<terms>利用規約</terms>および<privacy>プライバシーポリシー</privacy>に同意します",
-      "agreeRequired": "利用規約とプライバシーポリシーに同意する必要があります"
+      "google": "Googleで続行"
     }
   },
   "landing": {
