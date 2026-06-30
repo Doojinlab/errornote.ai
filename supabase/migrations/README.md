@@ -33,6 +33,16 @@
 
 ---
 
+### ⚠️ 알려진 타임스탬프 충돌 — `20260619000001` (×2)
+
+`20260619000001_gamification_g3_streak_economy.sql` 와 `20260619000001_lti_platforms.sql` 두 파일이 **동일한 버전 타임스탬프**를 가진다. 둘 다 이미 `main`에 머지·배포되어 있으므로 **append-only 원칙상 리네임하지 않는다** (리네임 시 적용 이력이 깨지고 원격 `schema_migrations`와 어긋난다).
+
+- **실제 영향 없음**: 두 파일은 서로 독립적이다. `_gamification_g3_streak_economy`는 `gamification_stats`/`error_species`(06/18)·`enrollments`/`classes`(04/21)에만, `_lti_platforms`는 `profiles`/`classes`(04/21)에만 의존한다. 적용 순서와 무관하게 둘 다 성공한다. 후속 LTI 마이그(`...000002_lti_identities`, `...000003_lti_context_links`)도 모두 더 이른 시점 객체에만 의존하므로 체인이 안전하다.
+- **CLI 정렬**: Supabase CLI는 전체 파일명으로 사전식 정렬하므로 `g`(gamification) < `l`(lti)로 결정적이다.
+- **재발 방지**: 앞으로 같은 날 여러 마이그를 추가할 때는 시·분·초까지 구분하거나 도메인 접미사로 버전 충돌을 피한다(아래 "추가 규칙" 2번).
+
+---
+
 ### 새 마이그레이션 추가 규칙
 
 1. **파일명**: `YYYYMMDDHHMMSS_<도메인>.sql` 형식. 도메인은 단일 기능 단위로 좁게.

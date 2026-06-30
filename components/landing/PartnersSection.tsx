@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { Section } from './primitives'
 import { MultiLine } from './CoreValues'
+import { assetUrl } from '@/lib/asset-url'
 
 interface Univ {
   ko: string
@@ -10,7 +11,7 @@ interface Univ {
   dept: string
 }
 
-export default function PartnersSection({ video = '/video/feature.mp4' }: { video?: string }) {
+export default function PartnersSection({ video = assetUrl('/video/feature.mp4') }: { video?: string }) {
   const t = useTranslations('landing.partners')
   const universities = t.raw('universities') as Univ[]
 
