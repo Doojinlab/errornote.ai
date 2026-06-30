@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest'
 import {
   BADGE_CATALOG,
   buildBadgeGrid,
@@ -8,6 +8,9 @@ import {
   chapterTeaser,
   pickFocusChapter,
   mapCardnewsTeasers,
+  loadGrowthData,
+  loadErrorsData,
+  loadLearnData,
   type ErrorCardRow,
 } from './student-dashboard'
 import type {
@@ -16,6 +19,95 @@ import type {
   Card3TodoNowData,
   Card4NextWeekData,
 } from '@/types/cardnews'
+import { getAuthContext } from './auth'
+import { listAssignmentsForStudent } from './assignments'
+import { listAssignedReviews } from './peer-review'
+import { getLeagueStandings } from './league'
+
+// ── 로더 테스트용 Supabase 모의 ──────────────────────────────────────────────
+// 로더는 테이블 여러 개를 count/maybeSingle/list 로 섞어 호출하므로, 쿼리 형태
+// (table·isCount·single·filters)를 받아 응답을 돌려주는 handler 기반 빌더를 쓴다.
+interface QueryShape {
+  table: string
+  isCount: boolean
+  single: boolean
+  filters: Array<[string, string, unknown]>
+}
+type QueryResult = { data?: unknown; error: unknown; count?: number }
+
+let handleQuery: (q: QueryShape) => QueryResult = () => ({ data: null, error: null })
+
+function makeBuilder(table: string) {
+  const q: QueryShape = { table, isCount: false, single: false, filters: [] }
+  const b: Record<string, unknown> = {
+    select: (_cols: string, opts?: { head?: boolean; count?: string }) => {
+      if (opts && (opts.head || opts.count)) q.isCount = true
+      return b
+    },
+    eq: (c: string, v: unknown) => {
+      q.filters.push(['eq', c, v])
+      return b
+    },
+    gte: (c: string, v: unknown) => {
+      q.filters.push(['gte', c, v])
+      return b
+    },
+    lt: (c: string, v: unknown) => {
+      q.filters.push(['lt', c, v])
+      return b
+    },
+    order: () => b,
+    limit: () => b,
+    maybeSingle: () => {
+      q.single = true
+      return Promise.resolve(handleQuery(q))
+    },
+    then: (resolve: (v: unknown) => unknown, reject: (e: unknown) => unknown) =>
+      Promise.resolve(handleQuery(q)).then(resolve, reject),
+  }
+  return b
+}
+
+const mockSupabase = { from: (table: string) => makeBuilder(table) }
+
+vi.mock('./supabase', () => ({
+  createServerClient: () => mockSupabase,
+  createAdminClient: () => mockSupabase,
+}))
+vi.mock('./auth', () => ({ getAuthContext: vi.fn() }))
+vi.mock('./assignments', () => ({ listAssignmentsForStudent: vi.fn() }))
+vi.mock('./peer-review', () => ({ listAssignedReviews: vi.fn() }))
+vi.mock('./league', () => ({ getLeagueStandings: vi.fn() }))
+
+const STUDENT = { userId: 'u1', role: 'student', email: null }
+const futureIso = (days: number) => new Date(Date.now() + days * 86_400_000).toISOString()
+
+function errorRow(over: Partial<ErrorCardRow> = {}): ErrorCardRow {
+  return {
+    id: 'e1',
+    error_span: '看书在图书馆',
+    error_type: 'grammar',
+    error_subtype: '어순',
+    correction: '在图书馆看书',
+    explanation: '장소는 동사 앞에.',
+    chapter_number: 3,
+    created_at: '2026-06-21T09:00:00.000Z',
+    ...over,
+  }
+}
+
+const sampleCard1: Card1ErrorsData = {
+  total_errors: 12,
+  grammar_count: 7,
+  vocab_count: 5,
+  by_subtype: [{ name: '어순', value: 4 }],
+  week_summary: '어순 오류가 줄었어요',
+}
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  handleQuery = () => ({ data: null, error: null })
+})
 
 describe('buildBadgeGrid', () => {
   it('marks earned badges and leaves the rest locked', () => {
@@ -208,5 +300,153 @@ describe('mapCardnewsTeasers', () => {
     expect(items[1].summary).toBeUndefined()
     expect(items[3].title).toBe('다음 주 학습')
     expect(items[3].summary).toBe('대체 문법')
+  })
+})
+
+describe('loadGrowthData', () => {
+  beforeEach(() => {
+    ;(getAuthContext as Mock).mockResolvedValue(STUDENT)
+    ;(getLeagueStandings as Mock).mockResolvedValue([
+      { rank: 1, nickname: '익명1', points: 100, isMe: false },
+      { rank: 2, nickname: '나', points: 80, isMe: true },
+    ])
+  })
+
+  it('returns null when unauthenticated', async () => {
+    ;(getAuthContext as Mock).mockResolvedValue(null)
+    expect(await loadGrowthData()).toBeNull()
+  })
+
+  it('maps stats, gems(=activity_coins), anonymous league and earned badges', async () => {
+    handleQuery = (q) => {
+      if (q.table === 'gamification_stats')
+        return { data: { level: 3, xp: 120, activity_coins: 45 }, error: null }
+      if (q.table === 'badges') return { data: [{ badge_type: 'streak_7' }], error: null }
+      if (q.table === 'enrollments') return { data: { class_id: 'c1' }, error: null }
+      return { data: null, error: null }
+    }
+    const g = await loadGrowthData()
+    expect(g).not.toBeNull()
+    expect(g!.level).toBe(3)
+    expect(g!.gemBalance).toBe(45)
+    expect(g!.leagueRows).toHaveLength(2)
+    expect(g!.leagueRows[1]).toMatchObject({ name: '나', xp: 80, me: true })
+    expect(g!.badges.find((b) => b.id === 'streak_7')?.earned).toBe(true)
+    expect(g!.badges.find((b) => b.id === 'zero_error')?.earned).toBe(false)
+  })
+
+  it('falls back to defaults when stats missing and no class', async () => {
+    handleQuery = () => ({ data: null, error: null })
+    const g = await loadGrowthData()
+    expect(g!.level).toBe(1)
+    expect(g!.gemBalance).toBe(0)
+    expect(g!.leagueRows).toEqual([])
+    expect(getLeagueStandings).not.toHaveBeenCalled()
+  })
+})
+
+describe('loadErrorsData', () => {
+  beforeEach(() => {
+    ;(getAuthContext as Mock).mockResolvedValue(STUDENT)
+  })
+
+  it('returns null when unauthenticated', async () => {
+    ;(getAuthContext as Mock).mockResolvedValue(null)
+    expect(await loadErrorsData()).toBeNull()
+  })
+
+  it('maps items and computes fixed(=주간 해결)/accuracy(=해결/전체) from counts', async () => {
+    handleQuery = (q) => {
+      if (q.table !== 'error_cards') return { data: null, error: null }
+      if (!q.isCount) return { data: [errorRow(), errorRow({ id: 'e2' })], error: null }
+      const hasGte = q.filters.some((f) => f[0] === 'gte')
+      const hasResolved = q.filters.some((f) => f[0] === 'eq' && f[1] === 'is_resolved')
+      if (hasGte) return { count: 2, error: null }
+      if (hasResolved) return { count: 7, error: null }
+      return { count: 10, error: null }
+    }
+    const e = await loadErrorsData()
+    expect(e).not.toBeNull()
+    expect(e!.items).toHaveLength(2)
+    expect(e!.fixed).toBe(2)
+    expect(e!.accuracy).toBe(70)
+  })
+})
+
+describe('loadLearnData', () => {
+  beforeEach(() => {
+    ;(getAuthContext as Mock).mockResolvedValue(STUDENT)
+    ;(listAssignmentsForStudent as Mock).mockResolvedValue([])
+    ;(listAssignedReviews as Mock).mockResolvedValue([])
+  })
+
+  it('returns null when unauthenticated', async () => {
+    ;(getAuthContext as Mock).mockResolvedValue(null)
+    expect(await loadLearnData()).toBeNull()
+  })
+
+  it('returns empty-state shape (no extra queries) when there is no active class', async () => {
+    handleQuery = (q) => {
+      if (q.table === 'profiles') return { data: { name: '두진' }, error: null }
+      if (q.table === 'enrollments') return { data: null, error: null }
+      return { data: null, error: null }
+    }
+    const d = await loadLearnData()
+    expect(d).not.toBeNull()
+    expect(d!.hasActiveClass).toBe(false)
+    expect(d!.studentName).toBe('두진')
+    expect(d!.cardNews).toEqual([])
+    expect(listAssignmentsForStudent).not.toHaveBeenCalled()
+  })
+
+  it('assembles goal/streak/gems/tasks/today/cardNews for an active class', async () => {
+    ;(listAssignmentsForStudent as Mock).mockResolvedValue([
+      { assignment: { title: '주간 작문', due_date: futureIso(3) }, submitted: false },
+      { assignment: { title: '이미 제출', due_date: futureIso(1) }, submitted: true },
+    ])
+    ;(listAssignedReviews as Mock).mockResolvedValue([
+      { status: 'pending' },
+      { status: 'completed' },
+    ])
+    handleQuery = (q) => {
+      switch (q.table) {
+        case 'profiles':
+          return { data: { name: '두진' }, error: null }
+        case 'enrollments':
+          return { data: { class_id: 'c1' }, error: null }
+        case 'gamification_stats':
+          return { data: { streak_days: 7, activity_coins: 120 }, error: null }
+        case 'sessions':
+          return q.isCount
+            ? { count: 4, error: null }
+            : { data: { chapter_number: 2 }, error: null }
+        case 'error_cards':
+          return { data: [{ chapter_number: 3 }, { chapter_number: 3 }], error: null }
+        case 'weekly_cardnews':
+          return {
+            data: {
+              card1_data: sampleCard1,
+              card2_data: null,
+              card3_data: null,
+              card4_data: null,
+            },
+            error: null,
+          }
+        default:
+          return { data: null, error: null }
+      }
+    }
+    const d = await loadLearnData()
+    expect(d!.hasActiveClass).toBe(true)
+    expect(d!.studentName).toBe('두진')
+    expect(d!.goal).toEqual({ current: 4, total: 5 })
+    expect(d!.streakDays).toBe(7)
+    expect(d!.gems).toBe(120)
+    expect(d!.tasks.assignmentTitle).toBe('주간 작문') // 미제출·마감 임박 우선
+    expect(d!.tasks.assignmentDueInDays).toBe(3)
+    expect(d!.tasks.peerReviewCount).toBe(1) // completed 제외
+    expect(d!.today.chapterId).toBe(3) // 오류 최다 챕터
+    expect(d!.cardNews).toHaveLength(1) // card1 만 존재
+    expect(d!.cardNews[0].id).toBe('cn-errors')
   })
 })
