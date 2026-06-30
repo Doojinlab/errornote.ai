@@ -19,7 +19,11 @@ export default function MiniGrid({ tasks }: { tasks: LearnHomeData["tasks"] }) {
           icon={<ClipboardList size={20} aria-hidden />}
           title="과제"
           desc={tasks.assignmentTitle}
-          badge={`D-${tasks.assignmentDueInDays}`}
+          badge={
+            tasks.assignmentDueInDays !== null
+              ? `D-${tasks.assignmentDueInDays}`
+              : undefined
+          }
           badgeTone="terra"
         />
       </Link>
@@ -28,7 +32,7 @@ export default function MiniGrid({ tasks }: { tasks: LearnHomeData["tasks"] }) {
           icon={<Users size={20} aria-hidden />}
           title="동료 리뷰"
           desc={tasks.peerReviewDesc}
-          badge={`+${tasks.peerReviewXp} XP`}
+          badge={tasks.peerReviewCount > 0 ? `${tasks.peerReviewCount}건` : undefined}
           badgeTone="jade"
         />
       </Link>

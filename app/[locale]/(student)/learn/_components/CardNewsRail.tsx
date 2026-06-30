@@ -45,12 +45,18 @@ export default function CardNewsRail({ items }: { items: CardNewsItem[] }) {
                 <h3 className="mt-3 text-sm font-bold leading-snug text-ink">
                   {item.title}
                 </h3>
-                <p
-                  lang="zh"
-                  className="font-cn mt-2 text-base leading-relaxed text-bodytx"
-                >
-                  {item.zh}
-                </p>
+                {item.zh ? (
+                  <p
+                    lang="zh"
+                    className="font-cn mt-2 text-base leading-relaxed text-bodytx"
+                  >
+                    {item.zh}
+                  </p>
+                ) : item.summary ? (
+                  <p className="mt-2 text-xs leading-relaxed text-bodytx">
+                    {item.summary}
+                  </p>
+                ) : null}
               </Card>
             </Link>
           </li>

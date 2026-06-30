@@ -1,20 +1,47 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { GraduationCap } from "lucide-react";
 import { Card, LipButton } from "@/components/student-ui";
 
 /**
  * 빈 상태(활성 수업 없음) — 행동을 부르는 초대장. 스펙 §5 "빈 상태 재작성".
  * 초대코드 입력 + <LipButton variant="blue">수업 등록하기</LipButton> 를 중앙 카드에.
- * 실제 등록(서버) 연동은 후속 — 지금은 입력 UI만.
+ * 제출 시 POST /api/enrollments → 성공하면 router.refresh() 로 학습 홈을 다시 그린다.
  */
 export default function LearnEmptyState() {
+  const router = useRouter();
   const [code, setCode] = useState("");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // TODO(server): 초대코드로 수업 등록 API 연동. 현재는 플레이스홀더.
+    const inviteCode = code.trim();
+    if (!inviteCode || pending) return;
+    setPending(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/enrollments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inviteCode }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+      };
+      if (!res.ok) {
+        setError(data.error ?? "수업 등록에 실패했어요. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
+      // 등록 성공 → 서버 컴포넌트 재요청(활성 수업 화면으로 전환).
+      router.refresh();
+    } catch {
+      setError("네트워크 오류로 등록하지 못했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
@@ -41,13 +68,24 @@ export default function LearnEmptyState() {
           inputMode="text"
           autoComplete="off"
           required
+          disabled={pending}
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="예: ERR-2025-CHN"
-          className="w-full rounded-2xl border border-hairline bg-white px-4 py-3 text-center text-base font-bold tracking-wide text-ink placeholder:font-normal placeholder:tracking-normal placeholder:text-muted focus:border-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-blue/60"
+          className="w-full rounded-2xl border border-hairline bg-white px-4 py-3 text-center text-base font-bold tracking-wide text-ink placeholder:font-normal placeholder:tracking-normal placeholder:text-muted focus:border-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-blue/60 disabled:opacity-60"
         />
-        <LipButton variant="blue" full type="submit">
-          수업 등록하기
+        {error && (
+          <p role="alert" className="text-sm font-medium text-terra-dark">
+            {error}
+          </p>
+        )}
+        <LipButton
+          variant="blue"
+          full
+          type="submit"
+          className={pending ? "pointer-events-none opacity-70" : ""}
+        >
+          {pending ? "등록 중…" : "수업 등록하기"}
         </LipButton>
       </form>
     </Card>

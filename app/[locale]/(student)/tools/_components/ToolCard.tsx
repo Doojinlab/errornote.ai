@@ -7,6 +7,8 @@ export interface Tool {
   title: string;
   desc: string;
   cta: string;
+  /** 실제 사용량 한 줄(예: "지금까지 12건 교정"). 없으면 미표시. */
+  meta?: string;
 }
 
 /**
@@ -25,6 +27,9 @@ export default function ToolCard({ tool }: { tool: Tool }) {
         <div className="min-w-0">
           <h2 className="font-bold text-ink">{tool.title}</h2>
           <p className="mt-0.5 text-sm text-bodytx">{tool.desc}</p>
+          {tool.meta && (
+            <p className="mt-1 text-xs font-semibold text-blue-dark">{tool.meta}</p>
+          )}
         </div>
       </div>
 
