@@ -1,13 +1,16 @@
 name: Lighthouse CI
 
-# Per-PR PWA / a11y / best-practices audit. Fails the check if the PWA
-# category score drops below 90 — that's our floor for "this branch is
-# still installable as a PWA on iOS / Android."
+# Per-PR quality audit for the public login page: accessibility(게이트),
+# performance / best-practices / SEO(경고). 접근성 점수가 0.85 아래면 실패.
+#
+# 주의: Lighthouse 12 에서 PWA 카테고리·감사가 제거됐다. PWA 설치 가능성은
+# 별도로 `npm run pwa:check`(scripts/check-pwa-manifest.mjs)로 검증한다.
 #
 # We don't require a real Supabase / Anthropic API key: build runs with
-# placeholder env vars, and Lighthouse only audits public unauthenticated
-# pages (/ko/login, /manifest.json) where SSR doesn't actually call the
-# external APIs.
+# placeholder env vars, and Lighthouse only audits the public unauthenticated
+# page (/ko/login) where SSR doesn't actually call the external APIs.
+# manifest.json 은 HTML 이 아니라(application/json) Lighthouse collect 가
+# 실패하므로 감사 대상에서 제외한다.
 
 on:
   pull_request:
@@ -27,7 +30,7 @@ concurrency:
 
 jobs:
   audit:
-    name: Lighthouse audit (PWA >= 90)
+    name: Lighthouse audit (a11y >= 85)
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -78,7 +81,6 @@ jobs:
         with:
           urls: |
             http://localhost:3000/ko/login
-            http://localhost:3000/manifest.json
           configPath: ./.lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
@@ -100,7 +102,7 @@ jobs:
               const c = r.categories || {};
               const fmt = (k) => c[k] ? Math.round(c[k].score * 100) : 'n/a';
               lines.push(`- ${url}`);
-              lines.push(`  - PWA **${fmt('pwa')}** · Performance ${fmt('performance')} · Accessibility ${fmt('accessibility')} · Best practices ${fmt('best-practices')} · SEO ${fmt('seo')}`);
+              lines.push(`  - Accessibility **${fmt('accessibility')}** · Performance ${fmt('performance')} · Best practices ${fmt('best-practices')} · SEO ${fmt('seo')}`);
             }
             github.rest.issues.createComment({
               issue_number: context.issue.number,
