@@ -9,6 +9,7 @@ import ErrorPanel from "@/components/learn/ErrorPanel";
 import TutorChat from "@/components/learn/TutorChat";
 import { useSound } from "@/components/gamification/SoundManager";
 import { fetchOrEnqueue, isQueuedSentinel } from "@/lib/offline-queue";
+import { W } from "@/components/learn/writerTheme";
 import type { AnalysisResponse, AnalyzeRequest } from "@/types";
 
 type Tab = "doc" | "errors" | "chat";
@@ -17,10 +18,6 @@ interface Props {
   classId: string;
   chapterId: string;
 }
-
-// 각 패널 공통 — 데스크톱에서는 카드(둥근 테두리+그림자), 모바일에서는 풀블리드.
-const PANE =
-  "min-h-0 flex-1 flex-col overflow-hidden bg-white lg:flex lg:rounded-2xl lg:border lg:border-slate-200 lg:shadow-sm";
 
 export default function LearnClient({ classId, chapterId }: Props) {
   const t = useTranslations("pages.student.learn");
@@ -33,7 +30,6 @@ export default function LearnClient({ classId, chapterId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [focusedErrorId, setFocusedErrorId] = useState<number | null>(null);
   // 한 번이라도 분석 결과를 받은 적이 있으면 다음 분석은 "수정고" 로 간주.
-  // (오류 0개 수정고 → correct.mp3, errornote.md 559)
   const [hasSubmittedBefore, setHasSubmittedBefore] = useState(false);
 
   async function analyze() {
@@ -57,8 +53,6 @@ export default function LearnClient({ classId, chapterId }: Props) {
         { kind: "analyze", label: `오류카드 — ${chapterId}과` }
       );
       if (isQueuedSentinel(res)) {
-        // Network unreachable — request stashed in IDB; the global flusher
-        // toast will tell the user. Bail out without setting analysis state.
         setError(t("offlineQueued"));
         return;
       }
@@ -91,89 +85,146 @@ export default function LearnClient({ classId, chapterId }: Props) {
 
   const focusedError = analysis?.errors.find((e) => e.id === focusedErrorId) ?? null;
 
+  const errorCount = analysis?.error_count ?? null;
+  const hskAvg =
+    analysis && analysis.errors.length
+      ? `${Math.round(
+          analysis.errors.reduce((s, e) => s + (e.hsk_level ?? 0), 0) / analysis.errors.length
+        )}급`
+      : null;
+
   return (
-    <div className="flex h-dvh flex-col bg-slate-100">
-      {/* 상단 바 — 학습 홈으로 돌아가기 + 챕터 라벨 */}
-      <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-2.5">
-        <Link
-          href="/learn"
-          aria-label="학습 홈으로"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+    <div className="flex h-dvh flex-col" style={{ background: W.paper2 }}>
+      {/* 데스크톱: 중앙 카드 / 모바일: 풀스크린 */}
+      <div
+        className="flex min-h-0 flex-1 flex-col overflow-hidden lg:mx-auto lg:my-4 lg:w-full lg:max-w-7xl lg:rounded-2xl lg:border lg:shadow-sm"
+        style={{ background: W.paper, borderColor: W.line }}
+      >
+        {/* 윈도우 크롬 */}
+        <header
+          className="flex items-center gap-3 px-4 py-2.5"
+          style={{ borderBottom: `1px solid ${W.line}`, background: W.paper2 }}
         >
-          <ArrowLeft size={18} aria-hidden />
-        </Link>
-        <h1 className="text-sm font-semibold text-slate-700">
-          {t("chapterLabel", { chapter: chapterId })}
-        </h1>
-        {error && (
-          <p role="alert" className="ml-auto truncate text-xs font-medium text-red-600">
-            {error}
-          </p>
-        )}
-      </header>
+          <Link
+            href="/learn"
+            aria-label="학습 홈으로"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition"
+            style={{ color: W.inkMute }}
+          >
+            <ArrowLeft size={18} aria-hidden />
+          </Link>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#FF5F57" }} />
+            <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#FEBC2E" }} />
+            <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#28C840" }} />
+          </div>
+          <span className="text-xs font-medium" style={{ color: W.inkMute }}>
+            errornote · 작문 연습
+          </span>
+          <div className="ml-auto flex items-center gap-1.5 text-[11.5px]" style={{ color: W.inkMute }}>
+            {error ? (
+              <span role="alert" className="truncate font-medium" style={{ color: W.red }}>
+                {error}
+              </span>
+            ) : (
+              <>
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: W.green }} />
+                저장됨
+              </>
+            )}
+          </div>
+        </header>
 
-      {/* 본문 — 데스크톱(lg): 좌 문서 / 우 상 오류·하 채팅 2열 분할. 모바일: 단일 + 하단 탭 */}
-      <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col lg:grid lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:grid-rows-2 lg:gap-4 lg:p-4">
-        {/* 문서 작성 / 분석 결과 */}
-        <section
-          className={`${tab === "doc" ? "flex" : "hidden"} ${PANE} lg:col-start-1 lg:row-span-2`}
-        >
-          {analysis ? (
-            <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between border-b border-slate-200 p-3">
-                <h2 className="text-sm font-semibold text-slate-700">{t("analysisResult")}</h2>
-                <button
-                  type="button"
-                  onClick={() => setAnalysis(null)}
-                  className="text-xs font-medium text-indigo-600 hover:underline"
+        {/* 본문 — 데스크톱(lg): 좌 문서(2행 span) / 우 상 오류·하 채팅. 모바일: 단일 + 하단 탭 */}
+        <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-1 lg:grid-cols-[1.4fr_1fr] lg:grid-rows-2">
+          {/* 좌 — 문서/분석 */}
+          <section
+            className={`${tab === "doc" ? "flex" : "hidden"} min-h-0 flex-col lg:col-start-1 lg:row-span-2 lg:flex`}
+            style={{ borderRight: `1px solid ${W.line}` }}
+          >
+            {analysis ? (
+              <div className="flex h-full min-h-0 flex-col" style={{ background: W.paper }}>
+                <div
+                  className="flex items-center justify-between px-5 py-3"
+                  style={{ borderBottom: `1px solid ${W.line}` }}
                 >
-                  {t("editAgain")}
-                </button>
+                  <span className="text-sm font-semibold" style={{ color: W.ink }}>
+                    {t("analysisResult")}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setAnalysis(null)}
+                    className="text-xs font-medium hover:underline"
+                    style={{ color: W.red }}
+                  >
+                    {t("editAgain")}
+                  </button>
+                </div>
+                <div className="min-h-0 flex-1 overflow-auto">
+                  <AnnotatedText
+                    annotatedText={analysis.annotated_text}
+                    errors={analysis.errors}
+                    focusedErrorId={focusedErrorId}
+                    onErrorClick={focusError}
+                  />
+                </div>
+                <div
+                  className="flex items-center gap-4 px-6 py-3 text-xs"
+                  style={{ borderTop: `1px solid ${W.line}`, background: W.paper2, color: W.inkMute }}
+                >
+                  <span>
+                    글자 <strong style={{ color: W.ink }}>{draft.trim().length}</strong>
+                  </span>
+                  <span>
+                    오류{" "}
+                    <strong style={{ color: (errorCount ?? 0) > 0 ? W.red : W.ink }}>
+                      {errorCount ?? 0}
+                    </strong>
+                  </span>
+                  <span>
+                    HSK 평균 <strong style={{ color: W.ink }}>{hskAvg ?? "—"}</strong>
+                  </span>
+                </div>
               </div>
-              <div className="min-h-0 flex-1 overflow-auto">
-                <AnnotatedText
-                  annotatedText={analysis.annotated_text}
-                  errors={analysis.errors}
-                  focusedErrorId={focusedErrorId}
-                  onErrorClick={focusError}
-                />
-              </div>
-            </div>
-          ) : (
-            <DocumentEditor
-              value={draft}
-              onChange={setDraft}
-              onSubmit={analyze}
-              isSubmitting={analyzing}
+            ) : (
+              <DocumentEditor
+                value={draft}
+                onChange={setDraft}
+                onSubmit={analyze}
+                isSubmitting={analyzing}
+                errorCount={errorCount}
+                hskAvg={hskAvg}
+              />
+            )}
+          </section>
+
+          {/* 우상 — 오류 카드 */}
+          <section
+            className={`${tab === "errors" ? "flex" : "hidden"} min-h-0 flex-col lg:col-start-2 lg:row-start-1 lg:flex`}
+            style={{ borderBottom: `1px solid ${W.line}` }}
+          >
+            <ErrorPanel
+              analysis={analysis}
+              focusedErrorId={focusedErrorId}
+              onFocusError={setFocusedErrorId}
+              isLoading={analyzing}
             />
-          )}
-        </section>
-
-        {/* 오류 카드 */}
-        <section
-          className={`${tab === "errors" ? "flex" : "hidden"} ${PANE} lg:col-start-2 lg:row-start-1`}
-        >
-          <ErrorPanel
-            analysis={analysis}
-            focusedErrorId={focusedErrorId}
-            onFocusError={setFocusedErrorId}
-            isLoading={analyzing}
-          />
-        </section>
-
-        {/* AI 과외 채팅 */}
-        <section
-          className={`${tab === "chat" ? "flex" : "hidden"} ${PANE} lg:col-start-2 lg:row-start-2`}
-        >
-          <TutorChat focusedError={focusedError} chapterNumber={chapterNumber} />
-        </section>
+          </section>
+          {/* 우하 — 채팅 */}
+          <section
+            className={`${tab === "chat" ? "flex" : "hidden"} min-h-0 flex-col lg:col-start-2 lg:row-start-2 lg:flex`}
+          >
+            <TutorChat focusedError={focusedError} chapterNumber={chapterNumber} />
+          </section>
+        </div>
       </div>
 
-      {/* 모바일 탭 — 데스크톱에서는 분할로 모두 보이므로 숨김 */}
+      {/* 모바일 탭 */}
       <nav
-        className="grid grid-cols-3 border-t border-slate-200 bg-white lg:hidden"
+        className="grid grid-cols-3 lg:hidden"
         role="tablist"
         aria-label={t("tabNavAria")}
+        style={{ borderTop: `1px solid ${W.line}`, background: W.paper }}
       >
         {(
           [
@@ -188,11 +239,12 @@ export default function LearnClient({ classId, chapterId }: Props) {
             role="tab"
             onClick={() => setTab(tab2.id)}
             aria-selected={tab === tab2.id}
-            className={`py-3 text-sm font-medium transition-colors ${
+            className="py-3 text-sm font-medium transition"
+            style={
               tab === tab2.id
-                ? "bg-indigo-50 text-indigo-700"
-                : "text-slate-600 hover:bg-slate-50"
-            }`}
+                ? { background: W.redSoft, color: W.redDeep }
+                : { color: W.inkMute }
+            }
           >
             {tab2.label}
           </button>
