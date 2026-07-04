@@ -33,7 +33,7 @@ export default async function LearnPage(props: { params: Promise<{ chapterId: st
 
   if (!classId) {
     return (
-      <section className="mx-auto flex min-h-0 max-w-md flex-1 flex-col items-center justify-center p-8 text-center">
+      <section className="mx-auto flex min-h-dvh max-w-md flex-1 flex-col items-center justify-center p-8 text-center">
         <h1 className="text-lg font-bold text-slate-900">{t("noActiveClassTitle")}</h1>
         <p className="mt-2 text-sm text-slate-600">{t("noActiveClassBody")}</p>
       </section>

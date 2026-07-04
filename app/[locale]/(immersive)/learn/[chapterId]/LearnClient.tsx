@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "@/i18n/routing";
 import DocumentEditor from "@/components/learn/DocumentEditor";
 import AnnotatedText from "@/components/learn/AnnotatedText";
 import ErrorPanel from "@/components/learn/ErrorPanel";
@@ -15,6 +17,10 @@ interface Props {
   classId: string;
   chapterId: string;
 }
+
+// 각 패널 공통 — 데스크톱에서는 카드(둥근 테두리+그림자), 모바일에서는 풀블리드.
+const PANE =
+  "min-h-0 flex-1 flex-col overflow-hidden bg-white lg:flex lg:rounded-2xl lg:border lg:border-slate-200 lg:shadow-sm";
 
 export default function LearnClient({ classId, chapterId }: Props) {
   const t = useTranslations("pages.student.learn");
@@ -86,30 +92,40 @@ export default function LearnClient({ classId, chapterId }: Props) {
   const focusedError = analysis?.errors.find((e) => e.id === focusedErrorId) ?? null;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-slate-100">
-      <header className="flex items-center justify-between border-b bg-white px-4 py-2">
+    <div className="flex h-dvh flex-col bg-slate-100">
+      {/* 상단 바 — 학습 홈으로 돌아가기 + 챕터 라벨 */}
+      <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-2.5">
+        <Link
+          href="/learn"
+          aria-label="학습 홈으로"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+        >
+          <ArrowLeft size={18} aria-hidden />
+        </Link>
         <h1 className="text-sm font-semibold text-slate-700">
           {t("chapterLabel", { chapter: chapterId })}
         </h1>
         {error && (
-          <p role="alert" className="text-xs text-red-600">
+          <p role="alert" className="ml-auto truncate text-xs font-medium text-red-600">
             {error}
           </p>
         )}
       </header>
 
-      <main className="min-h-0 flex-1 overflow-hidden sm:grid sm:grid-cols-2 sm:grid-rows-2">
+      {/* 본문 — 데스크톱(lg): 좌 문서 / 우 상 오류·하 채팅 2열 분할. 모바일: 단일 + 하단 탭 */}
+      <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col lg:grid lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:grid-rows-2 lg:gap-4 lg:p-4">
+        {/* 문서 작성 / 분석 결과 */}
         <section
-          className={`${tab === "doc" ? "" : "hidden sm:block"} h-full overflow-hidden sm:col-start-1 sm:row-span-2`}
+          className={`${tab === "doc" ? "flex" : "hidden"} ${PANE} lg:col-start-1 lg:row-span-2`}
         >
           {analysis ? (
-            <div className="flex h-full flex-col bg-white">
-              <div className="flex items-center justify-between border-b p-3">
+            <div className="flex h-full flex-col">
+              <div className="flex items-center justify-between border-b border-slate-200 p-3">
                 <h2 className="text-sm font-semibold text-slate-700">{t("analysisResult")}</h2>
                 <button
                   type="button"
                   onClick={() => setAnalysis(null)}
-                  className="text-xs text-indigo-600 hover:underline"
+                  className="text-xs font-medium text-indigo-600 hover:underline"
                 >
                   {t("editAgain")}
                 </button>
@@ -133,8 +149,9 @@ export default function LearnClient({ classId, chapterId }: Props) {
           )}
         </section>
 
+        {/* 오류 카드 */}
         <section
-          className={`${tab === "errors" ? "" : "hidden sm:block"} h-full overflow-hidden sm:col-start-2 sm:row-start-1 sm:border-l`}
+          className={`${tab === "errors" ? "flex" : "hidden"} ${PANE} lg:col-start-2 lg:row-start-1`}
         >
           <ErrorPanel
             analysis={analysis}
@@ -144,15 +161,17 @@ export default function LearnClient({ classId, chapterId }: Props) {
           />
         </section>
 
+        {/* AI 과외 채팅 */}
         <section
-          className={`${tab === "chat" ? "" : "hidden sm:block"} h-full overflow-hidden sm:col-start-2 sm:row-start-2 sm:border-l sm:border-t`}
+          className={`${tab === "chat" ? "flex" : "hidden"} ${PANE} lg:col-start-2 lg:row-start-2`}
         >
           <TutorChat focusedError={focusedError} chapterNumber={chapterNumber} />
         </section>
-      </main>
+      </div>
 
+      {/* 모바일 탭 — 데스크톱에서는 분할로 모두 보이므로 숨김 */}
       <nav
-        className="grid grid-cols-3 border-t bg-white sm:hidden"
+        className="grid grid-cols-3 border-t border-slate-200 bg-white lg:hidden"
         role="tablist"
         aria-label={t("tabNavAria")}
       >
