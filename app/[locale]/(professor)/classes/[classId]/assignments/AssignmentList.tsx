@@ -94,7 +94,7 @@ export default function AssignmentList({ classId, initialAssignments, rubrics }:
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-700">과제 ({items.length})</h2>
+        <h2 className="text-sm font-semibold text-bodytx">과제 ({items.length})</h2>
         {!creating && (
           <Button size="sm" onClick={() => setCreating(true)}>
             + 과제 출제
@@ -105,7 +105,7 @@ export default function AssignmentList({ classId, initialAssignments, rubrics }:
       {creating && (
         <Card className="space-y-3 p-4">
           <div>
-            <label className="block text-xs font-medium text-slate-700">제목</label>
+            <label className="block text-xs font-medium text-bodytx">제목</label>
             <Input
               className="mt-1"
               value={title}
@@ -115,9 +115,9 @@ export default function AssignmentList({ classId, initialAssignments, rubrics }:
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">지시문</label>
+            <label className="block text-xs font-medium text-bodytx">지시문</label>
             <textarea
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 disabled:bg-slate-50"
+              className="mt-1 w-full rounded-md border border-hairline px-3 py-2 text-sm outline-none focus:border-blue disabled:bg-ivory"
               rows={5}
               value={promptText}
               onChange={(e) => setPromptText(e.target.value)}
@@ -127,7 +127,7 @@ export default function AssignmentList({ classId, initialAssignments, rubrics }:
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-medium text-slate-700">마감 (선택)</label>
+              <label className="block text-xs font-medium text-bodytx">마감 (선택)</label>
               <Input
                 className="mt-1"
                 type="datetime-local"
@@ -137,9 +137,9 @@ export default function AssignmentList({ classId, initialAssignments, rubrics }:
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-700">루브릭 (선택)</label>
+              <label className="block text-xs font-medium text-bodytx">루브릭 (선택)</label>
               <select
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 disabled:bg-slate-50"
+                className="mt-1 w-full rounded-md border border-hairline px-3 py-2 text-sm outline-none focus:border-blue disabled:bg-ivory"
                 value={rubricId}
                 onChange={(e) => setRubricId(e.target.value)}
                 disabled={busy}
@@ -152,11 +152,11 @@ export default function AssignmentList({ classId, initialAssignments, rubrics }:
                 ))}
               </select>
               {rubrics.length === 0 && (
-                <p className="mt-1 text-[11px] text-slate-500">
+                <p className="mt-1 text-[11px] text-muted">
                   루브릭이 아직 없습니다.{" "}
                   <Link
                     href={`/classes/${classId}/rubrics`}
-                    className="text-indigo-600 hover:underline"
+                    className="text-blue hover:underline"
                   >
                     루브릭 관리 페이지
                   </Link>
@@ -167,7 +167,7 @@ export default function AssignmentList({ classId, initialAssignments, rubrics }:
           </div>
 
           {error && (
-            <p role="alert" className="text-xs text-red-600">
+            <p role="alert" className="text-xs text-terra-dark">
               {error}
             </p>
           )}
@@ -190,23 +190,23 @@ export default function AssignmentList({ classId, initialAssignments, rubrics }:
       )}
 
       {items.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+        <p className="rounded-xl2 border border-dashed border-hairline bg-white p-6 text-center text-sm text-muted">
           아직 출제한 과제가 없습니다.
         </p>
       ) : (
         <ul className="space-y-2">
           {items.map((a) => (
             <li key={a.id}>
-              <Card className="p-3">
+              <Card className="card-pop p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/classes/${classId}/assignments/${a.id}`}
-                      className="block font-medium text-slate-800 hover:underline"
+                      className="block font-medium text-ink hover:underline"
                     >
                       {a.title}
                     </Link>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-muted">
                       마감: {formatDateTime(a.due_date)}
                       {a.rubric_id ? " · 루브릭 연결됨" : " · 루브릭 없음"}
                     </p>
@@ -214,7 +214,7 @@ export default function AssignmentList({ classId, initialAssignments, rubrics }:
                   <div className="flex shrink-0 gap-2">
                     <Link
                       href={`/classes/${classId}/assignments/${a.id}`}
-                      className="rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50"
+                      className="rounded-md border border-hairline bg-white px-2.5 py-1 text-xs text-bodytx hover:bg-ivory"
                     >
                       제출물 보기
                     </Link>
@@ -222,7 +222,7 @@ export default function AssignmentList({ classId, initialAssignments, rubrics }:
                       variant="secondary"
                       size="sm"
                       onClick={() => removeAssignment(a.id)}
-                      className="text-red-600"
+                      className="text-terra-dark"
                     >
                       삭제
                     </Button>

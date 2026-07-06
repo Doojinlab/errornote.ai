@@ -31,12 +31,12 @@ export default async function ClassGoalsPage({
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-1">
-        <Link href={`/classes/${classId}`} className="text-xs text-indigo-500 hover:underline">
+        <Link href={`/classes/${classId}`} className="text-xs text-blue hover:underline">
           ← {t('backToClass')}
         </Link>
       </div>
-      <h1 className="text-2xl font-bold text-slate-900">{t('title')}</h1>
-      <p className="mt-1 mb-6 text-sm text-slate-500">{t('subtitle')}</p>
+      <h1 className="text-2xl font-bold text-ink">{t('title')}</h1>
+      <p className="mt-1 mb-6 text-sm text-muted">{t('subtitle')}</p>
       <ClassGoalsManager classId={classId} initialGoals={goals} species={species} />
     </div>
   )

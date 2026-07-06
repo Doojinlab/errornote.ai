@@ -61,7 +61,7 @@ export default function CorpusUploader({ classId, disabled, disabledReason }: Pr
 
   if (disabled) {
     return (
-      <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">
+      <div className="rounded-xl2 border border-dashed border-hairline bg-ivory p-6 text-center text-sm text-muted">
         {disabledReason ?? "업로드가 비활성화되어 있습니다."}
       </div>
     );
@@ -80,10 +80,10 @@ export default function CorpusUploader({ classId, disabled, disabledReason }: Pr
           setDragging(false);
           acceptFile(e.dataTransfer.files[0] ?? null);
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-6 text-center text-sm transition ${
+        className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl2 border-2 border-dashed p-6 text-center text-sm transition ${
           dragging
-            ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-            : "border-slate-300 bg-white text-slate-600"
+            ? "border-blue bg-blue-soft text-blue-dark"
+            : "border-hairline bg-white text-muted"
         }`}
       >
         <input
@@ -97,18 +97,18 @@ export default function CorpusUploader({ classId, disabled, disabledReason }: Pr
           📄
         </span>
         {file ? (
-          <span className="font-medium text-slate-800">
+          <span className="font-medium text-ink">
             {file.name} · {(file.size / 1024).toFixed(1)} KB
           </span>
         ) : (
           <>
             <span className="font-medium">파일을 여기로 끌어오거나 클릭</span>
-            <span className="text-xs text-slate-500">PDF · DOCX · TXT (최대 10MB, 수업당 20개)</span>
+            <span className="text-xs text-muted">PDF · DOCX · TXT (최대 10MB, 수업당 20개)</span>
           </>
         )}
       </label>
 
-      <label className="flex items-center gap-2 text-xs text-slate-600">
+      <label className="flex items-center gap-2 text-xs text-muted">
         <input
           type="checkbox"
           checked={isPublic}
@@ -118,7 +118,7 @@ export default function CorpusUploader({ classId, disabled, disabledReason }: Pr
       </label>
 
       {error && (
-        <p role="alert" className="text-xs text-red-600">
+        <p role="alert" className="text-xs text-terra-dark">
           {error}
         </p>
       )}

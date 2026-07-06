@@ -72,24 +72,24 @@ export default async function CorpusPage(
     <main className="mx-auto w-full max-w-4xl space-y-5 p-4">
       <div className="flex items-baseline justify-between">
         <div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted">
             <Link href="/dashboard" className="hover:underline">
               {t('breadcrumbDashboard')}
             </Link>{' '}
             › {t('breadcrumbCorpus')}
           </p>
-          <h1 className="text-lg font-bold text-slate-900">
+          <h1 className="text-lg font-bold text-ink">
             {classInfo.name}{' '}
-            <span className="text-sm font-normal text-slate-500">({classInfo.semester})</span>
+            <span className="text-sm font-normal text-muted">({classInfo.semester})</span>
           </h1>
         </div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           {t('docsCount', { count: docs.length, max: MAX_DOCS_PER_CLASS })}
         </p>
       </div>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-700">{t('sectionUpload')}</h2>
+        <h2 className="text-sm font-semibold text-bodytx">{t('sectionUpload')}</h2>
         <CorpusUploader
           classId={params.classId}
           disabled={atLimit}
@@ -98,25 +98,25 @@ export default async function CorpusPage(
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-700">{t('sectionDocs')}</h2>
+        <h2 className="text-sm font-semibold text-bodytx">{t('sectionDocs')}</h2>
         {docs.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+          <p className="rounded-xl2 border border-dashed border-hairline bg-white p-6 text-center text-sm text-muted">
             {t('emptyDocs')}
           </p>
         ) : (
           <ul className="space-y-2">
             {docs.map(d => (
               <li key={d.id}>
-                <Card className="flex items-center gap-3 p-3">
-                  <span className="rounded bg-slate-100 px-2 py-1 text-[10px] font-semibold uppercase text-slate-600">
+                <Card className="card-pop flex items-center gap-3 p-3">
+                  <span className="rounded bg-ivory px-2 py-1 text-[10px] font-semibold uppercase text-muted">
                     {d.file_type}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-800">{d.file_name}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="truncate text-sm font-medium text-ink">{d.file_name}</p>
+                    <p className="text-xs text-muted">
                       {formatDate(d.created_at)}
                       {d.is_public && (
-                        <span className="ml-2 text-indigo-600">· {t('docPublic')}</span>
+                        <span className="ml-2 text-blue">· {t('docPublic')}</span>
                       )}
                       {d.download_count > 0 && (
                         <span className="ml-2">

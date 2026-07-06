@@ -137,11 +137,11 @@ export default function SubmissionsClient({
   return (
     <div className="grid gap-4 md:grid-cols-[320px_1fr]">
       <aside className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-700">
+        <h2 className="text-sm font-semibold text-bodytx">
           제출물 ({submissions.length})
         </h2>
         {submissions.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-center text-xs text-slate-500">
+          <p className="rounded-xl2 border border-dashed border-hairline bg-white p-4 text-center text-xs text-muted">
             아직 제출이 없습니다.
           </p>
         ) : (
@@ -155,21 +155,21 @@ export default function SubmissionsClient({
                     onClick={() => setSelectedId(s.session_id)}
                     className={`block w-full rounded-md border p-2 text-left text-xs transition ${
                       active
-                        ? "border-indigo-500 bg-indigo-50"
-                        : "border-slate-200 bg-white hover:bg-slate-50"
+                        ? "border-blue bg-blue-soft"
+                        : "border-hairline bg-white hover:bg-ivory"
                     }`}
                   >
-                    <p className="font-medium text-slate-800">
+                    <p className="font-medium text-ink">
                       {s.student_name ?? "이름 없음"}
                     </p>
-                    <p className="mt-0.5 text-slate-500">
+                    <p className="mt-0.5 text-muted">
                       {formatDateTime(s.submitted_at)}
                       {s.draft_error_count !== null && (
                         <span className="ml-1">· 오류 {s.draft_error_count}개</span>
                       )}
                     </p>
                     {s.total_score !== null && (
-                      <p className="mt-0.5 font-semibold text-indigo-700">
+                      <p className="mt-0.5 font-semibold text-blue-dark">
                         {s.total_score.toFixed(1)}점
                       </p>
                     )}
@@ -183,19 +183,19 @@ export default function SubmissionsClient({
 
       <section className="min-w-0">
         {!selected ? (
-          <Card className="p-6 text-center text-sm text-slate-500">
+          <Card className="p-6 text-center text-sm text-muted">
             왼쪽에서 제출물을 선택하세요.
           </Card>
         ) : (
           <Card className="space-y-4 p-4">
             <div>
-              <h3 className="text-xs font-semibold text-slate-700">
+              <h3 className="text-xs font-semibold text-bodytx">
                 {selected.student_name ?? "이름 없음"} 의 제출문
               </h3>
-              <pre className="mt-1 max-h-60 overflow-auto whitespace-pre-wrap rounded bg-slate-50 p-2 text-xs text-slate-800">
+              <pre lang="zh" className="mt-1 max-h-60 overflow-auto whitespace-pre-wrap rounded bg-ivory p-2 font-cn text-xs text-ink">
                 {selected.draft_text ?? "(비어 있음)"}
               </pre>
-              <p className="mt-1 text-[11px] text-slate-500">
+              <p className="mt-1 text-[11px] text-muted">
                 제출: {formatDateTime(selected.submitted_at)}
                 {selected.draft_error_count !== null &&
                   ` · 초고 오류 ${selected.draft_error_count}개`}
@@ -205,7 +205,7 @@ export default function SubmissionsClient({
             {rubric ? (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold text-slate-700">
+                  <h3 className="text-xs font-semibold text-bodytx">
                     루브릭: {rubric.name}
                   </h3>
                   <div className="flex gap-2">
@@ -230,7 +230,7 @@ export default function SubmissionsClient({
                 {draftScores && (
                   <div className="overflow-hidden rounded-md border">
                     <table className="w-full text-xs">
-                      <thead className="bg-slate-50 text-slate-600">
+                      <thead className="bg-ivory text-muted">
                         <tr>
                           <th className="p-2 text-left">항목</th>
                           <th className="w-24 p-2 text-right">점수</th>
@@ -241,8 +241,8 @@ export default function SubmissionsClient({
                         {draftScores.map((s, i) => (
                           <tr key={s.criterion} className="border-t align-top">
                             <td className="p-2">
-                              <p className="font-medium text-slate-800">{s.criterion}</p>
-                              <p className="text-[10px] text-slate-500">만점 {s.max_score}</p>
+                              <p className="font-medium text-ink">{s.criterion}</p>
+                              <p className="text-[10px] text-muted">만점 {s.max_score}</p>
                             </td>
                             <td className="p-2">
                               <Input
@@ -265,20 +265,20 @@ export default function SubmissionsClient({
                                 onChange={(e) =>
                                   updateScore(i, { feedback: e.target.value })
                                 }
-                                className="w-full rounded-md border border-slate-300 p-1 text-xs outline-none focus:border-indigo-500 disabled:bg-slate-50"
+                                className="w-full rounded-md border border-hairline p-1 text-xs outline-none focus:border-blue disabled:bg-ivory"
                                 disabled={busy}
                               />
                             </td>
                           </tr>
                         ))}
                       </tbody>
-                      <tfoot className="bg-slate-50 text-slate-800">
+                      <tfoot className="bg-ivory text-ink">
                         <tr>
                           <td className="p-2 text-right font-semibold">총점 (가중치 반영)</td>
-                          <td className="p-2 text-right font-semibold text-indigo-700">
+                          <td className="p-2 text-right font-semibold text-blue-dark">
                             {liveTotal?.toFixed(1) ?? "—"}
                           </td>
-                          <td className="p-2 text-[11px] text-slate-500">
+                          <td className="p-2 text-[11px] text-muted">
                             저장된 점수: {selected.total_score?.toFixed(1) ?? "—"}
                           </td>
                         </tr>
@@ -288,27 +288,27 @@ export default function SubmissionsClient({
                 )}
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-700">
+                  <label className="block text-xs font-medium text-bodytx">
                     총평 (ai_feedback)
                   </label>
                   <textarea
                     rows={3}
                     value={draftFeedback}
                     onChange={(e) => setDraftFeedback(e.target.value)}
-                    className="mt-1 w-full rounded-md border border-slate-300 p-2 text-xs outline-none focus:border-indigo-500 disabled:bg-slate-50"
+                    className="mt-1 w-full rounded-md border border-hairline p-2 text-xs outline-none focus:border-blue disabled:bg-ivory"
                     placeholder="제출문 전반에 대한 총평을 적거나 AI 채점 결과를 수정하세요."
                     disabled={busy}
                   />
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted">
                 이 과제에는 루브릭이 연결되어 있지 않습니다.
               </p>
             )}
 
             {error && (
-              <p role="alert" className="text-xs text-red-600">
+              <p role="alert" className="text-xs text-terra-dark">
                 {error}
               </p>
             )}
