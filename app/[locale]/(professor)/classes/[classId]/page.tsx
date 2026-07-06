@@ -203,7 +203,7 @@ export default async function ClassDetailPage(
 
   return (
     <main className="mx-auto w-full max-w-5xl space-y-5 p-4">
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted">
         <Link href="/dashboard" className="hover:underline">
           {t('breadcrumbDashboard')}
         </Link>{' '}
@@ -212,53 +212,53 @@ export default async function ClassDetailPage(
 
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-slate-900">
+          <h1 className="text-lg font-bold text-ink">
             {info.name}{' '}
-            <span className="text-sm font-normal text-slate-500">({info.semester})</span>
+            <span className="text-sm font-normal text-muted">({info.semester})</span>
           </h1>
           {info.current_grammar_focus && (
-            <p className="mt-1 text-xs text-indigo-700">
+            <p className="mt-1 text-xs text-blue-dark">
               {t('thisWeekPoint', { focus: info.current_grammar_focus })}
             </p>
           )}
         </div>
         <div className="flex items-center gap-3 text-xs">
-          <span className="font-mono text-slate-500">
+          <span className="font-mono text-muted">
             {t('inviteCode', { code: info.invite_code })}
           </span>
-          <Link href={`/classes/${info.id}/corpus`} className="text-indigo-600 hover:underline">
+          <Link href={`/classes/${info.id}/corpus`} className="text-blue hover:underline">
             {t('corpusLink')}
           </Link>
-          <Link href={`/reports?classId=${info.id}`} className="text-indigo-600 hover:underline">
+          <Link href={`/reports?classId=${info.id}`} className="text-blue hover:underline">
             {t('reportsLink')}
           </Link>
-          <Link href={`/classes/${info.id}/goals`} className="text-indigo-600 hover:underline">
+          <Link href={`/classes/${info.id}/goals`} className="text-blue hover:underline">
             {t('goalsLink')}
           </Link>
         </div>
       </header>
 
       <section className="grid gap-3 sm:grid-cols-4">
-        <Card className="p-3">
-          <p className="text-xs text-slate-500">{t('statStudents')}</p>
-          <p className="mt-1 text-lg font-bold text-slate-900">{students.length}</p>
-          <p className="text-[11px] text-slate-500">
+        <Card className="card-pop p-3">
+          <p className="text-xs text-muted">{t('statStudents')}</p>
+          <p className="mt-1 text-lg font-bold text-ink">{students.length}</p>
+          <p className="text-[11px] text-muted">
             {t('statStudentsSub', { active: activeStudents, inactive: inactiveStudents })}
           </p>
         </Card>
-        <Card className="p-3">
-          <p className="text-xs text-slate-500">{t('statTotalSessions')}</p>
-          <p className="mt-1 text-lg font-bold text-slate-900">{totalSessions}</p>
+        <Card className="card-pop p-3">
+          <p className="text-xs text-muted">{t('statTotalSessions')}</p>
+          <p className="mt-1 text-lg font-bold text-ink">{totalSessions}</p>
         </Card>
-        <Card className="p-3">
-          <p className="text-xs text-slate-500">{t('statTotalErrors')}</p>
-          <p className="mt-1 text-lg font-bold text-slate-900">{totalErrors}</p>
+        <Card className="card-pop p-3">
+          <p className="text-xs text-muted">{t('statTotalErrors')}</p>
+          <p className="mt-1 text-lg font-bold text-ink">{totalErrors}</p>
         </Card>
-        <Card className={`p-3 ${fossilStudents > 0 ? 'border-amber-300 bg-amber-50' : ''}`}>
-          <p className="text-xs text-slate-500">{t('statFossilStudents')}</p>
+        <Card className={`card-pop p-3 ${fossilStudents > 0 ? 'border-gold bg-gold-soft' : ''}`}>
+          <p className="text-xs text-muted">{t('statFossilStudents')}</p>
           <p
             className={`mt-1 text-lg font-bold ${
-              fossilStudents > 0 ? 'text-amber-700' : 'text-slate-900'
+              fossilStudents > 0 ? 'text-gold-dark' : 'text-ink'
             }`}
           >
             {t('statPeopleUnit', { count: fossilStudents })}
@@ -267,15 +267,15 @@ export default async function ClassDetailPage(
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-700">{t('sectionStudents')}</h2>
+        <h2 className="text-sm font-semibold text-bodytx">{t('sectionStudents')}</h2>
         {students.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+          <p className="rounded-xl2 border border-dashed border-hairline bg-white p-8 text-center text-sm text-muted">
             {t('emptyStudents', { code: info.invite_code })}
           </p>
         ) : (
           <Card className="overflow-x-auto">
             <table className="min-w-full text-xs">
-              <thead className="bg-slate-50 text-slate-500">
+              <thead className="bg-ivory text-muted">
                 <tr>
                   <th className="px-3 py-2 text-left font-medium">{t('thStudent')}</th>
                   <th className="px-3 py-2 text-right font-medium">{t('thSessions')}</th>
@@ -290,26 +290,26 @@ export default async function ClassDetailPage(
               </thead>
               <tbody>
                 {students.map(s => (
-                  <tr key={s.id} className="border-t border-slate-100">
-                    <td className="px-3 py-2 font-medium text-slate-800">{s.name}</td>
-                    <td className="px-3 py-2 text-right text-slate-700">{s.session_count}</td>
-                    <td className="px-3 py-2 text-right text-slate-700">{s.error_count}</td>
-                    <td className="px-3 py-2 text-slate-700">{s.top_subtype ?? '—'}</td>
-                    <td className="px-3 py-2 text-right text-slate-700">
+                  <tr key={s.id} className="border-t border-hairline">
+                    <td className="px-3 py-2 font-medium text-ink">{s.name}</td>
+                    <td className="px-3 py-2 text-right text-bodytx">{s.session_count}</td>
+                    <td className="px-3 py-2 text-right text-bodytx">{s.error_count}</td>
+                    <td className="px-3 py-2 text-bodytx">{s.top_subtype ?? '—'}</td>
+                    <td className="px-3 py-2 text-right text-bodytx">
                       {s.improvement_rate == null
                         ? '—'
                         : `${(s.improvement_rate * 100).toFixed(0)}%`}
                     </td>
                     <td className="px-3 py-2">
                       {s.fossilization_count > 0 ? (
-                        <span className="rounded bg-amber-100 px-1.5 py-0.5 text-amber-700">
+                        <span className="rounded bg-gold-soft px-1.5 py-0.5 text-gold-dark">
                           {t('fossilCountSuffix', { count: s.fossilization_count })}
                         </span>
                       ) : (
-                        <span className="text-slate-400">—</span>
+                        <span className="text-muted">—</span>
                       )}
                     </td>
-                    <td className="px-3 py-2 text-slate-500">{formatDate(s.last_active)}</td>
+                    <td className="px-3 py-2 text-muted">{formatDate(s.last_active)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -171,13 +171,13 @@ export default function LiveClassPage(props: PageProps) {
     <main className="mx-auto w-full max-w-6xl space-y-4 p-4">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-xs text-slate-500">
-            <span className="font-mono text-slate-400">{classId}</span>
+          <p className="text-xs text-muted">
+            <span className="font-mono text-muted">{classId}</span>
             {lastSyncedAt && (
               <> · {t('syncedAt', { time: lastSyncedAt })}</>
             )}
           </p>
-          <h1 className="text-lg font-bold text-slate-900">{t('title')}</h1>
+          <h1 className="text-lg font-bold text-ink">{t('title')}</h1>
         </div>
         <div className="flex items-center gap-2">
           {isLive ? (
@@ -196,13 +196,13 @@ export default function LiveClassPage(props: PageProps) {
       </header>
 
       {error && (
-        <div className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+        <div className="rounded-xl2 border border-terra-soft bg-terra-soft px-3 py-2 text-sm text-terra-dark">
           {error}
         </div>
       )}
 
       {summary && (
-        <Card className="border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
+        <Card className="card-pop border-jade-soft bg-jade-soft p-3 text-sm text-jade-dark">
           <p className="font-semibold">{t('summaryTitle')}</p>
           <p className="mt-1">
             {t('summaryBody', {
@@ -217,10 +217,10 @@ export default function LiveClassPage(props: PageProps) {
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          <Card className="p-3">
+          <Card className="card-pop p-3">
             <div className="flex items-baseline justify-between">
-              <h2 className="text-sm font-semibold text-slate-800">{t('heatmapTitle')}</h2>
-              <p className="text-[11px] text-slate-400">
+              <h2 className="text-sm font-semibold text-ink">{t('heatmapTitle')}</h2>
+              <p className="text-[11px] text-muted">
                 {t('heatmapStats', {
                   cells: data?.heatmap?.length ?? 0,
                   total: data?.totals.errors ?? 0,
@@ -229,15 +229,15 @@ export default function LiveClassPage(props: PageProps) {
             </div>
             <div className="mt-2">
               {loading && !data ? (
-                <p className="text-xs text-slate-400">{t('heatmapLoading')}</p>
+                <p className="text-xs text-muted">{t('heatmapLoading')}</p>
               ) : (
                 <ErrorHeatmap cells={data?.heatmap ?? []} />
               )}
             </div>
           </Card>
 
-          <Card className="p-3">
-            <h2 className="text-sm font-semibold text-slate-800">{t('studentsTitle')}</h2>
+          <Card className="card-pop p-3">
+            <h2 className="text-sm font-semibold text-ink">{t('studentsTitle')}</h2>
             <div className="mt-2">
               <StudentList students={data?.students ?? []} />
             </div>
@@ -245,27 +245,27 @@ export default function LiveClassPage(props: PageProps) {
         </div>
 
         <aside className="space-y-4">
-          <Card className="p-3">
-            <h2 className="text-sm font-semibold text-slate-800">{t('top3Title')}</h2>
+          <Card className="card-pop p-3">
+            <h2 className="text-sm font-semibold text-ink">{t('top3Title')}</h2>
             {top3.length === 0 ? (
-              <p className="mt-2 text-xs text-slate-400">{t('top3Empty')}</p>
+              <p className="mt-2 text-xs text-muted">{t('top3Empty')}</p>
             ) : (
               <ol className="mt-2 space-y-1.5 text-sm">
                 {top3.map((entry, i) => (
                   <li
                     key={entry.error_subtype}
-                    className="flex items-center justify-between rounded-md bg-slate-50 px-2 py-1.5"
+                    className="flex items-center justify-between rounded-md bg-ivory px-2 py-1.5"
                   >
                     <span>
-                      <span className="mr-1.5 inline-block w-4 text-center font-mono text-xs text-indigo-600">
+                      <span className="mr-1.5 inline-block w-4 text-center font-mono text-xs text-blue">
                         {i + 1}
                       </span>
-                      <span className="font-medium text-slate-800">{entry.error_subtype}</span>
-                      <span className="ml-1 text-[11px] text-slate-400">
+                      <span className="font-medium text-ink">{entry.error_subtype}</span>
+                      <span className="ml-1 text-[11px] text-muted">
                         ({entry.error_type})
                       </span>
                     </span>
-                    <span className="font-semibold text-rose-600">{entry.count}</span>
+                    <span className="font-semibold text-terra">{entry.count}</span>
                   </li>
                 ))}
               </ol>
@@ -279,23 +279,23 @@ export default function LiveClassPage(props: PageProps) {
             onSaved={v => setSession(prev => (prev ? { ...prev, grammar_focus: v } : prev))}
           />
 
-          <Card className="p-3 text-xs text-slate-500">
-            <h3 className="mb-1 text-sm font-semibold text-slate-700">
+          <Card className="card-pop p-3 text-xs text-muted">
+            <h3 className="mb-1 text-sm font-semibold text-bodytx">
               {t('sessionInfoTitle')}
             </h3>
             {session ? (
               <dl className="space-y-1">
                 <div>
-                  <dt className="inline text-slate-400">{t('sessionIdLabel')} </dt>
+                  <dt className="inline text-muted">{t('sessionIdLabel')} </dt>
                   <dd className="inline font-mono">{session.id.slice(0, 8)}…</dd>
                 </div>
                 <div>
-                  <dt className="inline text-slate-400">{t('sessionStartLabel')} </dt>
+                  <dt className="inline text-muted">{t('sessionStartLabel')} </dt>
                   <dd className="inline">{new Date(session.started_at).toLocaleString()}</dd>
                 </div>
                 {session.ended_at && (
                   <div>
-                    <dt className="inline text-slate-400">{t('sessionEndLabel')} </dt>
+                    <dt className="inline text-muted">{t('sessionEndLabel')} </dt>
                     <dd className="inline">{new Date(session.ended_at).toLocaleString()}</dd>
                   </div>
                 )}
@@ -312,8 +312,8 @@ export default function LiveClassPage(props: PageProps) {
 
 function LiveIndicator() {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-700">
-      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rose-500" />
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-terra-soft px-2 py-0.5 text-[11px] font-semibold text-terra-dark">
+      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-terra" />
       LIVE
     </span>
   )

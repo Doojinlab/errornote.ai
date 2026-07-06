@@ -14,7 +14,7 @@ interface Props {
 export default function StudentList({ students, onSelect }: Props) {
   if (students.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-xs text-slate-500">
+      <div className="rounded-xl2 border border-dashed border-hairline bg-white p-6 text-center text-xs text-muted">
         아직 제출한 학생이 없습니다.
       </div>
     )
@@ -23,7 +23,7 @@ export default function StudentList({ students, onSelect }: Props) {
   const maxErrors = students.reduce((m, s) => (s.errors > m ? s.errors : m), 0)
 
   return (
-    <ul className="divide-y divide-slate-200 overflow-hidden rounded-lg border border-slate-200 bg-white">
+    <ul className="divide-y divide-hairline overflow-hidden rounded-xl2 border border-hairline bg-white">
       {students.map(s => {
         const ratio = maxErrors > 0 ? (s.errors / maxErrors) * 100 : 0
         return (
@@ -31,22 +31,22 @@ export default function StudentList({ students, onSelect }: Props) {
             <button
               type="button"
               onClick={() => onSelect?.(s.student_id)}
-              className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-slate-50"
+              className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-ivory"
             >
-              <div className="min-w-[6rem] truncate font-medium text-slate-800">
+              <div className="min-w-[6rem] truncate font-medium text-ink">
                 {s.name ?? '(이름 없음)'}
               </div>
               <div className="flex-1">
-                <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
+                <div className="h-1.5 overflow-hidden rounded-full bg-hairline">
                   <div
-                    className="h-full rounded-full bg-rose-400"
+                    className="h-full rounded-full bg-terra"
                     style={{ width: `${ratio.toFixed(1)}%` }}
                   />
                 </div>
               </div>
-              <div className="flex shrink-0 gap-2 text-xs text-slate-600">
+              <div className="flex shrink-0 gap-2 text-xs text-bodytx">
                 <span title="제출 수">📝 {s.submissions}</span>
-                <span className="font-semibold text-rose-600" title="오류 수">
+                <span className="font-semibold text-terra" title="오류 수">
                   ⚠ {s.errors}
                 </span>
               </div>
