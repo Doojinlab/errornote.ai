@@ -100,6 +100,7 @@ export default function PronunciationPage() {
   const recognitionRef = useRef<ISpeechRecognition | null>(null)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- SSR 하이드레이션 불일치 방지를 위해 마운트 후 1회 브라우저 Web Speech 지원 여부를 반영하는 의도적 effect
     setSpeechSupported(
       typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition)
     )
