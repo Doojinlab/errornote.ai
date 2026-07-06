@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "predeploy": "npm run typecheck && npm run lint && npm run test:coverage && npm run build",
     "db:types": "supabase gen types typescript --local > types/database.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",

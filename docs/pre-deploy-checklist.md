@@ -9,9 +9,10 @@
 
 ## 0. 코드 게이트 (로컬, 푸시/배포 전)
 
-- [ ] `npm run build` 통과 — CI 는 `next build` 를 게이트로 돌리지 않으므로 **빌드 실패는 Vercel 에서 처음 드러난다**
-- [ ] `npm run typecheck` / `npm run lint` 통과
-- [ ] `npm run test:coverage` 통과 — CI `verify` 가 커버리지 게이트(lines/stmts/branch)를 강제한다. 로컬 `npm test` 는 게이트 미포함이라 통과해도 CI 실패 가능
+- [ ] **`npm run predeploy` 통과** — CI `verify` 잡과 **동일한 4단계**(typecheck → lint → test:coverage → build)를 한 번에 로컬에서 돌린다. 푸시 전 이거 하나면 CI 게이트를 그대로 재현한다.
+  - 개별로 돌리려면: `npm run typecheck` / `npm run lint` / `npm run test:coverage` / `npm run build`
+  - `test:coverage` 는 커버리지 게이트(lines/stmts/branch, `vitest.config.ts`)를 강제한다 — 로컬 `npm test` 는 게이트 미포함이라 통과해도 CI 실패 가능
+  - `next build` 는 CI `verify` 도 게이트로 돌리지만(`.github/workflows/ci.yml`), Vercel 배포 전 로컬에서 먼저 확인하면 CI 왕복을 아낀다
 - [ ] main(또는 배포 대상) 기준 최신 — `git fetch && git log origin/main` 으로 내 변경이 반영됐는지 확인
 
 ## 1. Supabase 운영 프로젝트 → [deployment-vercel.md §1](deployment-vercel.md)
