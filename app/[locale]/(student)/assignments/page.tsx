@@ -35,15 +35,15 @@ export default async function StudentAssignmentsPage() {
   const submitted = items.filter((i) => i.submitted);
 
   return (
-    <main className="mx-auto w-full max-w-3xl space-y-5 p-4">
-      <h1 className="text-lg font-bold text-slate-900">{t("title")}</h1>
+    <main className="space-y-5">
+      <h1 className="text-lg font-bold text-ink">{t("title")}</h1>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-700">
+        <h2 className="text-sm font-semibold text-bodytx">
           {t("sectionPending", { count: pending.length })}
         </h2>
         {pending.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+          <p className="rounded-xl2 border border-dashed border-hairline bg-white p-6 text-center text-sm text-muted">
             {t("emptyPending")}
           </p>
         ) : (
@@ -51,9 +51,9 @@ export default async function StudentAssignmentsPage() {
             {pending.map((i) => (
               <li key={i.assignment.id}>
                 <Link href={`/assignments/${i.assignment.id}`}>
-                  <Card className="p-3 transition hover:border-indigo-400">
-                    <p className="font-medium text-slate-800">{i.assignment.title}</p>
-                    <p className="mt-1 text-xs text-slate-500">
+                  <Card className="p-3 transition hover:border-blue">
+                    <p className="font-medium text-ink">{i.assignment.title}</p>
+                    <p className="mt-1 text-xs text-muted">
                       {t("dueLabel")}
                       {formatDue(i.assignment.due_date, t)}
                       {i.rubric && t("rubricSuffix", { name: i.rubric.name })}
@@ -67,11 +67,11 @@ export default async function StudentAssignmentsPage() {
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-700">
+        <h2 className="text-sm font-semibold text-bodytx">
           {t("sectionSubmitted", { count: submitted.length })}
         </h2>
         {submitted.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+          <p className="rounded-xl2 border border-dashed border-hairline bg-white p-6 text-center text-sm text-muted">
             {t("emptySubmitted")}
           </p>
         ) : (
@@ -79,11 +79,11 @@ export default async function StudentAssignmentsPage() {
             {submitted.map((i) => (
               <li key={i.assignment.id}>
                 <Link href={`/assignments/${i.assignment.id}`}>
-                  <Card className="p-3 transition hover:border-indigo-400">
+                  <Card className="p-3 transition hover:border-blue">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
-                        <p className="font-medium text-slate-800">{i.assignment.title}</p>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="font-medium text-ink">{i.assignment.title}</p>
+                        <p className="mt-1 text-xs text-muted">
                           {t("submittedLabel")}
                           {i.submitted_at ? new Date(i.submitted_at).toLocaleString() : "—"}
                           {i.error_count !== null &&
@@ -91,7 +91,7 @@ export default async function StudentAssignmentsPage() {
                         </p>
                       </div>
                       {i.total_score !== null && (
-                        <span className="shrink-0 rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-700">
+                        <span className="shrink-0 rounded bg-blue-soft px-2 py-1 text-xs font-semibold text-blue-dark">
                           {t("scoreSuffix", { score: i.total_score.toFixed(1) })}
                         </span>
                       )}

@@ -138,7 +138,7 @@ export default function NotificationsPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-sm text-slate-500">{t('loading')}</p>
+        <p className="text-sm text-muted">{t('loading')}</p>
       </div>
     )
   }
@@ -146,13 +146,13 @@ export default function NotificationsPage() {
   const events = status?.enabled_events ?? DEFAULT_ENABLED
 
   return (
-    <main className="mx-auto w-full max-w-lg space-y-4 p-4">
+    <main className="space-y-4">
       {toast && (
         <div
-          className={`fixed right-4 top-4 z-50 rounded-lg border px-4 py-3 text-sm font-medium shadow-lg ${
+          className={`fixed right-4 top-4 z-50 rounded-xl2 border px-4 py-3 text-sm font-medium shadow-lg ${
             toast.type === 'success'
-              ? 'border-green-200 bg-green-50 text-green-800'
-              : 'border-red-200 bg-red-50 text-red-800'
+              ? 'border-jade bg-jade-soft text-jade-dark'
+              : 'border-terra bg-terra-soft text-terra-dark'
           }`}
         >
           {toast.message}
@@ -160,20 +160,20 @@ export default function NotificationsPage() {
       )}
 
       <div>
-        <h1 className="text-lg font-bold text-slate-900">{t('title')}</h1>
-        <p className="mt-0.5 text-xs text-slate-500">{t('subtitle')}</p>
+        <h1 className="text-lg font-bold text-ink">{t('title')}</h1>
+        <p className="mt-0.5 text-xs text-muted">{t('subtitle')}</p>
       </div>
 
       <PushToggle />
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="card-pop rounded-xl2 border border-hairline bg-white p-5">
         <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-yellow-400 text-sm font-bold text-yellow-900 select-none">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl2 bg-gold text-sm font-bold text-gold-dark select-none">
             K
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-900">{t('kakaoTitle')}</p>
-            <p className="truncate text-xs text-slate-500">
+            <p className="text-sm font-semibold text-ink">{t('kakaoTitle')}</p>
+            <p className="truncate text-xs text-muted">
               {status?.connected
                 ? t('connectedStatus', { id: status.kakao_user_id ?? '' })
                 : t('disconnectedStatus')}
@@ -182,8 +182,8 @@ export default function NotificationsPage() {
           <span
             className={`shrink-0 rounded-full px-2 py-1 text-xs font-medium ${
               status?.connected
-                ? 'bg-green-100 text-green-700'
-                : 'bg-slate-100 text-slate-500'
+                ? 'bg-jade-soft text-jade-dark'
+                : 'bg-ivory text-muted'
             }`}
           >
             {status?.connected ? t('connectedBadge') : t('disconnectedBadge')}
@@ -194,8 +194,8 @@ export default function NotificationsPage() {
           <button
             onClick={handleUnlink}
             disabled={saving}
-            className="w-full rounded-lg border border-red-200 py-2 text-sm text-red-600
-              transition-colors hover:bg-red-50 disabled:opacity-50"
+            className="w-full rounded-xl2 border border-terra py-2 text-sm text-terra
+              transition-colors hover:bg-terra-soft disabled:opacity-50"
           >
             {t('unlink')}
           </button>
@@ -203,22 +203,22 @@ export default function NotificationsPage() {
           <button
             onClick={handleConnect}
             disabled={saving}
-            className="w-full rounded-lg bg-yellow-400 py-2 text-sm font-medium text-yellow-900
-              transition-colors hover:bg-yellow-500 disabled:opacity-50"
+            className="w-full rounded-xl2 bg-gold py-2 text-sm font-medium text-gold-dark
+              transition-colors hover:bg-gold-dark disabled:opacity-50"
           >
             {t('connect')}
           </button>
         )}
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
-        <p className="mb-1 text-sm font-semibold text-slate-900">{t('eventsTitle')}</p>
-        <p className="mb-4 text-xs text-slate-500">{t('eventsSubtitle')}</p>
+      <section className="card-pop rounded-xl2 border border-hairline bg-white p-5">
+        <p className="mb-1 text-sm font-semibold text-ink">{t('eventsTitle')}</p>
+        <p className="mb-4 text-xs text-muted">{t('eventsSubtitle')}</p>
 
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-hairline">
           {EVENT_TYPES.map((event) => (
             <li key={event} className="flex items-center justify-between py-3">
-              <span className="text-sm text-slate-700">{eventLabel(event)}</span>
+              <span className="text-sm text-bodytx">{eventLabel(event)}</span>
               <button
                 role="switch"
                 aria-checked={events[event]}
@@ -226,8 +226,8 @@ export default function NotificationsPage() {
                 onClick={() => handleToggleEvent(event)}
                 disabled={saving || !status?.connected}
                 className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500
-                  disabled:opacity-40 ${events[event] ? 'bg-indigo-600' : 'bg-slate-200'}`}
+                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue
+                  disabled:opacity-40 ${events[event] ? 'bg-blue' : 'bg-hairline'}`}
               >
                 <span
                   className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
@@ -240,7 +240,7 @@ export default function NotificationsPage() {
         </ul>
 
         {!status?.connected && (
-          <p className="mt-3 text-xs text-slate-400">{t('eventsHint')}</p>
+          <p className="mt-3 text-xs text-muted">{t('eventsHint')}</p>
         )}
       </section>
     </main>

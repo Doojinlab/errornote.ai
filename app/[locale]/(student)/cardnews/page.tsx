@@ -41,17 +41,17 @@ export default async function CardnewsListPage() {
   ]);
 
   return (
-    <section className="mx-auto w-full max-w-3xl space-y-4 p-4">
+    <section className="space-y-4">
       <div className="flex items-baseline justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold text-slate-900">{t("title")}</h1>
-          <p className="text-xs text-slate-500">{t("subtitle")}</p>
+          <h1 className="text-lg font-bold text-ink">{t("title")}</h1>
+          <p className="text-xs text-muted">{t("subtitle")}</p>
         </div>
         <GenerateButton />
       </div>
 
       {weeks.length === 0 ? (
-        <Card className="p-6 text-center text-sm text-slate-500">
+        <Card className="p-6 text-center text-sm text-muted">
           {t("emptyState")}
         </Card>
       ) : (
@@ -60,21 +60,21 @@ export default async function CardnewsListPage() {
             <li key={w.id}>
               <Link
                 href={`/cardnews/${encodeURIComponent(w.week_start)}`}
-                className="block focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                className="block focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2"
               >
-                <Card className="p-3 transition hover:border-indigo-300 hover:shadow">
+                <Card className="p-3 transition hover:border-blue hover:shadow">
                   <div className="flex items-center justify-between">
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-sm font-semibold text-ink">
                         {t("weekLabel", { date: formatDate(w.week_start) })}
                       </p>
-                      <p className="mt-0.5 text-[11px] text-slate-500">
+                      <p className="mt-0.5 text-[11px] text-muted">
                         {t("entryCreated", { date: formatDate(w.created_at.slice(0, 10)) })}
                         {" · "}
                         {w.is_sent ? t("sent") : t("notSent")}
                       </p>
                     </div>
-                    <span className="text-xs text-indigo-600">{t("detailLink")}</span>
+                    <span className="text-xs text-blue">{t("detailLink")}</span>
                   </div>
                 </Card>
               </Link>

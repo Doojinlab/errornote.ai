@@ -46,32 +46,32 @@ export default function QuestBoard({ initialMissions }: Props) {
   return (
     <div className="space-y-3">
       {allDone && (
-        <p className="rounded-lg bg-green-50 p-3 text-center text-sm font-semibold text-green-700">
+        <p className="rounded-xl2 bg-jade-soft p-3 text-center text-sm font-semibold text-jade-dark">
           {t("allDone")}
         </p>
       )}
       {coinFlash != null && (
         <p
-          className="text-center text-sm font-semibold text-amber-600"
+          className="text-center text-sm font-semibold text-gold"
           role="status"
         >
           {t("coinsEarned", { coins: coinFlash })}
         </p>
       )}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-terra">{error}</p>}
 
       <ul className="space-y-3">
         {missions.map((m) => (
           <li
             key={m.id}
-            className={`rounded-lg border bg-white p-4 shadow-sm ${m.done ? "opacity-60" : ""}`}
+            className={`card-pop rounded-xl2 border bg-white p-4 shadow-sm ${m.done ? "opacity-60" : ""}`}
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="font-semibold text-slate-900">{m.title}</h3>
-                <p className="mt-1 text-sm text-slate-600">{m.instruction}</p>
+                <h3 className="font-semibold text-ink">{m.title}</h3>
+                <p className="mt-1 text-sm text-bodytx">{m.instruction}</p>
                 {m.source_label && (
-                  <p className="mt-2 inline-block rounded bg-indigo-50 px-2 py-0.5 text-xs text-indigo-600">
+                  <p className="mt-2 inline-block rounded bg-blue-soft px-2 py-0.5 text-xs text-blue">
                     {t("fromYesterday", { label: m.source_label })}
                   </p>
                 )}
@@ -80,7 +80,7 @@ export default function QuestBoard({ initialMissions }: Props) {
                 type="button"
                 onClick={() => complete(m.id)}
                 disabled={m.done || busyId === m.id}
-                className="shrink-0 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:bg-slate-300"
+                className="shrink-0 rounded-md bg-blue px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-dark disabled:bg-hairline"
               >
                 {m.done ? t("done") : t("complete")}
               </button>

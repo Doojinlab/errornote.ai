@@ -70,16 +70,16 @@ export default async function CardnewsWeekPage(props: Params) {
   if (!record) notFound();
 
   return (
-    <section className="mx-auto flex min-h-0 w-full max-w-xl flex-1 flex-col p-4">
+    <section className="flex min-h-0 flex-1 flex-col">
       <header className="mb-2 flex items-center justify-between">
         <div>
           <Link
             href="/cardnews"
-            className="text-[11px] text-slate-500 hover:text-slate-700"
+            className="text-[11px] text-muted hover:text-bodytx"
           >
             {t("backToList")}
           </Link>
-          <h1 className="mt-1 text-base font-bold text-slate-900">
+          <h1 className="mt-1 text-base font-bold text-ink">
             {t("weekLabel", { date: record.week_start })}
           </h1>
         </div>

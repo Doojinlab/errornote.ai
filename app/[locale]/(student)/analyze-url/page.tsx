@@ -48,18 +48,18 @@ export default async function AnalyzeUrlPage() {
   const history = user ? await loadHistory(user.id) : [];
 
   return (
-    <section className="mx-auto w-full max-w-3xl space-y-4 p-4">
+    <section className="space-y-4">
       <div>
-        <h1 className="text-lg font-bold text-slate-900">{t("title")}</h1>
-        <p className="mt-1 text-xs text-slate-500">{t("subtitle")}</p>
+        <h1 className="text-lg font-bold text-ink">{t("title")}</h1>
+        <p className="mt-1 text-xs text-muted">{t("subtitle")}</p>
       </div>
 
       <AnalyzeUrlClient />
 
       <div className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-700">{t("historyTitle")}</h2>
+        <h2 className="text-sm font-semibold text-bodytx">{t("historyTitle")}</h2>
         {history.length === 0 ? (
-          <Card className="p-6 text-center text-sm text-slate-500">{t("emptyState")}</Card>
+          <Card className="p-6 text-center text-sm text-muted">{t("emptyState")}</Card>
         ) : (
           <ul className="space-y-2">
             {history.map((r) => (
@@ -70,20 +70,20 @@ export default async function AnalyzeUrlPage() {
                       href={r.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="truncate text-xs font-medium text-indigo-600 hover:underline"
+                      className="truncate text-xs font-medium text-blue hover:underline"
                     >
                       {r.url}
                     </a>
-                    <span className="shrink-0 rounded bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">
+                    <span className="shrink-0 rounded bg-ivory px-2 py-0.5 text-[10px] text-bodytx">
                       {t(`source.${r.source_type ?? "other"}`)}
                     </span>
                   </div>
                   {r.analysis_result.overall_register && (
-                    <p className="mt-1 text-xs text-slate-700">
+                    <p className="mt-1 text-xs text-bodytx">
                       {r.analysis_result.overall_register}
                     </p>
                   )}
-                  <p className="mt-1 text-[11px] text-slate-400">
+                  <p className="mt-1 text-[11px] text-muted">
                     {new Date(r.created_at).toLocaleString()}
                     {" · "}
                     {t("annotationsCount", {

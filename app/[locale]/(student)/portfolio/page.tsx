@@ -42,9 +42,9 @@ export default async function PortfolioPage() {
       <div className="mx-auto w-full max-w-4xl space-y-8 p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">{t('title')}</h1>
-            <p className="mt-1 text-slate-500">{data.student.email ?? 'Student'}</p>
-            <p className="mt-0.5 text-xs text-slate-400">
+            <h1 className="text-3xl font-bold text-ink">{t('title')}</h1>
+            <p className="mt-1 text-muted">{data.student.email ?? 'Student'}</p>
+            <p className="mt-0.5 text-xs text-muted">
               {t('generatedAt', {
                 generatedAt: formatDate(data.generatedAt),
                 joinedAt: formatDate(data.student.joined_at),
@@ -65,23 +65,23 @@ export default async function PortfolioPage() {
             { label: t('statVocab'), value: data.vocabularyCount },
             { label: t('statBadges'), value: data.badgesEarned.length },
           ].map(({ label, value }) => (
-            <div key={label} className="rounded-lg border border-slate-200 bg-white p-4 text-center">
-              <p className="text-2xl font-bold text-slate-800">{value}</p>
-              <p className="mt-1 text-sm text-slate-500">{label}</p>
+            <div key={label} className="rounded-xl2 border border-hairline bg-white p-4 text-center">
+              <p className="text-2xl font-bold text-ink">{value}</p>
+              <p className="mt-1 text-sm text-muted">{label}</p>
             </div>
           ))}
         </div>
 
         <section>
-          <h2 className="mb-4 text-xl font-semibold text-slate-800">{t('writingSamplesTitle')}</h2>
+          <h2 className="mb-4 text-xl font-semibold text-ink">{t('writingSamplesTitle')}</h2>
           {data.topSessions.length === 0 ? (
-            <p className="text-sm text-slate-400">{t('noSessions')}</p>
+            <p className="text-sm text-muted">{t('noSessions')}</p>
           ) : (
             <div className="space-y-4">
               {data.topSessions.map((session, i) => (
-                <div key={session.id} className="rounded-lg border border-slate-200 bg-white p-4">
+                <div key={session.id} className="rounded-xl2 border border-hairline bg-white p-4">
                   <div className="mb-2 flex items-center justify-between">
-                    <span className="text-sm font-medium text-slate-600">
+                    <span className="text-sm font-medium text-bodytx">
                       {t('sessionLabel', {
                         rank: i + 1,
                         chapter: session.chapter_number,
@@ -90,21 +90,21 @@ export default async function PortfolioPage() {
                     </span>
                     <div className="flex items-center gap-3 text-sm">
                       {session.score !== undefined && (
-                        <span className="font-semibold text-green-700">
+                        <span className="font-semibold text-jade-dark">
                           {t('scoreLabel', { score: session.score })}
                         </span>
                       )}
-                      <span className="text-red-500">
+                      <span className="text-terra">
                         {t('errorsLabel', { count: session.error_count })}
                       </span>
                     </div>
                   </div>
-                  <p className="line-clamp-3 text-sm leading-relaxed text-slate-700">
+                  <p lang="zh" className="line-clamp-3 text-sm leading-relaxed text-bodytx font-cn">
                     {session.draft_text.slice(0, 300)}
                     {session.draft_text.length > 300 ? '…' : ''}
                   </p>
                   {session.feedback && (
-                    <p className="mt-2 border-t pt-2 text-xs italic text-slate-500">
+                    <p className="mt-2 border-t border-hairline pt-2 text-xs italic text-muted">
                       {session.feedback}
                     </p>
                   )}
@@ -115,26 +115,26 @@ export default async function PortfolioPage() {
         </section>
 
         <section>
-          <h2 className="mb-4 text-xl font-semibold text-slate-800">
+          <h2 className="mb-4 text-xl font-semibold text-ink">
             {t('errorAnalysisTitle')}
-            <span className="ml-2 text-sm font-normal text-slate-400">
+            <span className="ml-2 text-sm font-normal text-muted">
               {t('totalErrors', { total: data.totalErrors })}
             </span>
           </h2>
           {data.errorStats.length === 0 ? (
-            <p className="text-sm text-slate-400">{t('noErrors')}</p>
+            <p className="text-sm text-muted">{t('noErrors')}</p>
           ) : (
-            <div className="space-y-2 rounded-lg border border-slate-200 bg-white p-4">
+            <div className="space-y-2 rounded-xl2 border border-hairline bg-white p-4">
               {data.errorStats.map((stat) => (
                 <div key={stat.type} className="flex items-center gap-3">
-                  <span className="w-28 capitalize text-sm text-slate-600">{stat.type}</span>
-                  <div className="h-2.5 flex-1 rounded-full bg-slate-100">
+                  <span className="w-28 capitalize text-sm text-bodytx">{stat.type}</span>
+                  <div className="h-2.5 flex-1 rounded-full bg-ivory">
                     <div
-                      className="h-2.5 rounded-full bg-indigo-500"
+                      className="h-2.5 rounded-full bg-blue"
                       style={{ width: `${(stat.count / maxErrorCount) * 100}%` }}
                     />
                   </div>
-                  <span className="w-8 text-right text-sm font-medium text-slate-700">
+                  <span className="w-8 text-right text-sm font-medium text-bodytx">
                     {stat.count}
                   </span>
                 </div>
@@ -145,16 +145,16 @@ export default async function PortfolioPage() {
 
         {data.badgesEarned.length > 0 && (
           <section>
-            <h2 className="mb-4 text-xl font-semibold text-slate-800">{t('badgesTitle')}</h2>
+            <h2 className="mb-4 text-xl font-semibold text-ink">{t('badgesTitle')}</h2>
             <div className="flex flex-wrap gap-2">
               {data.badgesEarned.map((badge, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-2 rounded-full border border-yellow-200 bg-yellow-50 px-4 py-1.5 text-sm"
+                  className="flex items-center gap-2 rounded-full border border-gold bg-gold-soft px-4 py-1.5 text-sm"
                 >
-                  <span className="text-yellow-500">★</span>
-                  <span className="font-medium text-yellow-800">{badge.badge_name}</span>
-                  <span className="text-xs text-yellow-500">{formatDate(badge.earned_at)}</span>
+                  <span className="text-gold">★</span>
+                  <span className="font-medium text-gold-dark">{badge.badge_name}</span>
+                  <span className="text-xs text-gold">{formatDate(badge.earned_at)}</span>
                 </div>
               ))}
             </div>
@@ -163,8 +163,8 @@ export default async function PortfolioPage() {
 
         {data.goalsProgress.length > 0 && (
           <section>
-            <h2 className="mb-4 text-xl font-semibold text-slate-800">{t('goalsTitle')}</h2>
-            <div className="space-y-3 rounded-lg border border-slate-200 bg-white p-4">
+            <h2 className="mb-4 text-xl font-semibold text-ink">{t('goalsTitle')}</h2>
+            <div className="space-y-3 rounded-xl2 border border-hairline bg-white p-4">
               {data.goalsProgress.map((goal, i) => {
                 const pct = Math.min(
                   Math.round((goal.current_value / Math.max(goal.target_value, 1)) * 100),
@@ -173,8 +173,8 @@ export default async function PortfolioPage() {
                 return (
                   <div key={i}>
                     <div className="mb-1 flex justify-between text-sm">
-                      <span className="text-slate-700">{goal.goal}</span>
-                      <span className="text-slate-500">
+                      <span className="text-bodytx">{goal.goal}</span>
+                      <span className="text-muted">
                         {t('goalProgress', {
                           current: goal.current_value,
                           target: goal.target_value,
@@ -182,9 +182,9 @@ export default async function PortfolioPage() {
                         })}
                       </span>
                     </div>
-                    <div className="h-2 rounded-full bg-slate-100">
+                    <div className="h-2 rounded-full bg-ivory">
                       <div
-                        className="h-2 rounded-full bg-green-500 transition-all"
+                        className="h-2 rounded-full bg-jade transition-all"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -195,7 +195,7 @@ export default async function PortfolioPage() {
           </section>
         )}
 
-        <div className="border-t pt-4 text-center text-xs text-slate-300">
+        <div className="border-t border-hairline pt-4 text-center text-xs text-muted">
           {t('generatedFooter', { date: formatDate(data.generatedAt) })}
         </div>
       </div>

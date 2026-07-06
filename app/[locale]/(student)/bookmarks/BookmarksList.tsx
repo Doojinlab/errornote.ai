@@ -38,7 +38,7 @@ export default function BookmarksList({ items }: Props) {
 
   if (items.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+      <p className="rounded-xl2 border border-dashed border-hairline bg-white p-6 text-center text-sm text-muted">
         북마크한 예문이 없습니다. 오류 기록에서 ⭐ 버튼으로 추가할 수 있습니다.
       </p>
     );
@@ -51,15 +51,15 @@ export default function BookmarksList({ items }: Props) {
           <Card className="p-3">
             <div className="flex items-start gap-3">
               <div className="min-w-0 flex-1">
-                <p className="text-sm text-slate-900">{b.sentence}</p>
-                {b.note && <p className="mt-1 text-xs text-slate-500">메모: {b.note}</p>}
-                <p className="mt-1 text-[10px] text-slate-400">{formatDate(b.created_at)}</p>
+                <p className="text-sm text-ink font-cn" lang="zh">{b.sentence}</p>
+                {b.note && <p className="mt-1 text-xs text-muted">메모: {b.note}</p>}
+                <p className="mt-1 text-[10px] text-muted">{formatDate(b.created_at)}</p>
               </div>
               <button
                 type="button"
                 onClick={() => remove(b.id)}
                 disabled={removingIds.has(b.id)}
-                className="shrink-0 text-xs text-red-600 hover:underline disabled:opacity-50"
+                className="shrink-0 text-xs text-terra hover:underline disabled:opacity-50"
               >
                 삭제
               </button>

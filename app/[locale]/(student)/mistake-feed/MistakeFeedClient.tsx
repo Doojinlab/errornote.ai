@@ -86,8 +86,8 @@ export default function MistakeFeedClient({ initialMine, initialPublic }: Props)
     <button
       type="button"
       onClick={() => setTab(key)}
-      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-        tab === key ? "bg-indigo-600 text-white" : "bg-white text-slate-600 hover:bg-slate-100"
+      className={`rounded-xl2 px-3 py-1.5 text-sm font-medium transition-colors ${
+        tab === key ? "bg-blue text-white" : "bg-white text-bodytx hover:bg-ivory"
       }`}
     >
       {label}
@@ -103,35 +103,35 @@ export default function MistakeFeedClient({ initialMine, initialPublic }: Props)
       </div>
 
       {tab === "submit" && (
-        <form onSubmit={submit} className="space-y-3 rounded-xl border bg-white p-4 shadow-sm">
+        <form onSubmit={submit} className="space-y-3 card-pop rounded-xl2 border border-hairline bg-white p-4 shadow-sm">
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">{t("labelOriginalKo")}</label>
+            <label className="mb-1 block text-xs font-medium text-bodytx">{t("labelOriginalKo")}</label>
             <input
               value={originalKo}
               onChange={(e) => setOriginalKo(e.target.value)}
               placeholder={t("placeholderOriginalKo")}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full rounded-xl2 border border-hairline px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">{t("labelLiteralZh")}</label>
+            <label className="mb-1 block text-xs font-medium text-bodytx">{t("labelLiteralZh")}</label>
             <input
               value={literalZh}
               onChange={(e) => setLiteralZh(e.target.value)}
               placeholder={t("placeholderLiteralZh")}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full rounded-xl2 border border-hairline px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">{t("labelCorrectedZh")}</label>
+            <label className="mb-1 block text-xs font-medium text-bodytx">{t("labelCorrectedZh")}</label>
             <input
               value={correctedZh}
               onChange={(e) => setCorrectedZh(e.target.value)}
               placeholder={t("placeholderCorrectedZh")}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full rounded-xl2 border border-hairline px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue"
             />
           </div>
-          <label className="flex items-start gap-2 text-xs text-slate-600">
+          <label className="flex items-start gap-2 text-xs text-bodytx">
             <input
               type="checkbox"
               checked={isPublic}
@@ -140,11 +140,11 @@ export default function MistakeFeedClient({ initialMine, initialPublic }: Props)
             />
             <span>{t("publicConsent")}</span>
           </label>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-terra">{error}</p>}
           <button
             type="submit"
             disabled={busy || !originalKo.trim() || !literalZh.trim()}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+            className="rounded-xl2 bg-blue px-4 py-2 text-sm font-medium text-white hover:bg-blue-dark disabled:opacity-50"
           >
             {busy ? t("submitting") : t("submit")}
           </button>
@@ -153,23 +153,23 @@ export default function MistakeFeedClient({ initialMine, initialPublic }: Props)
 
       {tab === "mine" &&
         (mine.length === 0 ? (
-          <p className="rounded-lg bg-white p-6 text-center text-sm text-slate-500 shadow-sm">{t("emptyMine")}</p>
+          <p className="rounded-xl2 bg-white p-6 text-center text-sm text-muted shadow-sm">{t("emptyMine")}</p>
         ) : (
           <ul className="space-y-3">
             {mine.map((m) => (
-              <li key={m.id} className="rounded-xl border bg-white p-4 shadow-sm">
-                <p className="text-sm text-slate-500">🇰🇷 {m.originalKo}</p>
-                <p className="mt-1 text-base text-slate-900">😅 {m.literalZh}</p>
-                {m.correctedZh && <p className="mt-1 text-sm text-emerald-700">✅ {m.correctedZh}</p>}
+              <li key={m.id} className="card-pop rounded-xl2 border border-hairline bg-white p-4 shadow-sm">
+                <p className="text-sm text-muted">🇰🇷 {m.originalKo}</p>
+                <p className="mt-1 text-base text-ink font-cn" lang="zh">😅 {m.literalZh}</p>
+                {m.correctedZh && <p className="mt-1 text-sm text-jade-dark font-cn" lang="zh">✅ {m.correctedZh}</p>}
                 <div className="mt-3 flex items-center justify-between">
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-muted">
                     {m.isPublic ? t("statusPublic") : t("statusPrivate")}
                   </span>
                   <button
                     type="button"
                     onClick={() => togglePublic(m)}
                     disabled={togglingId === m.id}
-                    className="rounded-md border border-slate-200 px-2.5 py-1 text-xs text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                    className="rounded-md border border-hairline px-2.5 py-1 text-xs text-bodytx hover:bg-ivory disabled:opacity-50"
                   >
                     {m.isPublic ? t("makePrivate") : t("makePublic")}
                   </button>
@@ -181,24 +181,24 @@ export default function MistakeFeedClient({ initialMine, initialPublic }: Props)
 
       {tab === "public" &&
         (publicFeed.length === 0 ? (
-          <p className="rounded-lg bg-white p-6 text-center text-sm text-slate-500 shadow-sm">{t("emptyPublic")}</p>
+          <p className="rounded-xl2 bg-white p-6 text-center text-sm text-muted shadow-sm">{t("emptyPublic")}</p>
         ) : (
           <ul className="space-y-3">
             {publicFeed.map((m) => (
               <li
                 key={m.id}
-                className={`rounded-xl border bg-white p-4 shadow-sm ${m.isMe ? "ring-1 ring-indigo-200" : ""}`}
+                className={`card-pop rounded-xl2 border border-hairline bg-white p-4 shadow-sm ${m.isMe ? "ring-1 ring-blue" : ""}`}
               >
                 <div className="mb-1 flex items-center justify-between">
-                  <span className="text-xs font-medium text-slate-500">
+                  <span className="text-xs font-medium text-muted">
                     {m.nickname}
                     {m.isMe && ` · ${t("me")}`}
                   </span>
-                  {m.likes > 0 && <span className="text-xs text-rose-500">❤ {m.likes}</span>}
+                  {m.likes > 0 && <span className="text-xs text-terra">❤ {m.likes}</span>}
                 </div>
-                <p className="text-sm text-slate-500">🇰🇷 {m.originalKo}</p>
-                <p className="mt-1 text-base text-slate-900">😅 {m.literalZh}</p>
-                {m.correctedZh && <p className="mt-1 text-sm text-emerald-700">✅ {m.correctedZh}</p>}
+                <p className="text-sm text-muted">🇰🇷 {m.originalKo}</p>
+                <p className="mt-1 text-base text-ink font-cn" lang="zh">😅 {m.literalZh}</p>
+                {m.correctedZh && <p className="mt-1 text-sm text-jade-dark font-cn" lang="zh">✅ {m.correctedZh}</p>}
               </li>
             ))}
           </ul>

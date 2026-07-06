@@ -43,30 +43,30 @@ export default function StudentDataExportPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-2xl space-y-5 p-4">
+    <main className="space-y-5">
       <div>
-        <h1 className="text-lg font-bold text-slate-900">{t('title')}</h1>
-        <p className="mt-1 text-xs text-slate-500">{t('subtitle')}</p>
+        <h1 className="text-lg font-bold text-ink">{t('title')}</h1>
+        <p className="mt-1 text-xs text-muted">{t('subtitle')}</p>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 space-y-2">
-        <p className="text-sm font-medium text-slate-700">{t('includedTitle')}</p>
-        <ul className="space-y-1 text-sm text-slate-500 list-disc list-inside">
+      <div className="rounded-xl2 border border-hairline bg-ivory p-4 space-y-2">
+        <p className="text-sm font-medium text-bodytx">{t('includedTitle')}</p>
+        <ul className="space-y-1 text-sm text-muted list-disc list-inside">
           <li>{t('includedProfile')}</li>
           <li>{t('includedSessions')}</li>
           <li>{t('includedVocab')}</li>
           <li>{t('includedBookmarks')}</li>
           <li>{t('includedBadges')}</li>
         </ul>
-        <p className="text-xs text-slate-400 pt-1">{t('includedNote')}</p>
+        <p className="text-xs text-muted pt-1">{t('includedNote')}</p>
       </div>
 
       {error && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+        <p className="rounded-md bg-terra-soft px-3 py-2 text-sm text-terra">{error}</p>
       )}
 
       {done && (
-        <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
+        <p className="rounded-md bg-jade-soft px-3 py-2 text-sm text-jade-dark">
           {t('successMsg')}
         </p>
       )}
@@ -74,13 +74,13 @@ export default function StudentDataExportPage() {
       <button
         onClick={handleDownload}
         disabled={loading}
-        className="w-full rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white
-          hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+        className="w-full rounded-md bg-blue px-4 py-2.5 text-sm font-semibold text-white
+          hover:bg-blue-dark disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
       >
         {loading ? t('downloading') : t('download')}
       </button>
 
-      <p className="text-center text-xs text-slate-400">{t('gdprNote')}</p>
+      <p className="text-center text-xs text-muted">{t('gdprNote')}</p>
     </main>
   )
 }

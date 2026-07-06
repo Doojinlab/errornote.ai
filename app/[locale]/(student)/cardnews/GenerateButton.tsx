@@ -40,11 +40,11 @@ export default function GenerateButton() {
         type="button"
         onClick={handleClick}
         disabled={isPending}
-        className="rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow hover:bg-indigo-500 disabled:opacity-60"
+        className="rounded-md bg-blue px-3 py-1.5 text-xs font-semibold text-white shadow hover:bg-blue-dark disabled:opacity-60"
       >
         {isPending ? "생성 중…" : "이번 주 생성"}
       </button>
-      {error && <p className="text-[10px] text-red-600">{error}</p>}
+      {error && <p className="text-[10px] text-terra">{error}</p>}
     </div>
   );
 }
