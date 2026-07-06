@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { Card, LipButton } from '@/components/student-ui'
 import type { ReviewDetail } from '@/types/peer-review'
 
 function ScoreSelect({
@@ -18,7 +19,7 @@ function ScoreSelect({
 }) {
   return (
     <div className="space-y-1">
-      <p className="text-sm font-semibold text-slate-700">{label}</p>
+      <p className="text-sm font-bold text-bodytx">{label}</p>
       <div className="flex gap-2">
         {[1, 2, 3, 4, 5].map((n) => (
           <button
@@ -26,11 +27,11 @@ function ScoreSelect({
             type="button"
             disabled={disabled}
             onClick={() => onChange(n)}
-            className={`h-9 w-9 rounded border text-sm font-medium transition
+            className={`h-9 w-9 rounded-xl2 border text-sm font-bold transition
               ${
                 value === n
-                  ? 'border-indigo-500 bg-indigo-500 text-white'
-                  : 'border-slate-300 bg-white text-slate-700 hover:border-indigo-400'
+                  ? 'border-blue bg-blue text-white'
+                  : 'border-hairline bg-white text-bodytx hover:border-blue'
               }
               disabled:cursor-not-allowed disabled:opacity-50`}
           >
@@ -142,50 +143,42 @@ export default function PeerReviewFormPage() {
   }, [reviewId, feedbackText, grammarScore, vocabScore, contentScore, overallScore, router, t])
 
   if (loading) {
-    return (
-      <main className="mx-auto w-full max-w-3xl p-4">
-        <p className="text-sm text-slate-500">{t('loading')}</p>
-      </main>
-    )
+    return <p className="text-sm text-muted">{t('loading')}</p>
   }
 
   if (loadError || !detail) {
-    return (
-      <main className="mx-auto w-full max-w-3xl p-4">
-        <p className="text-sm text-red-600">{loadError ?? t('notFound')}</p>
-      </main>
-    )
+    return <p className="text-sm text-terra-dark">{loadError ?? t('notFound')}</p>
   }
 
   const isCompleted = detail.status === 'completed'
 
   return (
-    <main className="mx-auto w-full max-w-3xl space-y-5 p-4">
+    <div className="space-y-5">
       <div>
-        <h1 className="text-lg font-bold text-slate-900">{t('formTitle')}</h1>
-        <p className="text-sm text-slate-500">{detail.assignment_title}</p>
+        <h1 className="text-xl font-extrabold tracking-tight text-ink">{t('formTitle')}</h1>
+        <p className="mt-1 text-sm text-muted">{detail.assignment_title}</p>
       </div>
 
       {detail.prompt_text && (
-        <section className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-          <p className="mb-1 text-xs font-semibold text-slate-500">{t('promptLabel')}</p>
-          <p className="whitespace-pre-wrap text-sm text-slate-700">{detail.prompt_text}</p>
+        <section className="rounded-xl2 border border-hairline bg-ivory p-3">
+          <p className="mb-1 text-xs font-bold text-muted">{t('promptLabel')}</p>
+          <p className="whitespace-pre-wrap text-sm text-bodytx">{detail.prompt_text}</p>
         </section>
       )}
 
-      <section className="rounded-lg border border-slate-200 bg-white p-3">
-        <p className="mb-1 text-xs font-semibold text-slate-500">{t('draftLabel')}</p>
+      <Card className="p-3">
+        <p className="mb-1 text-xs font-bold text-muted">{t('draftLabel')}</p>
         {detail.draft_text ? (
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+          <p className="whitespace-pre-wrap font-cn text-sm leading-relaxed text-ink">
             {detail.draft_text}
           </p>
         ) : (
-          <p className="text-sm text-slate-400">{t('draftMissing')}</p>
+          <p className="text-sm text-muted">{t('draftMissing')}</p>
         )}
-      </section>
+      </Card>
 
-      <section className="space-y-4 rounded-lg border border-slate-200 bg-white p-4">
-        <p className="text-sm font-semibold text-slate-700">{t('scoresHeading')}</p>
+      <Card className="space-y-4 p-4">
+        <p className="text-sm font-bold text-bodytx">{t('scoresHeading')}</p>
 
         <ScoreSelect label={t('grammarLabel')} value={grammarScore} onChange={setGrammarScore} disabled={isCompleted} />
         <ScoreSelect label={t('vocabLabel')}   value={vocabScore}   onChange={setVocabScore}   disabled={isCompleted} />
@@ -193,7 +186,7 @@ export default function PeerReviewFormPage() {
         <ScoreSelect label={t('overallLabel')} value={overallScore} onChange={setOverallScore} disabled={isCompleted} />
 
         <div className="space-y-1">
-          <label htmlFor="feedback-text" className="text-sm font-semibold text-slate-700">
+          <label htmlFor="feedback-text" className="text-sm font-bold text-bodytx">
             {t('feedbackLabel')}
           </label>
           <textarea
@@ -203,42 +196,38 @@ export default function PeerReviewFormPage() {
             disabled={isCompleted}
             rows={5}
             placeholder={t('feedbackPlaceholder')}
-            className="w-full rounded border border-slate-300 p-2 text-sm text-slate-700
-              placeholder-slate-400 focus:border-indigo-400 focus:outline-none
-              disabled:bg-slate-50 disabled:opacity-70"
+            className="w-full rounded-xl2 border border-hairline p-2 text-sm text-bodytx
+              placeholder-muted focus:border-blue focus:outline-none
+              disabled:bg-ivory disabled:opacity-70"
           />
         </div>
 
-        {formError && <p className="text-sm text-red-600">{formError}</p>}
-        {savedMsg  && <p className="text-sm text-green-600">{t('savedMsg')}</p>}
+        {formError && <p className="text-sm text-terra-dark">{formError}</p>}
+        {savedMsg  && <p className="text-sm text-jade-dark">{t('savedMsg')}</p>}
 
         {!isCompleted ? (
           <div className="flex gap-2">
-            <button
-              type="button"
+            <LipButton
+              variant="white"
               onClick={handleSave}
-              disabled={saving || submitting}
-              className="rounded border border-slate-300 px-4 py-2 text-sm font-medium
-                text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+              className={saving || submitting ? 'pointer-events-none opacity-50' : ''}
             >
               {saving ? t('saving') : t('saveDraft')}
-            </button>
-            <button
-              type="button"
+            </LipButton>
+            <LipButton
+              variant="blue"
               onClick={handleSubmit}
-              disabled={saving || submitting}
-              className="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white
-                transition hover:bg-indigo-700 disabled:opacity-50"
+              className={saving || submitting ? 'pointer-events-none opacity-50' : ''}
             >
               {submitting ? t('submitting') : t('submitReview')}
-            </button>
+            </LipButton>
           </div>
         ) : (
-          <div className="rounded bg-green-50 p-3 text-sm text-green-700">
+          <div className="rounded-xl2 bg-jade-soft p-3 text-sm text-jade-dark">
             {t('completedMsg')}
           </div>
         )}
-      </section>
-    </main>
+      </Card>
+    </div>
   )
 }
