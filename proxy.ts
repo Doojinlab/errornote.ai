@@ -135,12 +135,17 @@ export async function proxy(request: NextRequest) {
       .single()
     const role = profile?.role
 
-    if (isStudentRoute && role !== 'student') {
+    // 반대 역할일 때만 리디렉트한다. role 이 'student'/'professor' 로 해석되지
+    // 않는 경우(프로필 row 없음 / 조회 실패)에는 어느 쪽으로도 보내지 않는다.
+    // 예전 `role !== 'student'` / `role !== 'professor'` 조건은 role 미해결 시
+    // 두 분기가 동시에 참이 되어 /learn ↔ /dashboard 무한 리디렉트
+    // (ERR_TOO_MANY_REDIRECTS)를 일으켰다.
+    if (isStudentRoute && role === 'professor') {
       const url = request.nextUrl.clone()
       url.pathname = localize(locale, '/dashboard')
       return NextResponse.redirect(url)
     }
-    if (isProfessorRoute && role !== 'professor') {
+    if (isProfessorRoute && role === 'student') {
       const url = request.nextUrl.clone()
       url.pathname = localize(locale, '/learn')
       return NextResponse.redirect(url)
