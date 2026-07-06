@@ -1075,7 +1075,10 @@
       "documentEditor": {
         "heading": "文章作成",
         "analyzing": "解析中…",
+        "analyze": "AI解析",
         "submit": "再解析",
+        "placeholder": "ここに中国語の文章を書いて［AI解析］を押してください。",
+        "submitHint": "Ctrl / ⌘ + Enter で解析",
         "ariaLabel": "中国語の文を入力"
       },
       "offlineQueue": {

@@ -1075,7 +1075,10 @@
       "documentEditor": {
         "heading": "Write",
         "analyzing": "Analyzing…",
+        "analyze": "AI Analyze",
         "submit": "Re-analyze",
+        "placeholder": "Write your Chinese sentences here, then press [AI Analyze].",
+        "submitHint": "Ctrl / ⌘ + Enter to analyze",
         "ariaLabel": "Chinese sentence input"
       },
       "offlineQueue": {
