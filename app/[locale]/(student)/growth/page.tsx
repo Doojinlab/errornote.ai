@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
+import { Trophy, Medal, Swords } from "lucide-react";
 import { getAuthContext } from "@/lib/auth";
 import { GACHA_COST } from "@/lib/gacha";
 import { loadGrowthData } from "@/lib/student-dashboard";
+import { HubGrid, type HubLink } from "@/components/student-ui";
 import LevelCard from "./_components/LevelCard";
 import LeagueCard from "./_components/LeagueCard";
 import BadgeGrid from "./_components/BadgeGrid";
 import RewardCard from "./_components/RewardCard";
+
+const GROWTH_LINKS: HubLink[] = [
+  { href: "/league", icon: Trophy, title: "리그", desc: "이번 주 순위", tone: "gold" },
+  { href: "/badges", icon: Medal, title: "뱃지", desc: "모은 성취", tone: "gold" },
+  { href: "/quests", icon: Swords, title: "퀘스트", desc: "도전 과제", tone: "jade" },
+];
 
 export const metadata: Metadata = {
   title: "성장 · errornote",
@@ -23,6 +31,7 @@ export default async function GrowthPage() {
       <div className="space-y-4">
         <h1 className="text-xl font-extrabold text-ink">성장</h1>
         <p className="text-sm text-muted">로그인 후 성장 기록을 확인할 수 있어요.</p>
+        <HubGrid title="더보기" links={GROWTH_LINKS} />
       </div>
     );
   }
@@ -40,6 +49,8 @@ export default async function GrowthPage() {
       {data.leagueRows.length > 0 && <LeagueCard rows={data.leagueRows} />}
       <BadgeGrid badges={data.badges} />
       <RewardCard gemBalance={data.gemBalance} cost={GACHA_COST} />
+
+      <HubGrid title="더보기" links={GROWTH_LINKS} />
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import { ArrowRight } from "lucide-react";
-import { HeroCard, LipButton } from "@/components/student-ui";
+import { ArrowRight, BookA, Bookmark, Target, Sparkles } from "lucide-react";
+import { HeroCard, HubGrid, LipButton, type HubLink } from "@/components/student-ui";
 import { loadLearnData } from "@/lib/student-dashboard";
 import CardNewsRail from "./_components/CardNewsRail";
 import GoalCard from "./_components/GoalCard";
@@ -10,6 +10,13 @@ import MiniGrid from "./_components/MiniGrid";
 // 인사 → GoalRing 카드 → HeroCard → 미니 2-up(과제·동료리뷰) → 카드뉴스 가로 스크롤.
 // 셸(헤더/하단탭/max-420 중앙정렬)은 (student)/layout.tsx 가 담당.
 // 데이터는 lib/student-dashboard.ts(loadLearnData)에서 실연동.
+const STUDY_LINKS: HubLink[] = [
+  { href: "/vocabulary", icon: BookA, title: "단어장", desc: "저장한 단어 복습", tone: "blue" },
+  { href: "/bookmarks", icon: Bookmark, title: "북마크", desc: "다시 볼 문장", tone: "blue" },
+  { href: "/goals", icon: Target, title: "목표", desc: "학습 목표 관리", tone: "jade" },
+  { href: "/weekly-suggestions", icon: Sparkles, title: "주간 추천", desc: "이번 주 맞춤 학습", tone: "gold" },
+];
+
 export default async function LearnHomePage() {
   const data = await loadLearnData();
   const studentName = data?.studentName ?? "학생";
@@ -49,6 +56,8 @@ export default async function LearnHomePage() {
       ) : (
         <LearnEmptyState />
       )}
+
+      <HubGrid title="바로가기" links={STUDY_LINKS} />
     </div>
   );
 }

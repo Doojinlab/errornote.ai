@@ -7,3 +7,5 @@ export { default as StatChip } from "./StatChip";
 export { default as GoalRing } from "./GoalRing";
 export { default as HeroCard } from "./HeroCard";
 export { default as MiniCard } from "./MiniCard";
+export { default as HubGrid } from "./HubGrid";
+export type { HubLink } from "./HubGrid";

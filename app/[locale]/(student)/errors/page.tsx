@@ -1,8 +1,14 @@
-import { AlertCircle } from "lucide-react";
-import { LipButton } from "@/components/student-ui";
+import { AlertCircle, Rss, Library, LineChart } from "lucide-react";
+import { HubGrid, LipButton, type HubLink } from "@/components/student-ui";
 import { loadErrorsData } from "@/lib/student-dashboard";
 import WeeklySummary from "./_components/WeeklySummary";
 import ErrorReviewCard from "./_components/ErrorReviewCard";
+
+const ERROR_LINKS: HubLink[] = [
+  { href: "/mistake-feed", icon: Rss, title: "실수 피드", desc: "자주 틀리는 표현", tone: "terra" },
+  { href: "/error-dex", icon: Library, title: "오류 도감", desc: "모은 오류 유형", tone: "blue" },
+  { href: "/progress", icon: LineChart, title: "진도·통계", desc: "학습 추이 보기", tone: "jade" },
+];
 
 // 오류 기록 — 주간 요약(수정 개수·정확도) + 오류 카드 목록(스펙 §5).
 // 데이터: error_cards(student_id 본인). 셸은 (student)/layout.tsx 제공.
@@ -23,6 +29,8 @@ export default async function ErrorsPage() {
           </p>
           <LipButton href="/learn">학습 시작하기</LipButton>
         </div>
+
+        <HubGrid title="오류 도구" links={ERROR_LINKS} />
       </section>
     );
   }
@@ -41,6 +49,8 @@ export default async function ErrorsPage() {
           <ErrorReviewCard key={item.id} item={item} />
         ))}
       </div>
+
+      <HubGrid title="오류 도구" links={ERROR_LINKS} />
     </section>
   );
 }
