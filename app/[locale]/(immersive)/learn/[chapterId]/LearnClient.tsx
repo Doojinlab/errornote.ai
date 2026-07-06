@@ -20,7 +20,7 @@ interface Props {
 
 // 각 패널 공통 — 데스크톱에서는 카드(둥근 테두리+그림자), 모바일에서는 풀블리드.
 const PANE =
-  "min-h-0 flex-1 flex-col overflow-hidden bg-white lg:flex lg:rounded-2xl lg:border lg:border-slate-200 lg:shadow-sm";
+  "min-h-0 flex-1 flex-col overflow-hidden bg-white lg:flex lg:rounded-xl2 lg:border lg:border-hairline lg:shadow-sm";
 
 export default function LearnClient({ classId, chapterId }: Props) {
   const t = useTranslations("pages.student.learn");
@@ -91,22 +91,43 @@ export default function LearnClient({ classId, chapterId }: Props) {
 
   const focusedError = analysis?.errors.find((e) => e.id === focusedErrorId) ?? null;
 
+  // 상단 상태바용 통계 — 글자 수 / 오류 수 / HSK 평균
+  const charCount = draft.length;
+  const errorCount = analysis?.error_count ?? 0;
+  const hskAvg =
+    analysis && analysis.errors.length > 0
+      ? Math.round(
+          analysis.errors.reduce((sum, e) => sum + e.hsk_level, 0) / analysis.errors.length
+        )
+      : null;
+
+  // 하단 진행 스텝퍼 — 타이핑 → 분석 → 하이라이트 → 오류 카드 → AI 솔루션
+  const steps = [
+    t("stepType"),
+    t("stepAnalyze"),
+    t("stepHighlight"),
+    t("stepCards"),
+    t("stepSolution"),
+  ];
+  const reached =
+    focusedErrorId != null ? 5 : analysis ? 4 : draft.trim() || analyzing ? 2 : 1;
+
   return (
-    <div className="flex h-dvh flex-col bg-slate-100">
+    <div className="flex h-dvh flex-col bg-ivory">
       {/* 상단 바 — 학습 홈으로 돌아가기 + 챕터 라벨 */}
-      <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-2.5">
+      <header className="flex items-center gap-2 border-b border-hairline bg-white px-4 py-2.5">
         <Link
           href="/learn"
           aria-label="학습 홈으로"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-ivory hover:text-ink"
         >
           <ArrowLeft size={18} aria-hidden />
         </Link>
-        <h1 className="text-sm font-semibold text-slate-700">
+        <h1 className="text-sm font-bold text-ink">
           {t("chapterLabel", { chapter: chapterId })}
         </h1>
         {error && (
-          <p role="alert" className="ml-auto truncate text-xs font-medium text-red-600">
+          <p role="alert" className="ml-auto truncate text-xs font-medium text-terra-dark">
             {error}
           </p>
         )}
@@ -120,12 +141,14 @@ export default function LearnClient({ classId, chapterId }: Props) {
         >
           {analysis ? (
             <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between border-b border-slate-200 p-3">
-                <h2 className="text-sm font-semibold text-slate-700">{t("analysisResult")}</h2>
+              <div className="flex items-center justify-between border-b border-hairline p-3">
+                <h2 className="flex items-center gap-1.5 text-sm font-bold text-ink">
+                  📄 {t("analysisResult")}
+                </h2>
                 <button
                   type="button"
                   onClick={() => setAnalysis(null)}
-                  className="text-xs font-medium text-indigo-600 hover:underline"
+                  className="rounded-full border border-hairline px-3 py-1 text-xs font-medium text-bodytx transition-colors hover:bg-ivory"
                 >
                   {t("editAgain")}
                 </button>
@@ -137,6 +160,24 @@ export default function LearnClient({ classId, chapterId }: Props) {
                   focusedErrorId={focusedErrorId}
                   onErrorClick={focusError}
                 />
+              </div>
+              {/* 상태바 — 글자 / 오류 / HSK 평균 */}
+              <div className="flex items-center gap-4 border-t border-hairline px-4 py-2 text-xs text-muted">
+                <span>
+                  {t("statChars")} <b className="font-semibold text-bodytx">{charCount}</b>
+                </span>
+                <span>
+                  {t("statErrors")}{" "}
+                  <b className={errorCount > 0 ? "font-semibold text-terra-dark" : "font-semibold text-jade"}>
+                    {errorCount}
+                  </b>
+                </span>
+                {hskAvg != null && (
+                  <span>
+                    {t("statHskAvg")}{" "}
+                    <b className="font-semibold text-bodytx">{t("hskGrade", { level: hskAvg })}</b>
+                  </span>
+                )}
               </div>
             </div>
           ) : (
@@ -169,9 +210,48 @@ export default function LearnClient({ classId, chapterId }: Props) {
         </section>
       </div>
 
+      {/* 진행 스텝퍼 — 데스크톱 전용(모바일은 하단 탭이 대신함) */}
+      <nav
+        className="hidden items-center justify-center gap-1 border-t border-hairline bg-white px-4 py-2.5 lg:flex"
+        aria-label={t("tabNavAria")}
+      >
+        {steps.map((label, i) => {
+          const n = i + 1;
+          const done = n < reached;
+          const active = n === reached;
+          return (
+            <div key={label} className="flex items-center">
+              <span
+                className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                  active
+                    ? "bg-terra-soft text-terra-dark"
+                    : done
+                      ? "text-jade"
+                      : "text-muted"
+                }`}
+              >
+                <span
+                  className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold ${
+                    active
+                      ? "bg-terra text-white"
+                      : done
+                        ? "bg-jade text-white"
+                        : "bg-hairline text-muted"
+                  }`}
+                >
+                  {n}
+                </span>
+                {label}
+              </span>
+              {n < steps.length && <span className="mx-1 h-px w-4 bg-hairline" aria-hidden />}
+            </div>
+          );
+        })}
+      </nav>
+
       {/* 모바일 탭 — 데스크톱에서는 분할로 모두 보이므로 숨김 */}
       <nav
-        className="grid grid-cols-3 border-t border-slate-200 bg-white lg:hidden"
+        className="grid grid-cols-3 border-t border-hairline bg-white lg:hidden"
         role="tablist"
         aria-label={t("tabNavAria")}
       >
@@ -190,8 +270,8 @@ export default function LearnClient({ classId, chapterId }: Props) {
             aria-selected={tab === tab2.id}
             className={`py-3 text-sm font-medium transition-colors ${
               tab === tab2.id
-                ? "bg-indigo-50 text-indigo-700"
-                : "text-slate-600 hover:bg-slate-50"
+                ? "bg-terra-soft text-terra-dark"
+                : "text-bodytx hover:bg-ivory"
             }`}
           >
             {tab2.label}

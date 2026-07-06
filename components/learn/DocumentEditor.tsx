@@ -32,15 +32,15 @@ export default function DocumentEditor({ value, onChange, onSubmit, isSubmitting
 
   return (
     <div className="flex h-full flex-col bg-white">
-      <div className="flex items-center justify-between gap-2 border-b p-3">
-        <h2 className="text-sm font-semibold text-slate-700">{t("heading")}</h2>
+      <div className="flex items-center justify-between gap-2 border-b border-hairline p-3">
+        <h2 className="flex items-center gap-1.5 text-sm font-bold text-ink">📄 {t("heading")}</h2>
         <div className="flex items-center gap-2">
           {/* AI 분석 — 주 액션(첫 분석 실행) */}
           <button
             type="button"
             onClick={onSubmit}
             disabled={!canSubmit}
-            className="inline-flex items-center gap-1.5 rounded-md bg-rose-500 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-600 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded-full bg-terra px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-terra-dark disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Sparkles size={15} aria-hidden />
             {isSubmitting ? t("analyzing") : t("analyze")}
@@ -50,7 +50,7 @@ export default function DocumentEditor({ value, onChange, onSubmit, isSubmitting
             type="button"
             onClick={onSubmit}
             disabled={!canSubmit}
-            className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-full border border-hairline px-3.5 py-1.5 text-sm font-medium text-bodytx transition-colors hover:bg-ivory disabled:cursor-not-allowed disabled:opacity-40"
           >
             {t("submit")}
           </button>
@@ -60,7 +60,7 @@ export default function DocumentEditor({ value, onChange, onSubmit, isSubmitting
       {/* 입력 영역 — 비어 있을 때 안내 문구(placeholder)를 오버레이 */}
       <div className="relative min-h-0 flex-1">
         {!value && (
-          <p className="pointer-events-none absolute left-4 top-4 text-base leading-7 text-slate-400">
+          <p className="pointer-events-none absolute left-5 top-5 text-base leading-8 text-muted">
             {t("placeholder")}
           </p>
         )}
@@ -70,13 +70,14 @@ export default function DocumentEditor({ value, onChange, onSubmit, isSubmitting
           suppressContentEditableWarning
           onInput={(e) => onChange((e.currentTarget as HTMLDivElement).innerText)}
           onKeyDown={handleKeyDown}
-          className="h-full overflow-auto p-4 text-base leading-7 outline-none"
+          className="h-full overflow-auto p-5 font-cn text-lg leading-8 text-ink outline-none"
           aria-label={t("ariaLabel")}
         />
       </div>
 
-      <div className="border-t px-4 py-2 text-right text-xs text-slate-400">
-        {t("submitHint")}
+      <div className="flex items-center justify-between border-t border-hairline px-4 py-2 text-xs text-muted">
+        <span>{t("charCount", { count: value.length })}</span>
+        <span>{t("submitHint")}</span>
       </div>
     </div>
   );
