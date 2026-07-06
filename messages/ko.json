@@ -732,7 +732,10 @@
         "errorVowelError": "모음 오류",
         "errorConsonantError": "자음 오류",
         "langEnUS": "영어",
-        "langKoKR": "한국어"
+        "langKoKR": "한국어",
+        "recordHint": "샘플을 고르거나 문장을 입력한 뒤 녹음을 시작하세요.",
+        "unsupportedTitle": "이 브라우저에서는 사용할 수 없어요",
+        "unsupportedBody": "발음 연습은 음성 인식을 지원하는 Chrome 또는 Edge에서 이용할 수 있어요."
       },
       "live": {
         "pickerTitle": "실시간 수업",

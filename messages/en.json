@@ -626,7 +626,10 @@
         "errorVowelError": "Vowel Error",
         "errorConsonantError": "Consonant Error",
         "langEnUS": "English",
-        "langKoKR": "Korean"
+        "langKoKR": "Korean",
+        "recordHint": "Pick a sample or type a sentence, then start recording.",
+        "unsupportedTitle": "Not available in this browser",
+        "unsupportedBody": "Pronunciation practice works in Chrome or Edge, which support speech recognition."
       },
       "live": {
         "pickerTitle": "Live class",
