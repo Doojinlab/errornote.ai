@@ -39,26 +39,26 @@ export default function AnnotatedText({
   onErrorClick,
 }: Props) {
   const segments = useMemo(() => parse(annotatedText), [annotatedText]);
-  const errorMap = useMemo(
-    () => new Map(errors.map((e) => [e.id, e])),
-    [errors]
-  );
+  const errorMap = useMemo(() => new Map(errors.map((e) => [e.id, e])), [errors]);
 
   return (
-    <div className="whitespace-pre-wrap p-4 text-base leading-7">
+    <div className="whitespace-pre-wrap p-5 font-cn text-lg leading-[2.1] text-ink">
       {segments.map((seg, i) => {
         if (seg.kind === "text") return <span key={i}>{seg.content}</span>;
         const err = errorMap.get(seg.id);
         const tooltip = err ? `${err.error_subtype} — ${err.correction}` : undefined;
         const focused = focusedErrorId === seg.id;
+        const isVocab = err?.error_type === "vocab";
+        // 어휘 오류는 gold, 문법/어순 등은 terra 로 물결 밑줄을 색 구분한다.
+        const cls = isVocab
+          ? `decoration-gold ${focused ? "bg-gold-soft" : "hover:bg-gold-soft"}`
+          : `decoration-terra ${focused ? "bg-terra-soft" : "hover:bg-terra-soft"}`;
         return (
           <span
             key={i}
             title={tooltip}
             onClick={() => onErrorClick(seg.id)}
-            className={`cursor-pointer underline decoration-red-500 decoration-2 underline-offset-4 ${
-              focused ? "bg-red-100" : "hover:bg-red-50"
-            }`}
+            className={`cursor-pointer rounded-[3px] underline decoration-wavy decoration-2 underline-offset-[6px] transition-colors ${cls}`}
           >
             {seg.content}
           </span>

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Check, ChevronRight } from "lucide-react";
 import type { AnalysisError } from "@/types";
 
 interface Props {
@@ -28,65 +29,87 @@ export default function ErrorCard({
 }: Props) {
   const t = useTranslations("pages.components.errorCard");
   const [cotOpen, setCotOpen] = useState(false);
-  const isFossilized = (fossilizationCount ?? 0) >= 3;
+  const count = fossilizationCount ?? 0;
+  const isFossilized = count >= 3;
+  const isVocab = error.error_type === "vocab";
   const showActions = Boolean(errorCardId && (onBookmark || onAddVocab));
-  const typeLabel =
-    error.error_type === "vocab" ? t("typeVocab") : t("typeGrammar");
 
   return (
     <article
       onClick={onFocus}
-      className={`cursor-pointer rounded-lg border bg-white shadow-sm transition ${
-        isFocused ? "border-indigo-500 ring-2 ring-indigo-200" : "border-slate-200"
+      className={`cursor-pointer rounded-xl2 border bg-white p-4 shadow-sm transition ${
+        isFocused ? "border-terra ring-2 ring-terra-soft" : "border-hairline hover:border-stone-300"
       }`}
     >
-      <header className="flex items-center justify-between border-b px-3 py-2">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="font-semibold text-red-600">
-            🔴 {typeLabel} — {error.error_subtype}
+      {/* 뱃지 행 — 오류 유형 / HSK / 화석화 */}
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span
+          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+            isVocab ? "bg-blue-soft text-blue" : "bg-terra-soft text-terra-dark"
+          }`}
+        >
+          {error.error_subtype}
+        </span>
+        <span className="rounded-full bg-hairline px-2.5 py-0.5 text-xs font-medium text-muted">
+          {t("hskLevel", { level: error.hsk_level })}
+        </span>
+        {isFossilized && (
+          <span className="rounded-full bg-gold-soft px-2.5 py-0.5 text-xs font-semibold text-gold-dark">
+            {t("fossilBadge", { count })}
           </span>
-          <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600">
-            {t("hskLevel", { level: error.hsk_level })}
-          </span>
-        </div>
-      </header>
-
-      <div className="space-y-2 px-3 py-2 text-sm">
-        <Field label={t("fieldErrorSpan")}>
-          <code className="rounded bg-red-50 px-1.5 py-0.5 text-red-700">{error.error_span}</code>
-        </Field>
-        <Field label={t("fieldCorrection")}>
-          <code className="rounded bg-green-50 px-1.5 py-0.5 text-green-700">{error.correction}</code>
-        </Field>
-        <Field label={t("fieldExplanation")}>
-          <p className="text-slate-700">{error.explanation}</p>
-        </Field>
+        )}
       </div>
 
-      {isFossilized && (
-        <div className="mx-3 mb-2 rounded bg-orange-50 px-3 py-2 text-xs text-orange-800">
-          {t("fossilWarning", { count: fossilizationCount ?? 0 })}
-        </div>
-      )}
+      {/* 오류 범위 */}
+      <div className="mt-3">
+        <p className="text-xs font-medium text-muted">{t("fieldErrorSpan")}</p>
+        <p className="mt-0.5 font-cn text-base font-semibold text-ink">{error.error_span}</p>
+      </div>
 
-      <div className="border-t px-3 py-2">
+      {/* 수정안 */}
+      <div className="mt-2.5">
+        <p className="text-xs font-medium text-muted">{t("fieldCorrection")}</p>
+        <p className="mt-0.5 inline-flex items-center gap-1.5 font-cn text-base font-semibold text-jade">
+          {error.correction}
+          <Check size={15} aria-hidden />
+        </p>
+      </div>
+
+      {/* 설명 */}
+      <div className="mt-2.5">
+        <p className="text-xs font-medium text-muted">{t("fieldExplanation")}</p>
+        <p className="mt-0.5 text-sm leading-6 text-bodytx">{error.explanation}</p>
+      </div>
+
+      {/* CoT 추론 단계 */}
+      <div className="mt-3 border-t border-hairline pt-2.5">
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             setCotOpen((v) => !v);
           }}
-          className="text-xs font-medium text-indigo-600 hover:underline"
+          className="inline-flex items-center gap-1 text-xs font-semibold text-blue transition-colors hover:text-blue-dark"
           aria-expanded={cotOpen}
         >
-          {t("cotToggle")} {cotOpen ? "▴" : "▾"}
+          <ChevronRight
+            size={14}
+            className={`transition-transform ${cotOpen ? "rotate-90" : ""}`}
+            aria-hidden
+          />
+          {cotOpen ? t("cotCollapse") : t("cotExpand", { count: error.cot_reasoning.length })}
         </button>
         {cotOpen && (
-          <ol className="mt-2 space-y-1.5 text-sm">
+          <ol className="mt-2 space-y-2">
             {error.cot_reasoning.map((step, i) => (
-              <li key={i} className="flex gap-2">
-                <span className="font-semibold text-slate-500">▷ {step.step}</span>
-                <span className="text-slate-700">{step.content}</span>
+              <li key={i} className="flex gap-2 text-sm">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-soft text-[11px] font-bold text-blue">
+                  {i + 1}
+                </span>
+                <div className="leading-6">
+                  <span className="font-semibold text-ink">{step.step}</span>
+                  <span className="ml-1 text-bodytx">{step.content}</span>
+                </div>
               </li>
             ))}
           </ol>
@@ -94,13 +117,14 @@ export default function ErrorCard({
       </div>
 
       {error.similar_example && (
-        <div className="border-t bg-slate-50 px-3 py-2 text-xs text-slate-600">
-          {t("similarExample")} <span className="ml-2 text-slate-800">{error.similar_example}</span>
+        <div className="mt-3 rounded-lg bg-ivory px-3 py-2 text-xs text-bodytx">
+          <span className="font-medium text-muted">{t("similarExample")}</span>
+          <span className="ml-2 font-cn text-ink">{error.similar_example}</span>
         </div>
       )}
 
       {showActions && errorCardId && (
-        <div className="flex gap-2 border-t px-3 py-2">
+        <div className="mt-3 flex gap-2 border-t border-hairline pt-3">
           {onBookmark && (
             <button
               type="button"
@@ -109,7 +133,7 @@ export default function ErrorCard({
                 onBookmark(errorCardId);
               }}
               disabled={isBookmarked}
-              className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              className="rounded-md border border-hairline px-2.5 py-1 text-xs font-medium text-bodytx hover:bg-ivory disabled:opacity-50"
             >
               {isBookmarked ? t("bookmarked") : t("bookmark")}
             </button>
@@ -122,7 +146,7 @@ export default function ErrorCard({
                 onAddVocab(errorCardId);
               }}
               disabled={isInVocab}
-              className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              className="rounded-md border border-hairline px-2.5 py-1 text-xs font-medium text-bodytx hover:bg-ivory disabled:opacity-50"
             >
               {isInVocab ? t("vocabAdded") : t("vocabAdd")}
             </button>
@@ -130,14 +154,5 @@ export default function ErrorCard({
         </div>
       )}
     </article>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex gap-3">
-      <span className="w-16 shrink-0 text-xs text-slate-500">{label}</span>
-      <div className="flex-1">{children}</div>
-    </div>
   );
 }

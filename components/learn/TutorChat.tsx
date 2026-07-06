@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { ArrowUp } from "lucide-react";
 import type { AnalysisError, ChatMessage, ChatRequest } from "@/types";
 import type { TutorQuiz, AddToVocabInput } from "@/lib/tutor-tools";
 import TutorQuizCard from "./TutorQuizCard";
@@ -129,18 +130,18 @@ export default function TutorChat({ focusedError, chapterNumber }: Props) {
   }
 
   return (
-    <div className="flex h-full flex-col bg-white">
-      <header className="flex items-center justify-between border-b px-3 py-2 text-sm font-semibold text-slate-700">
-        <span>{t("heading")}</span>
+    <div className="flex h-full flex-col bg-ivory">
+      <header className="flex items-center justify-between gap-2 border-b border-hairline bg-white px-4 py-3">
+        <span className="text-sm font-bold text-ink">{t("heading")}</span>
         {focusedError && (
-          <span className="rounded bg-indigo-50 px-2 py-0.5 text-xs text-indigo-700">
+          <span className="rounded-full bg-blue-soft px-2.5 py-0.5 text-xs font-medium text-blue">
             {t("contextLabel", { subtype: focusedError.error_subtype })}
           </span>
         )}
       </header>
-      <div className="min-h-0 flex-1 space-y-2 overflow-auto p-3">
+      <div className="min-h-0 flex-1 space-y-2.5 overflow-auto p-4">
         {messages.length === 0 && (
-          <p className="text-center text-sm text-slate-400">{t("emptyState")}</p>
+          <p className="mt-8 text-center text-sm text-muted">{t("emptyState")}</p>
         )}
         {messages.map((m, i) => (
           <div
@@ -151,10 +152,10 @@ export default function TutorChat({ focusedError, chapterNumber }: Props) {
           >
             {(m.content || m.role === "user") && (
               <div
-                className={`max-w-[80%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm ${
+                className={`max-w-[85%] whitespace-pre-wrap px-3.5 py-2 text-sm leading-6 ${
                   m.role === "user"
-                    ? "ml-auto bg-indigo-600 text-white"
-                    : "bg-slate-100 text-slate-800"
+                    ? "ml-auto rounded-2xl rounded-br-sm bg-ink text-white"
+                    : "rounded-2xl rounded-bl-sm border border-hairline bg-white text-ink"
                 }`}
               >
                 {m.content}
@@ -162,13 +163,13 @@ export default function TutorChat({ focusedError, chapterNumber }: Props) {
             )}
             {m.artifacts?.map((a, ai) =>
               a.kind === "quiz" ? (
-                <div key={ai} className="w-[90%]">
+                <div key={ai} className="mt-2 w-[90%]">
                   <TutorQuizCard quiz={a.quiz} />
                 </div>
               ) : (
                 <div
                   key={ai}
-                  className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs text-emerald-700"
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-jade-soft px-3 py-1 text-xs font-medium text-jade-dark"
                 >
                   📒 {t("vocabAdded", { word: a.vocab.chinese })}
                 </div>
@@ -182,20 +183,21 @@ export default function TutorChat({ focusedError, chapterNumber }: Props) {
           e.preventDefault();
           send();
         }}
-        className="flex gap-2 border-t p-2"
+        className="flex items-center gap-2 border-t border-hairline bg-white p-3"
       >
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t("inputPlaceholder")}
-          className="flex-1 rounded-md border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-indigo-500"
+          className="flex-1 rounded-full border border-hairline bg-ivory px-4 py-2 text-sm text-ink outline-none placeholder:text-muted focus:border-blue"
         />
         <button
           type="submit"
           disabled={sending || !input.trim()}
-          className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
+          aria-label={t("send")}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-white transition-opacity disabled:opacity-30"
         >
-          {t("send")}
+          <ArrowUp size={18} aria-hidden />
         </button>
       </form>
     </div>
