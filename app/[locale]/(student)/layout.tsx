@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/routing";
-import { User } from "lucide-react";
+import { Bell, User } from "lucide-react";
 import { createServerClient } from "@/lib/supabase";
 import StudentSoundShell from "@/components/gamification/StudentSoundShell";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -74,6 +74,13 @@ export default async function StudentLayout({
             <div className="ml-auto flex items-center gap-2">
               <StatChip type="flame" value={stats?.streak_days ?? 0} />
               <LanguageSwitcher />
+              <Link
+                href="/notifications"
+                aria-label="알림"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-white text-bodytx"
+              >
+                <Bell size={18} aria-hidden />
+              </Link>
               <Link
                 href="/settings"
                 aria-label="프로필"

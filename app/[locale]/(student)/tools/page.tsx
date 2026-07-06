@@ -1,6 +1,14 @@
-import { ScanText, Mic, Link2 } from "lucide-react";
+import { ScanText, Mic, Link2, Languages, FolderOpen, Download, Radio } from "lucide-react";
 import { createServerClient } from "@/lib/supabase";
+import { HubGrid, type HubLink } from "@/components/student-ui";
 import ToolCard, { type Tool } from "./_components/ToolCard";
+
+const MORE_TOOLS: HubLink[] = [
+  { href: "/translate", icon: Languages, title: "번역 비교", desc: "여러 번역 엔진 대조", tone: "blue" },
+  { href: "/portfolio", icon: FolderOpen, title: "포트폴리오", desc: "내 글 모아보기", tone: "blue" },
+  { href: "/live", icon: Radio, title: "실시간 수업", desc: "진행 중인 수업 참여", tone: "terra" },
+  { href: "/data-export", icon: Download, title: "데이터 내보내기", desc: "학습 기록 백업", tone: "blue" },
+];
 
 // 도구 허브 — 오류검사 / 발음연습 / URL분석 3종(스펙 §3 도구 탭, §5).
 // href 는 기존 학생 라우트로 연결. 각 카드의 사용량(meta)은 본인 활동 집계로 실연동.
@@ -79,6 +87,8 @@ export default async function ToolsPage() {
       {tools.map((tool) => (
         <ToolCard key={tool.href} tool={tool} />
       ))}
+
+      <HubGrid title="더 많은 도구" links={MORE_TOOLS} />
     </section>
   );
 }
