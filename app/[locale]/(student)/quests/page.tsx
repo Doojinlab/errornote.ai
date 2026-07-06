@@ -69,22 +69,22 @@ export default async function QuestsPage() {
   ]);
 
   return (
-    <section className="mx-auto w-full max-w-2xl space-y-4 p-4">
+    <section className="space-y-4">
       <div>
-        <h1 className="text-lg font-bold text-slate-900">{t("title")}</h1>
-        <p className="mt-1 text-sm text-slate-500">{t("subtitle")}</p>
+        <h1 className="text-lg font-bold text-ink">{t("title")}</h1>
+        <p className="mt-1 text-sm text-muted">{t("subtitle")}</p>
       </div>
       {quest && quest.missions.length > 0 ? (
         <QuestBoard initialMissions={quest.missions} />
       ) : (
-        <p className="rounded-lg bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+        <p className="rounded-xl2 bg-white p-6 text-center text-sm text-muted shadow-sm">
           {t("empty")}
         </p>
       )}
 
       {classGoals && (
-        <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
-          <p className="mb-3 text-sm font-bold text-indigo-900">🤝 {tc("title")}</p>
+        <div className="rounded-xl2 border border-blue bg-blue-soft/50 p-4">
+          <p className="mb-3 text-sm font-bold text-blue-dark">🤝 {tc("title")}</p>
           <ul className="space-y-3">
             {classGoals.goals.map((g) => {
               const pct = Math.min(100, Math.round((g.currentCount / g.targetCount) * 100));
@@ -92,15 +92,15 @@ export default async function QuestsPage() {
               return (
                 <li key={g.id}>
                   <div className="mb-1 flex items-center justify-between text-xs">
-                    <span className="font-medium text-slate-700">{name}</span>
-                    <span className="tabular-nums text-slate-500">
+                    <span className="font-medium text-bodytx">{name}</span>
+                    <span className="tabular-nums text-muted">
                       {g.currentCount} / {g.targetCount}
                       {g.achieved ? ` · 🎉 ${tc("achieved")}` : ""}
                     </span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-white">
                     <div
-                      className={`h-full rounded-full ${g.achieved ? "bg-emerald-500" : "bg-indigo-500"}`}
+                      className={`h-full rounded-full ${g.achieved ? "bg-jade" : "bg-blue"}`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -108,7 +108,7 @@ export default async function QuestsPage() {
               );
             })}
           </ul>
-          <p className="mt-3 text-xs text-indigo-700/70">{tc("hint")}</p>
+          <p className="mt-3 text-xs text-blue-dark/70">{tc("hint")}</p>
         </div>
       )}
     </section>

@@ -60,7 +60,7 @@ export default function VocabularyList({ items }: Props) {
       />
 
       {filtered.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+        <p className="rounded-xl2 border border-dashed border-hairline bg-white p-6 text-center text-sm text-muted">
           {items.length === 0 ? t("emptyStateNoItems") : t("emptyStateNoSearchResults")}
         </p>
       ) : (
@@ -69,19 +69,19 @@ export default function VocabularyList({ items }: Props) {
             <li key={v.id}>
               <Card className="flex items-center gap-3 p-3">
                 <div className="min-w-0 flex-1">
-                  <p className="text-lg font-semibold text-slate-900">{v.chinese}</p>
-                  {v.pinyin && <p className="text-xs text-slate-500">{v.pinyin}</p>}
-                  {v.korean && <p className="text-sm text-slate-700">{v.korean}</p>}
+                  <p className="text-lg font-semibold text-ink font-cn" lang="zh">{v.chinese}</p>
+                  {v.pinyin && <p className="text-xs text-muted">{v.pinyin}</p>}
+                  {v.korean && <p className="text-sm text-bodytx">{v.korean}</p>}
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-[10px] text-muted">
                     {t("reviewCount", { count: v.review_count })}
                   </p>
                   <button
                     type="button"
                     onClick={() => remove(v.id)}
                     disabled={removingIds.has(v.id)}
-                    className="mt-1 text-xs text-red-600 hover:underline disabled:opacity-50"
+                    className="mt-1 text-xs text-terra hover:underline disabled:opacity-50"
                   >
                     {t("delete")}
                   </button>

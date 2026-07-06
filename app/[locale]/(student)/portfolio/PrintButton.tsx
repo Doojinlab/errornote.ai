@@ -7,7 +7,7 @@ export default function PrintButton() {
   return (
     <button
       onClick={() => window.print()}
-      className="print:hidden inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+      className="print:hidden inline-flex items-center gap-2 px-5 py-2.5 bg-blue text-white font-medium rounded-xl2 hover:bg-blue-dark transition-colors"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

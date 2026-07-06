@@ -67,7 +67,7 @@ export default function TranslateCompare() {
   return (
     <div className="space-y-4">
       <Card className="space-y-2 p-4">
-        <label className="text-xs font-semibold text-slate-700" htmlFor="ko-input">
+        <label className="text-xs font-semibold text-bodytx" htmlFor="ko-input">
           한국어 입력 ({korean.length}/{MAX_INPUT_LEN})
         </label>
         <textarea
@@ -77,10 +77,10 @@ export default function TranslateCompare() {
           rows={4}
           maxLength={MAX_INPUT_LEN + 50}
           placeholder="예: 그는 방금 도서관에 갔다."
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500"
+          className="w-full rounded-md border border-hairline px-3 py-2 text-sm outline-none focus:border-blue"
         />
         <div className="flex items-center justify-between">
-          <p className="text-xs text-red-600" role="alert">
+          <p className="text-xs text-terra" role="alert">
             {error}
           </p>
           <Button onClick={submit} disabled={submitting}>
@@ -92,8 +92,8 @@ export default function TranslateCompare() {
       {result && (
         <>
           <Card className="p-4">
-            <h2 className="text-sm font-semibold text-slate-800">원문</h2>
-            <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">{result.original}</p>
+            <h2 className="text-sm font-semibold text-ink">원문</h2>
+            <p className="mt-1 whitespace-pre-wrap text-sm text-bodytx">{result.original}</p>
           </Card>
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -105,22 +105,22 @@ export default function TranslateCompare() {
                   key={eng}
                   className={
                     "space-y-2 p-3 " +
-                    (isBest ? "border-emerald-400 ring-2 ring-emerald-200" : "")
+                    (isBest ? "border-jade ring-2 ring-jade-soft" : "")
                   }
                 >
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-slate-800">
+                    <h3 className="text-sm font-semibold text-ink">
                       {ENGINE_LABELS[eng]}
                     </h3>
                     {isBest && (
-                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                      <span className="rounded-full bg-jade-soft px-2 py-0.5 text-[10px] font-semibold text-jade-dark">
                         추천
                       </span>
                     )}
                   </div>
-                  <p className="min-h-[3rem] whitespace-pre-wrap text-sm text-slate-900">
+                  <p lang="zh" className="min-h-[3rem] whitespace-pre-wrap text-sm text-ink font-cn">
                     {engineResult?.translation ?? (
-                      <span className="text-slate-400">{statusLabel(engineResult ?? { engine: eng, status: "skipped", translation: null })}</span>
+                      <span className="text-muted">{statusLabel(engineResult ?? { engine: eng, status: "skipped", translation: null })}</span>
                     )}
                   </p>
                 </Card>
@@ -129,29 +129,29 @@ export default function TranslateCompare() {
           </div>
 
           <Card className="space-y-1 p-4">
-            <h2 className="text-sm font-semibold text-slate-800">AI 추천</h2>
-            <p className="text-sm text-slate-700">
+            <h2 className="text-sm font-semibold text-ink">AI 추천</h2>
+            <p className="text-sm text-bodytx">
               {result.recommendation.best_engine
                 ? `${ENGINE_LABELS[result.recommendation.best_engine]} 번역이 가장 자연스럽습니다.`
                 : "추천할 만한 번역이 없습니다."}
             </p>
-            <p className="text-xs text-slate-500">{result.recommendation.reason}</p>
+            <p className="text-xs text-muted">{result.recommendation.reason}</p>
           </Card>
 
           {result.analyses.length > 0 && (
             <section className="space-y-3">
-              <h2 className="text-sm font-semibold text-slate-800">엔진별 학습 카드</h2>
+              <h2 className="text-sm font-semibold text-ink">엔진별 학습 카드</h2>
               {result.analyses.map((a) => (
                 <Card key={a.engine} className="space-y-2 p-3">
                   <div className="flex items-baseline justify-between">
-                    <h3 className="text-sm font-semibold text-slate-800">
+                    <h3 className="text-sm font-semibold text-ink">
                       {ENGINE_LABELS[a.engine]}
                     </h3>
-                    <span className="text-[10px] text-slate-500">
+                    <span className="text-[10px] text-muted">
                       {a.cards.length === 0 ? "특별한 주의사항 없음" : `${a.cards.length}개 카드`}
                     </span>
                   </div>
-                  {a.summary && <p className="text-xs text-slate-600">{a.summary}</p>}
+                  {a.summary && <p className="text-xs text-bodytx">{a.summary}</p>}
                   {a.cards.length > 0 && (
                     <div className="space-y-2">
                       {a.cards.map((card) => (

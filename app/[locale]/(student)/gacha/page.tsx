@@ -33,10 +33,10 @@ export default async function GachaPage() {
   ]);
 
   return (
-    <section className="mx-auto w-full max-w-3xl space-y-4 p-4">
+    <section className="space-y-4">
       <div>
-        <h1 className="text-lg font-bold text-slate-900">{t("title")}</h1>
-        <p className="mt-1 text-sm text-slate-500">{t("subtitle")}</p>
+        <h1 className="text-lg font-bold text-ink">{t("title")}</h1>
+        <p className="mt-1 text-sm text-muted">{t("subtitle")}</p>
       </div>
       {data ? (
         <GachaRoom
@@ -45,7 +45,7 @@ export default async function GachaPage() {
           cost={GACHA_COST}
         />
       ) : (
-        <p className="rounded-lg bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+        <p className="rounded-xl2 bg-white p-6 text-center text-sm text-muted shadow-sm">
           {t("empty")}
         </p>
       )}

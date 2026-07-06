@@ -39,10 +39,10 @@ export default async function BadgesPage() {
   const earnedCount = items.filter((b) => b.earned).length;
 
   return (
-    <section className="mx-auto w-full max-w-3xl space-y-4 p-4">
+    <section className="space-y-4">
       <div className="flex items-baseline justify-between">
-        <h1 className="text-lg font-bold text-slate-900">{t("title")}</h1>
-        <p className="text-xs text-slate-500">
+        <h1 className="text-lg font-bold text-ink">{t("title")}</h1>
+        <p className="text-xs text-muted">
           {t("countLabel", { earned: earnedCount, total: CATALOG.length })}
         </p>
       </div>

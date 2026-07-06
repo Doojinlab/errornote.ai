@@ -19,15 +19,15 @@ interface Props {
 }
 
 const RARITY_GLOW: Record<RewardRarity, string> = {
-  common: "ring-slate-300 shadow-slate-200",
-  rare: "ring-sky-400 shadow-sky-200",
-  epic: "ring-fuchsia-400 shadow-fuchsia-200",
+  common: "ring-hairline shadow-hairline",
+  rare: "ring-blue shadow-blue-soft",
+  epic: "ring-gem shadow-gem-soft",
 };
 
 const RARITY_BADGE: Record<RewardRarity, string> = {
-  common: "bg-slate-100 text-slate-600",
-  rare: "bg-sky-100 text-sky-700",
-  epic: "bg-fuchsia-100 text-fuchsia-700",
+  common: "bg-ivory text-bodytx",
+  rare: "bg-blue-soft text-blue-dark",
+  epic: "bg-gem-soft text-gem-dark",
 };
 
 export default function GachaRoom({ initialInventory, initialCoins, cost }: Props) {
@@ -93,26 +93,26 @@ export default function GachaRoom({ initialInventory, initialCoins, cost }: Prop
   return (
     <div className="space-y-5">
       {/* 뽑기 콘솔 */}
-      <div className="rounded-xl border bg-white p-5 shadow-sm">
+      <div className="card-pop rounded-xl2 border bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs text-slate-500">{t("coins")}</p>
-            <p className="text-2xl font-bold text-amber-600">🪙 {coins}</p>
+            <p className="text-xs text-muted">{t("coins")}</p>
+            <p className="text-2xl font-bold text-gold">🪙 {coins}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-400">{t("cost", { cost })}</p>
+            <p className="text-xs text-muted">{t("cost", { cost })}</p>
             <button
               type="button"
               onClick={pull}
               disabled={!canPull}
-              className="mt-1 rounded-lg bg-fuchsia-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-fuchsia-700 disabled:bg-slate-300"
+              className="mt-1 rounded-xl2 bg-gem px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-gem-dark disabled:bg-hairline"
             >
               {pulling ? t("pulling") : t("pull")}
             </button>
           </div>
         </div>
         {error && (
-          <p className="mt-3 text-sm text-red-600" role="alert">
+          <p className="mt-3 text-sm text-terra" role="alert">
             {error}
           </p>
         )}
@@ -121,7 +121,7 @@ export default function GachaRoom({ initialInventory, initialCoins, cost }: Prop
         {reveal && (
           <div
             key={reveal.cell.code + (reveal.isDuplicate ? "-dup" : "-new")}
-            className="mt-4 flex animate-[gachaPop_0.4s_ease-out] items-center gap-4 rounded-xl border bg-gradient-to-br from-white to-slate-50 p-4"
+            className="mt-4 flex animate-[gachaPop_0.4s_ease-out] items-center gap-4 rounded-xl2 border bg-gradient-to-br from-white to-ivory p-4"
             role="status"
           >
             <span
@@ -132,14 +132,14 @@ export default function GachaRoom({ initialInventory, initialCoins, cost }: Prop
             </span>
             <div className="min-w-0">
               <p
-                className={`text-sm font-bold ${reveal.isDuplicate ? "text-slate-500" : "text-emerald-600"}`}
+                className={`text-sm font-bold ${reveal.isDuplicate ? "text-muted" : "text-jade"}`}
               >
                 {reveal.isDuplicate ? t("gotDuplicate") : t("gotNew")}
               </p>
-              <p className="truncate text-base font-semibold text-slate-900">
+              <p className="truncate text-base font-semibold text-ink">
                 {reveal.cell.nameKo}
               </p>
-              <p className="mt-0.5 flex items-center gap-2 text-xs text-slate-500">
+              <p className="mt-0.5 flex items-center gap-2 text-xs text-muted">
                 <span className={`rounded-full px-2 py-0.5 font-semibold ${RARITY_BADGE[reveal.cell.rarity]}`}>
                   {rarityLabel(reveal.cell.rarity)}
                 </span>
@@ -153,8 +153,8 @@ export default function GachaRoom({ initialInventory, initialCoins, cost }: Prop
       {/* 컬렉션 */}
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-sm font-bold text-slate-900">{t("collection")}</h2>
-          <span className="text-xs text-slate-500">
+          <h2 className="text-sm font-bold text-ink">{t("collection")}</h2>
+          <span className="text-xs text-muted">
             {t("collectionProgress", { owned: ownedCount, total: inventory.length })}
           </span>
         </div>
@@ -162,8 +162,8 @@ export default function GachaRoom({ initialInventory, initialCoins, cost }: Prop
           {inventory.map((cell) => (
             <li
               key={cell.id}
-              className={`flex flex-col items-center rounded-xl border p-3 text-center shadow-sm ${
-                cell.owned ? "border-slate-200 bg-white" : "border-dashed border-slate-200 bg-slate-50"
+              className={`flex flex-col items-center rounded-xl2 border p-3 text-center shadow-sm ${
+                cell.owned ? "border-hairline bg-white" : "border-dashed border-hairline bg-ivory"
               }`}
             >
               <span
@@ -173,7 +173,7 @@ export default function GachaRoom({ initialInventory, initialCoins, cost }: Prop
                 {cell.icon}
               </span>
               <span
-                className={`mt-1 truncate text-xs font-medium ${cell.owned ? "text-slate-800" : "text-slate-400"}`}
+                className={`mt-1 truncate text-xs font-medium ${cell.owned ? "text-ink" : "text-muted"}`}
               >
                 {cell.owned ? cell.nameKo : "🔒"}
               </span>

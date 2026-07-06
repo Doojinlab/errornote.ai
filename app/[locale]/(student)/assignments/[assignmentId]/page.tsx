@@ -62,17 +62,17 @@ export default async function StudentAssignmentPage(
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl space-y-4 p-4">
+    <main className="space-y-4">
       <div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           <Link href="/assignments" className="hover:underline">
             {t("breadcrumb")}
           </Link>{" "}
           › {assignment.title}
         </p>
-        <h1 className="text-lg font-bold text-slate-900">{assignment.title}</h1>
+        <h1 className="text-lg font-bold text-ink">{assignment.title}</h1>
         {assignment.due_date && (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted">
             {t("dueLabel", { date: new Date(assignment.due_date).toLocaleString() })}
           </p>
         )}

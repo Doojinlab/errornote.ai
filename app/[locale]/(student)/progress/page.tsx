@@ -88,7 +88,7 @@ function DailyChart({
         <div
           key={b.date}
           title={tooltip(b.date, b.count)}
-          className="relative rounded-t bg-indigo-500/80 hover:bg-indigo-600"
+          className="relative rounded-t bg-blue/80 hover:bg-blue-dark"
           style={{ height: `${(b.count / max) * 100}%`, minHeight: b.count > 0 ? "2px" : "0" }}
         />
       ))}
@@ -102,14 +102,14 @@ function SubtypeBars({ buckets }: { buckets: SubtypeBucket[] }) {
     <ul className="space-y-2">
       {buckets.map((b) => (
         <li key={b.subtype} className="grid grid-cols-[140px_1fr_40px] items-center gap-2 text-sm">
-          <span className="truncate text-slate-700">{b.subtype}</span>
-          <div className="h-3 rounded-full bg-slate-100">
+          <span className="truncate text-bodytx">{b.subtype}</span>
+          <div className="h-3 rounded-full bg-ivory">
             <div
-              className="h-full rounded-full bg-indigo-500"
+              className="h-full rounded-full bg-blue"
               style={{ width: `${(b.count / max) * 100}%` }}
             />
           </div>
-          <span className="text-right text-xs text-slate-600">{b.count}</span>
+          <span className="text-right text-xs text-bodytx">{b.count}</span>
         </li>
       ))}
     </ul>
@@ -128,41 +128,41 @@ export default async function ProgressPage() {
   const bySubtype = bucketBySubtype(rows, t("unclassified"));
 
   return (
-    <main className="mx-auto w-full max-w-3xl space-y-4 p-4">
-      <h1 className="text-lg font-bold text-slate-900">{t("title")}</h1>
+    <main className="space-y-4">
+      <h1 className="text-lg font-bold text-ink">{t("title")}</h1>
 
       <div className="grid grid-cols-3 gap-2">
         <Card className="p-3 text-center">
-          <p className="text-xs text-slate-500">{t("statRecent30")}</p>
-          <p className="text-xl font-bold text-slate-800">{total}</p>
+          <p className="text-xs text-muted">{t("statRecent30")}</p>
+          <p className="text-xl font-bold text-ink">{total}</p>
         </Card>
         <Card className="p-3 text-center">
-          <p className="text-xs text-slate-500">{t("statGrammar")}</p>
-          <p className="text-xl font-bold text-slate-800">{grammar}</p>
+          <p className="text-xs text-muted">{t("statGrammar")}</p>
+          <p className="text-xl font-bold text-ink">{grammar}</p>
         </Card>
         <Card className="p-3 text-center">
-          <p className="text-xs text-slate-500">{t("statVocab")}</p>
-          <p className="text-xl font-bold text-slate-800">{vocab}</p>
+          <p className="text-xs text-muted">{t("statVocab")}</p>
+          <p className="text-xl font-bold text-ink">{vocab}</p>
         </Card>
       </div>
 
       <Card className="space-y-2 p-4">
-        <h2 className="text-sm font-semibold text-slate-700">{t("dailyTitle")}</h2>
+        <h2 className="text-sm font-semibold text-bodytx">{t("dailyTitle")}</h2>
         <DailyChart
           buckets={daily}
           ariaLabel={t("chartAriaRecent30")}
           tooltip={(date, count) => t("chartTooltip", { date, count })}
         />
-        <div className="flex justify-between text-[10px] text-slate-500">
+        <div className="flex justify-between text-[10px] text-muted">
           <span>{daily[0]?.date}</span>
           <span>{daily[daily.length - 1]?.date}</span>
         </div>
       </Card>
 
       <Card className="space-y-3 p-4">
-        <h2 className="text-sm font-semibold text-slate-700">{t("topSubtypesTitle")}</h2>
+        <h2 className="text-sm font-semibold text-bodytx">{t("topSubtypesTitle")}</h2>
         {bySubtype.length === 0 ? (
-          <p className="text-sm text-slate-500">{t("topSubtypesEmpty")}</p>
+          <p className="text-sm text-muted">{t("topSubtypesEmpty")}</p>
         ) : (
           <SubtypeBars buckets={bySubtype} />
         )}

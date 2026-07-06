@@ -24,10 +24,10 @@ function formatDeadline(iso: string | null): string | null {
 }
 
 function progressBarColor(pct: number, achieved: boolean): string {
-  if (achieved) return "bg-emerald-500";
-  if (pct >= 66) return "bg-indigo-500";
-  if (pct >= 33) return "bg-amber-500";
-  return "bg-slate-400";
+  if (achieved) return "bg-jade";
+  if (pct >= 66) return "bg-blue";
+  if (pct >= 33) return "bg-gold";
+  return "bg-hairline";
 }
 
 export default function GoalsManager({ initialGoals, initialProgress }: Props) {
@@ -159,14 +159,14 @@ export default function GoalsManager({ initialGoals, initialProgress }: Props) {
   return (
     <div className="space-y-4">
       <Card className="space-y-3 p-4">
-        <h2 className="text-sm font-semibold text-slate-800">{t("newHeading")}</h2>
+        <h2 className="text-sm font-semibold text-ink">{t("newHeading")}</h2>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <label className="text-xs text-slate-600">
+          <label className="text-xs text-bodytx">
             <span className="mb-1 block">{t("typeLabel")}</span>
             <select
               value={newType}
               onChange={(e) => setNewType(e.target.value as GoalType)}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-md border border-hairline px-3 py-2 text-sm"
             >
               {(Object.keys(TYPE_LABEL) as GoalType[]).map((type) => (
                 <option key={type} value={type}>
@@ -175,7 +175,7 @@ export default function GoalsManager({ initialGoals, initialProgress }: Props) {
               ))}
             </select>
           </label>
-          <label className="text-xs text-slate-600">
+          <label className="text-xs text-bodytx">
             <span className="mb-1 block">{t("targetLabel")}</span>
             <Input
               value={newTarget}
@@ -188,7 +188,7 @@ export default function GoalsManager({ initialGoals, initialProgress }: Props) {
               inputMode={newType === "error_type" ? "text" : "numeric"}
             />
           </label>
-          <label className="text-xs text-slate-600">
+          <label className="text-xs text-bodytx">
             <span className="mb-1 block">{t("deadlineLabel")}</span>
             <Input
               type="date"
@@ -197,9 +197,9 @@ export default function GoalsManager({ initialGoals, initialProgress }: Props) {
             />
           </label>
         </div>
-        <p className="text-[11px] text-slate-500">{TYPE_HINT[newType]}</p>
+        <p className="text-[11px] text-muted">{TYPE_HINT[newType]}</p>
         <div className="flex items-center justify-between">
-          <p className="text-xs text-red-600" role="alert">
+          <p className="text-xs text-terra" role="alert">
             {error}
           </p>
           <div className="flex gap-2">
@@ -214,7 +214,7 @@ export default function GoalsManager({ initialGoals, initialProgress }: Props) {
       </Card>
 
       {goals.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+        <p className="rounded-xl2 border border-dashed border-hairline bg-white p-8 text-center text-sm text-muted">
           {t("emptyState")}
         </p>
       ) : (
@@ -235,10 +235,10 @@ export default function GoalsManager({ initialGoals, initialProgress }: Props) {
                 <Card className="space-y-2 p-4">
                   <div className="flex items-start gap-3">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-sm font-semibold text-ink">
                         {TYPE_LABEL[g.goal_type]}
                       </p>
-                      <p className="text-xs text-slate-600">
+                      <p className="text-xs text-bodytx">
                         {t("targetPrefix")}
                         <span className="font-mono">{g.target_value}</span>
                         {prog && (
@@ -262,17 +262,17 @@ export default function GoalsManager({ initialGoals, initialProgress }: Props) {
                         className={
                           "rounded-full px-2 py-0.5 text-[10px] font-semibold " +
                           (achieved
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-slate-100 text-slate-600")
+                            ? "bg-jade-soft text-jade-dark"
+                            : "bg-ivory text-bodytx")
                         }
                       >
                         {statusLabel}
                       </span>
-                      <span className="text-xs tabular-nums text-slate-700">{pct}%</span>
+                      <span className="text-xs tabular-nums text-bodytx">{pct}%</span>
                     </div>
                   </div>
 
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-ivory">
                     <div
                       role="progressbar"
                       aria-valuemin={0}
@@ -297,7 +297,7 @@ export default function GoalsManager({ initialGoals, initialProgress }: Props) {
                       size="sm"
                       onClick={() => remove(g.id)}
                       disabled={busy}
-                      className="text-red-600 hover:bg-red-50"
+                      className="text-terra hover:bg-terra-soft"
                     >
                       {t("delete")}
                     </Button>

@@ -48,7 +48,7 @@ export default function SendSelfButton({ weekStart, alreadySent }: Props) {
         type="button"
         onClick={handleClick}
         disabled={state === "sending"}
-        className="rounded-md border border-slate-300 bg-white px-3 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+        className="rounded-md border border-hairline bg-white px-3 py-1 text-[11px] font-medium text-bodytx hover:bg-ivory disabled:opacity-60"
       >
         {state === "sending"
           ? "발송 중…"
@@ -58,7 +58,7 @@ export default function SendSelfButton({ weekStart, alreadySent }: Props) {
       </button>
       {msg && (
         <p
-          className={`text-[10px] ${state === "error" ? "text-red-600" : "text-slate-500"}`}
+          className={`text-[10px] ${state === "error" ? "text-terra" : "text-muted"}`}
         >
           {msg}
         </p>

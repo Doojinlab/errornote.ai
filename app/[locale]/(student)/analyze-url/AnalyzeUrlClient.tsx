@@ -7,11 +7,11 @@ import Card from "@/components/ui/Card";
 import type { AnalyzeUrlResponse, UrlAnalysisResult, UrlVocabAnnotation } from "@/types/url-analysis";
 
 const REGISTER_BADGE: Record<UrlVocabAnnotation["register"], string> = {
-  formal: "bg-blue-100 text-blue-700",
-  colloquial: "bg-emerald-100 text-emerald-700",
-  internet_slang: "bg-pink-100 text-pink-700",
-  literary: "bg-amber-100 text-amber-700",
-  neutral: "bg-slate-100 text-slate-700",
+  formal: "bg-blue-soft text-blue-dark",
+  colloquial: "bg-jade-soft text-jade-dark",
+  internet_slang: "bg-gem-soft text-gem-dark",
+  literary: "bg-gold-soft text-gold-dark",
+  neutral: "bg-ivory text-bodytx",
 };
 
 export default function AnalyzeUrlClient() {
@@ -53,7 +53,7 @@ export default function AnalyzeUrlClient() {
     <div className="space-y-4">
       <Card className="p-4">
         <form onSubmit={handleSubmit} className="space-y-3">
-          <label className="block text-xs font-medium text-slate-700">
+          <label className="block text-xs font-medium text-bodytx">
             {t("urlLabel")}
             <input
               type="url"
@@ -61,34 +61,34 @@ export default function AnalyzeUrlClient() {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder={t("urlPlaceholder")}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-md border border-hairline px-3 py-2 text-sm text-ink focus:border-blue focus:outline-none focus:ring-1 focus:ring-blue"
               disabled={isLoading}
             />
           </label>
 
-          <label className="flex items-center gap-2 text-xs text-slate-700">
+          <label className="flex items-center gap-2 text-xs text-bodytx">
             <input
               type="checkbox"
               checked={convertToCards}
               onChange={(e) => setConvertToCards(e.target.checked)}
-              className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+              className="rounded border-hairline text-blue focus:ring-blue"
               disabled={isLoading}
             />
             {t("convertToCardsLabel")}
           </label>
 
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[11px] text-slate-500">{t("supportedSourcesHint")}</p>
+            <p className="text-[11px] text-muted">{t("supportedSourcesHint")}</p>
             <button
               type="submit"
               disabled={isLoading || !url.trim()}
-              className="rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow hover:bg-indigo-500 disabled:opacity-60"
+              className="rounded-md bg-blue px-3 py-1.5 text-xs font-semibold text-white shadow hover:bg-blue-dark disabled:opacity-60"
             >
               {isLoading ? t("analyzing") : t("analyze")}
             </button>
           </div>
 
-          {error && <p className="text-xs text-red-600">{error}</p>}
+          {error && <p className="text-xs text-terra">{error}</p>}
         </form>
       </Card>
 
@@ -104,16 +104,16 @@ function ResultView({ result }: { result: AnalyzeUrlResponse }) {
   return (
     <Card className="space-y-4 p-4">
       <div>
-        <p className="text-[10px] uppercase tracking-wide text-slate-500">{t("resultHeading")}</p>
-        <h2 className="mt-1 text-sm font-semibold text-slate-900">{r.overall_register || "—"}</h2>
-        <p className="mt-1 text-[11px] text-slate-500">
+        <p className="text-[10px] uppercase tracking-wide text-muted">{t("resultHeading")}</p>
+        <h2 className="mt-1 text-sm font-semibold text-ink">{r.overall_register || "—"}</h2>
+        <p className="mt-1 text-[11px] text-muted">
           {t("estimatedHsk", { level: r.estimated_hsk_level ?? "?" })}
           {" · "}
           <a
             href={result.record.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-indigo-600 hover:underline"
+            className="text-blue hover:underline"
           >
             {t("viewSource")}
           </a>
@@ -122,8 +122,8 @@ function ResultView({ result }: { result: AnalyzeUrlResponse }) {
 
       {r.study_points.length > 0 && (
         <div>
-          <h3 className="text-xs font-semibold text-slate-700">{t("studyPointsHeading")}</h3>
-          <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-slate-700">
+          <h3 className="text-xs font-semibold text-bodytx">{t("studyPointsHeading")}</h3>
+          <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-bodytx">
             {r.study_points.map((p, i) => (
               <li key={i}>{p}</li>
             ))}
@@ -138,11 +138,11 @@ function ResultView({ result }: { result: AnalyzeUrlResponse }) {
       )}
 
       {result.cards && result.cards.length > 0 && (
-        <div className="rounded border border-emerald-200 bg-emerald-50 p-3">
-          <p className="text-xs font-semibold text-emerald-800">
+        <div className="rounded border border-jade bg-jade-soft p-3">
+          <p className="text-xs font-semibold text-jade-dark">
             {t("cardsConverted", { count: result.cards.length })}
           </p>
-          <p className="mt-0.5 text-[11px] text-emerald-700">{t("cardsConvertedHint")}</p>
+          <p className="mt-0.5 text-[11px] text-jade-dark">{t("cardsConvertedHint")}</p>
         </div>
       )}
     </Card>
@@ -159,12 +159,12 @@ function AnnotationsBlock({
   if (items.length === 0) return null;
   return (
     <div>
-      <h3 className="text-xs font-semibold text-slate-700">{title}</h3>
+      <h3 className="text-xs font-semibold text-bodytx">{title}</h3>
       <ul className="mt-2 space-y-2">
         {items.map((a, i) => (
-          <li key={i} className="rounded border border-slate-200 bg-slate-50 p-2">
+          <li key={i} className="rounded border border-hairline bg-ivory p-2">
             <div className="flex items-baseline justify-between gap-2">
-              <span className="font-mono text-sm font-semibold text-slate-900">{a.span}</span>
+              <span lang="zh" className="font-cn text-sm font-semibold text-ink">{a.span}</span>
               <div className="flex shrink-0 items-center gap-1">
                 <span
                   className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${REGISTER_BADGE[a.register]}`}
@@ -172,14 +172,14 @@ function AnnotationsBlock({
                   {a.register}
                 </span>
                 {a.hsk_level !== null && (
-                  <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-medium text-indigo-700">
+                  <span className="rounded bg-blue-soft px-1.5 py-0.5 text-[10px] font-medium text-blue-dark">
                     HSK {a.hsk_level}
                   </span>
                 )}
               </div>
             </div>
-            {a.meaning_ko && <p className="mt-1 text-xs text-slate-700">{a.meaning_ko}</p>}
-            {a.note && <p className="mt-0.5 text-[11px] text-slate-500">{a.note}</p>}
+            {a.meaning_ko && <p className="mt-1 text-xs text-bodytx">{a.meaning_ko}</p>}
+            {a.note && <p className="mt-0.5 text-[11px] text-muted">{a.note}</p>}
           </li>
         ))}
       </ul>

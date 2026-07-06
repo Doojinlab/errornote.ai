@@ -99,12 +99,12 @@ export default function SubmitClient({
   return (
     <div className="space-y-4">
       <Card className="p-4">
-        <h2 className="text-sm font-semibold text-slate-700">{t("promptTitle")}</h2>
-        <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
+        <h2 className="text-sm font-semibold text-bodytx">{t("promptTitle")}</h2>
+        <p className="mt-1 whitespace-pre-wrap text-sm text-bodytx">
           {assignment.prompt_text}
         </p>
         {rubric && (
-          <div className="mt-3 rounded border bg-slate-50 p-2 text-xs text-slate-700">
+          <div className="mt-3 rounded border border-hairline bg-ivory p-2 text-xs text-bodytx">
             <p className="font-semibold">{t("rubricLabel", { name: rubric.name })}</p>
             <ul className="mt-1 space-y-0.5">
               {rubric.criteria.map((c) => (
@@ -120,15 +120,15 @@ export default function SubmitClient({
       <div className="grid gap-4 md:grid-cols-2 md:grid-rows-[auto_1fr]">
         {/* 제출문 작성 / 분석 결과 */}
         <Card className="md:row-span-2 md:flex md:flex-col md:min-h-[480px]">
-          <div className="flex items-center justify-between border-b p-3">
-            <h2 className="text-sm font-semibold text-slate-700">
+          <div className="flex items-center justify-between border-b border-hairline p-3">
+            <h2 className="text-sm font-semibold text-bodytx">
               {analysis ? t("analysisResult") : t("draftTitle")}
             </h2>
             {analysis ? (
               <button
                 type="button"
                 onClick={() => setResult(null)}
-                className="text-xs text-indigo-600 hover:underline"
+                className="text-xs text-blue hover:underline"
               >
                 {t("editButton")}
               </button>
@@ -171,12 +171,12 @@ export default function SubmitClient({
 
         {/* 루브릭 채점 결과 */}
         <Card className="p-3 md:min-h-[220px]">
-          <h3 className="text-sm font-semibold text-slate-700">{t("rubricTitle")}</h3>
+          <h3 className="text-sm font-semibold text-bodytx">{t("rubricTitle")}</h3>
           {rubric ? (
             evaluation && evaluation.scores?.length > 0 ? (
-              <div className="mt-2 overflow-hidden rounded border">
+              <div className="mt-2 overflow-hidden rounded border border-hairline">
                 <table className="w-full text-xs">
-                  <thead className="bg-slate-50 text-slate-600">
+                  <thead className="bg-ivory text-bodytx">
                     <tr>
                       <th className="p-2 text-left">{t("colCriterion")}</th>
                       <th className="w-20 p-2 text-right">{t("colScore")}</th>
@@ -185,49 +185,49 @@ export default function SubmitClient({
                   </thead>
                   <tbody>
                     {evaluation.scores.map((s) => (
-                      <tr key={s.criterion} className="border-t align-top">
-                        <td className="p-2 font-medium text-slate-800">{s.criterion}</td>
-                        <td className="p-2 text-right text-slate-800">
+                      <tr key={s.criterion} className="border-t border-hairline align-top">
+                        <td className="p-2 font-medium text-ink">{s.criterion}</td>
+                        <td className="p-2 text-right text-ink">
                           {s.score}
-                          <span className="text-[10px] text-slate-400">/{s.max_score}</span>
+                          <span className="text-[10px] text-muted">/{s.max_score}</span>
                         </td>
-                        <td className="p-2 text-slate-700">{s.feedback}</td>
+                        <td className="p-2 text-bodytx">{s.feedback}</td>
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot className="bg-slate-50 text-slate-800">
+                  <tfoot className="bg-ivory text-ink">
                     <tr>
                       <td className="p-2 text-right font-semibold">{t("totalScore")}</td>
-                      <td className="p-2 text-right font-semibold text-indigo-700">
+                      <td className="p-2 text-right font-semibold text-blue-dark">
                         {evaluation.total_score?.toFixed(1) ?? "—"}
                       </td>
-                      <td className="p-2 text-[11px] text-slate-500">
+                      <td className="p-2 text-[11px] text-muted">
                         {t("instructorNote")}
                       </td>
                     </tr>
                   </tfoot>
                 </table>
                 {evaluation.ai_feedback && (
-                  <p className="border-t bg-white p-2 text-xs text-slate-700">
+                  <p className="border-t border-hairline bg-white p-2 text-xs text-bodytx">
                     {evaluation.ai_feedback}
                   </p>
                 )}
               </div>
             ) : (
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-muted">
                 {alreadySubmitted || result
                   ? t("noScoreYet")
                   : t("scoreAfterSubmit")}
               </p>
             )
           ) : (
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-muted">
               {t("noRubric")}
             </p>
           )}
 
           {initialErrorCount !== null && !result && (
-            <p className="mt-3 text-[11px] text-slate-500">
+            <p className="mt-3 text-[11px] text-muted">
               {t("prevErrorCount", { count: initialErrorCount })}
             </p>
           )}
@@ -235,7 +235,7 @@ export default function SubmitClient({
       </div>
 
       {error && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-terra">
           {error}
         </p>
       )}

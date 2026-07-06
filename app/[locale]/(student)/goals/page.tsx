@@ -33,10 +33,10 @@ export default async function GoalsPage() {
   ]);
 
   return (
-    <section className="mx-auto w-full max-w-3xl space-y-4 p-4">
+    <section className="space-y-4">
       <div className="flex items-baseline justify-between">
-        <h1 className="text-lg font-bold text-slate-900">{t("title")}</h1>
-        <p className="text-xs text-slate-500">{t("countLabel", { count: goals.length })}</p>
+        <h1 className="text-lg font-bold text-ink">{t("title")}</h1>
+        <p className="text-xs text-muted">{t("countLabel", { count: goals.length })}</p>
       </div>
       <GoalsManager initialGoals={goals} initialProgress={progress} />
     </section>

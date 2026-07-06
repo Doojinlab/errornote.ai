@@ -66,36 +66,36 @@ export default async function StudentWeeklySuggestionDetail(
   }) as StudentWeeklyMetrics
 
   return (
-    <main className="mx-auto w-full max-w-2xl space-y-4 p-4">
+    <main className="space-y-4">
       <Link
         href="/weekly-suggestions"
-        className="inline-block text-xs text-indigo-600 hover:underline"
+        className="inline-block text-xs text-blue hover:underline"
       >
         ← {t('backToList')}
       </Link>
 
       <header>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           {t('weekOf', { date: row.week_start })}
           {className && ` · ${className}`}
         </p>
-        <h1 className="mt-1 text-lg font-bold text-slate-900">
+        <h1 className="mt-1 text-lg font-bold text-ink">
           {suggestions.headline || t('noHeadline')}
         </h1>
       </header>
 
       <section className="grid grid-cols-3 gap-2 text-center">
-        <div className="rounded-xl border border-slate-200 bg-white p-3">
-          <p className="text-xs text-slate-500">{t('statSessions')}</p>
-          <p className="mt-1 text-lg font-bold text-slate-900">{metrics.total_sessions}</p>
+        <div className="card-pop rounded-xl2 border border-hairline bg-white p-3">
+          <p className="text-xs text-muted">{t('statSessions')}</p>
+          <p className="mt-1 text-lg font-bold text-ink">{metrics.total_sessions}</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-3">
-          <p className="text-xs text-slate-500">{t('statErrors')}</p>
-          <p className="mt-1 text-lg font-bold text-slate-900">{metrics.total_errors}</p>
+        <div className="card-pop rounded-xl2 border border-hairline bg-white p-3">
+          <p className="text-xs text-muted">{t('statErrors')}</p>
+          <p className="mt-1 text-lg font-bold text-ink">{metrics.total_errors}</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-3">
-          <p className="text-xs text-slate-500">{t('statImprovement')}</p>
-          <p className="mt-1 text-lg font-bold text-slate-900">
+        <div className="card-pop rounded-xl2 border border-hairline bg-white p-3">
+          <p className="text-xs text-muted">{t('statImprovement')}</p>
+          <p className="mt-1 text-lg font-bold text-ink">
             {metrics.improvement_rate === null
               ? '—'
               : `${Math.round(metrics.improvement_rate * 100)}%`}
@@ -104,15 +104,15 @@ export default async function StudentWeeklySuggestionDetail(
       </section>
 
       {suggestions.focus_areas.length > 0 && (
-        <section className="rounded-xl border border-slate-200 bg-white p-4">
-          <h2 className="text-sm font-semibold text-slate-900">{t('focusAreas')}</h2>
+        <section className="card-pop rounded-xl2 border border-hairline bg-white p-4">
+          <h2 className="text-sm font-semibold text-ink">{t('focusAreas')}</h2>
           <ul className="mt-3 space-y-3">
             {suggestions.focus_areas.map((f, idx) => (
-              <li key={idx} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-                <p className="text-sm font-semibold text-slate-900">{f.label}</p>
-                {f.why && <p className="mt-1 text-xs text-slate-600">{f.why}</p>}
+              <li key={idx} className="rounded-xl2 border border-hairline bg-ivory p-3">
+                <p className="text-sm font-semibold text-ink">{f.label}</p>
+                {f.why && <p className="mt-1 text-xs text-bodytx">{f.why}</p>}
                 {f.action && (
-                  <p className="mt-2 text-xs font-medium text-indigo-700">→ {f.action}</p>
+                  <p className="mt-2 text-xs font-medium text-blue-dark">→ {f.action}</p>
                 )}
               </li>
             ))}
@@ -121,9 +121,9 @@ export default async function StudentWeeklySuggestionDetail(
       )}
 
       {suggestions.recommended_activities.length > 0 && (
-        <section className="rounded-xl border border-slate-200 bg-white p-4">
-          <h2 className="text-sm font-semibold text-slate-900">{t('activities')}</h2>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
+        <section className="card-pop rounded-xl2 border border-hairline bg-white p-4">
+          <h2 className="text-sm font-semibold text-ink">{t('activities')}</h2>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-bodytx">
             {suggestions.recommended_activities.map((a, idx) => (
               <li key={idx}>{a}</li>
             ))}
@@ -132,15 +132,15 @@ export default async function StudentWeeklySuggestionDetail(
       )}
 
       {suggestions.encouragement && (
-        <section className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-          <p className="text-sm text-amber-900">💛 {suggestions.encouragement}</p>
+        <section className="card-pop rounded-xl2 border border-gold bg-gold-soft p-4">
+          <p className="text-sm text-gold-dark">💛 {suggestions.encouragement}</p>
         </section>
       )}
 
       {metrics.fossilization_alerts.length > 0 && (
-        <section className="rounded-xl border border-rose-200 bg-rose-50 p-4">
-          <h2 className="text-sm font-semibold text-rose-900">{t('fossilization')}</h2>
-          <ul className="mt-2 space-y-1 text-xs text-rose-800">
+        <section className="card-pop rounded-xl2 border border-terra bg-terra-soft p-4">
+          <h2 className="text-sm font-semibold text-terra-dark">{t('fossilization')}</h2>
+          <ul className="mt-2 space-y-1 text-xs text-terra-dark">
             {metrics.fossilization_alerts.map((f, idx) => (
               <li key={idx}>
                 {f.subtype} — {t('fossilCount', { count: f.count })}

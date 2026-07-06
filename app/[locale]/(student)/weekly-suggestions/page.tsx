@@ -39,14 +39,14 @@ export default async function StudentWeeklySuggestionsListPage() {
   const rows = (rowsRaw as RowJoin[] | null) ?? []
 
   return (
-    <main className="mx-auto w-full max-w-2xl space-y-4 p-4">
+    <main className="space-y-4">
       <header>
-        <h1 className="text-lg font-bold text-slate-900">{t('title')}</h1>
-        <p className="mt-0.5 text-xs text-slate-500">{t('subtitle')}</p>
+        <h1 className="text-lg font-bold text-ink">{t('title')}</h1>
+        <p className="mt-0.5 text-xs text-muted">{t('subtitle')}</p>
       </header>
 
       {rows.length === 0 ? (
-        <p className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+        <p className="card-pop rounded-xl2 border border-hairline bg-white p-6 text-sm text-muted">
           {t('empty')}
         </p>
       ) : (
@@ -65,16 +65,16 @@ export default async function StudentWeeklySuggestionsListPage() {
               <li key={r.id}>
                 <Link
                   href={`/weekly-suggestions/${r.week_start}/${r.class_id}`}
-                  className="block rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-indigo-300 hover:bg-indigo-50/40"
+                  className="card-pop block rounded-xl2 border border-hairline bg-white p-4 transition-colors hover:border-blue hover:bg-blue-soft/40"
                 >
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted">
                     {t('weekOf', { date: r.week_start })}
                     {className && ` · ${className}`}
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                  <p className="mt-1 text-sm font-semibold text-ink">
                     {suggestions.headline || t('noHeadline')}
                   </p>
-                  <p className="mt-2 text-xs text-slate-500">
+                  <p className="mt-2 text-xs text-muted">
                     {t('summary', {
                       sessions: metrics.total_sessions,
                       errors: metrics.total_errors
