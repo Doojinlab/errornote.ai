@@ -54,14 +54,14 @@ export default async function StudentLivePickerPage() {
   )
 
   return (
-    <main className="mx-auto w-full max-w-2xl space-y-4 p-4">
+    <div className="space-y-4">
       <header>
-        <h1 className="text-lg font-bold text-slate-900">{t('pickerTitle')}</h1>
-        <p className="mt-0.5 text-xs text-slate-500">{t('pickerSubtitle')}</p>
+        <h1 className="text-xl font-extrabold tracking-tight text-ink">{t('pickerTitle')}</h1>
+        <p className="mt-1 text-xs text-muted">{t('pickerSubtitle')}</p>
       </header>
 
       {rows.length === 0 ? (
-        <p className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+        <p className="rounded-xl2 border border-hairline bg-white p-6 text-sm text-muted">
           {t('emptyClasses')}
         </p>
       ) : (
@@ -73,22 +73,22 @@ export default async function StudentLivePickerPage() {
               <li key={c.id}>
                 <Link
                   href={`/live/${c.id}`}
-                  className="block rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-indigo-300 hover:bg-indigo-50/40"
+                  className="card-pop block rounded-xl3 border border-hairline bg-white p-4"
                 >
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-slate-900">{c.name}</p>
+                    <p className="text-sm font-bold text-ink">{c.name}</p>
                     <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                      className={`rounded-full px-2 py-0.5 text-xs font-bold ${
                         live
-                          ? 'bg-red-100 text-red-700'
-                          : 'bg-slate-100 text-slate-500'
+                          ? 'bg-terra-soft text-terra-dark'
+                          : 'bg-blue-soft text-blue-dark'
                       }`}
                     >
                       {live ? t('badgeLive') : t('badgeIdle')}
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">{c.semester}</p>
-                  <p className="mt-2 text-xs font-medium text-indigo-600">
+                  <p className="mt-1 text-xs text-muted">{c.semester}</p>
+                  <p className="mt-2 text-xs font-bold text-blue">
                     {t('enterRoom')} →
                   </p>
                 </Link>
@@ -97,6 +97,6 @@ export default async function StudentLivePickerPage() {
           })}
         </ul>
       )}
-    </main>
+    </div>
   )
 }

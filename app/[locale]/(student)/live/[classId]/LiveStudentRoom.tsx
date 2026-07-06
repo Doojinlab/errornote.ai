@@ -154,19 +154,19 @@ export default function LiveStudentRoom({
       : labels.statusIdle
 
   return (
-    <main className="mx-auto w-full max-w-3xl space-y-4 p-4">
+    <div className="space-y-4">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold text-slate-900">{labels.title}</h1>
-          <p className="mt-0.5 text-xs text-slate-500">{labels.focusLine}</p>
+          <h1 className="text-xl font-extrabold tracking-tight text-ink">{labels.title}</h1>
+          <p className="mt-0.5 text-xs text-muted">{labels.focusLine}</p>
         </div>
         <span
-          className={`rounded-full px-2 py-1 text-xs font-medium ${
+          className={`rounded-full px-2 py-1 text-xs font-bold ${
             sessionState === 'live'
-              ? 'bg-red-100 text-red-700'
+              ? 'bg-terra-soft text-terra-dark'
               : sessionState === 'ended'
-              ? 'bg-slate-200 text-slate-600'
-              : 'bg-slate-100 text-slate-500'
+              ? 'bg-hairline text-muted'
+              : 'bg-blue-soft text-blue-dark'
           }`}
         >
           {statusBadge}
@@ -174,12 +174,12 @@ export default function LiveStudentRoom({
       </header>
 
       {!consented && !showModal && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+        <div className="rounded-xl2 border border-gold-soft bg-gold-soft p-4 text-sm text-gold-dark">
           <p className="mb-3">{labels.notConsentedBlock}</p>
           <button
             onClick={() => setShowModal(true)}
             disabled={savingConsent}
-            className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+            className="rounded-xl2 bg-gold px-4 py-2 text-sm font-bold text-white hover:bg-gold-dark disabled:opacity-50"
           >
             {labels.consentRegrant}
           </button>
@@ -190,7 +190,7 @@ export default function LiveStudentRoom({
         <section className="space-y-2">
           <label
             htmlFor="live-text"
-            className="block text-xs font-medium text-slate-600"
+            className="block text-xs font-bold text-bodytx"
           >
             {labels.textareaLabel}
           </label>
@@ -200,10 +200,10 @@ export default function LiveStudentRoom({
             onChange={handleTextChange}
             disabled={sessionState === 'ended'}
             placeholder={labels.textareaPlaceholder}
-            className="block min-h-[200px] w-full resize-y rounded-xl border border-slate-300 bg-white p-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 disabled:bg-slate-100"
+            className="block min-h-[200px] w-full resize-y rounded-xl2 border border-hairline bg-white p-3 font-cn text-sm shadow-sm focus:border-blue focus:outline-none focus:ring-2 focus:ring-blue-soft disabled:bg-ivory"
             maxLength={4000}
           />
-          <div className="flex items-center justify-between text-xs text-slate-500">
+          <div className="flex items-center justify-between text-xs text-muted">
             <span>
               {sessionState === 'live'
                 ? labels.broadcastingHint
@@ -214,7 +214,7 @@ export default function LiveStudentRoom({
             <button
               onClick={handleWithdraw}
               disabled={savingConsent}
-              className="text-xs text-red-600 hover:underline disabled:opacity-50"
+              className="text-xs text-terra-dark hover:underline disabled:opacity-50"
             >
               {labels.consentWithdraw}
             </button>
@@ -228,28 +228,28 @@ export default function LiveStudentRoom({
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-            <h2 className="text-base font-bold text-slate-900">
+          <div className="w-full max-w-md rounded-xl3 border border-hairline bg-white p-6 shadow-xl">
+            <h2 className="text-base font-extrabold text-ink">
               {labels.consentTitle}
             </h2>
-            <p className="mt-2 whitespace-pre-line text-sm text-slate-600">
+            <p className="mt-2 whitespace-pre-line text-sm text-bodytx">
               {labels.consentBody}
             </p>
             {consentError && (
-              <p className="mt-3 text-xs text-red-600">{consentError}</p>
+              <p className="mt-3 text-xs text-terra-dark">{consentError}</p>
             )}
             <div className="mt-5 flex items-center justify-end gap-2">
               <button
                 onClick={handleDeclineConsent}
                 disabled={savingConsent}
-                className="rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                className="rounded-xl2 border border-hairline px-4 py-2 text-sm text-bodytx hover:bg-ivory disabled:opacity-50"
               >
                 {labels.consentDecline}
               </button>
               <button
                 onClick={handleAcceptConsent}
                 disabled={savingConsent}
-                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+                className="rounded-xl2 bg-blue px-4 py-2 text-sm font-bold text-white hover:bg-blue-dark disabled:opacity-50"
               >
                 {savingConsent ? labels.consentSaving : labels.consentAccept}
               </button>
@@ -257,6 +257,6 @@ export default function LiveStudentRoom({
           </div>
         </div>
       )}
-    </main>
+    </div>
   )
 }

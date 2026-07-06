@@ -2,13 +2,13 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { createServerClient } from '@/lib/supabase'
 import { listAssignedReviews, listReceivedReviews } from '@/lib/peer-review'
-import Card from '@/components/ui/Card'
+import { Card } from '@/components/student-ui'
 import type { ReviewStatus } from '@/types/peer-review'
 
 const STATUS_COLOR: Record<ReviewStatus, string> = {
-  pending:     'bg-yellow-50 text-yellow-700',
-  in_progress: 'bg-blue-50 text-blue-700',
-  completed:   'bg-green-50 text-green-700',
+  pending:     'bg-gold-soft text-gold-dark',
+  in_progress: 'bg-blue-soft text-blue-dark',
+  completed:   'bg-jade-soft text-jade-dark',
 }
 
 function formatDate(iso: string): string {
@@ -39,15 +39,15 @@ export default async function PeerReviewPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-3xl space-y-6 p-4">
-      <h1 className="text-lg font-bold text-slate-900">{t('title')}</h1>
+    <div className="space-y-6">
+      <h1 className="text-xl font-extrabold tracking-tight text-ink">{t('title')}</h1>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-700">
+        <h2 className="text-sm font-bold text-bodytx">
           {t('pendingTitle', { count: pending.length })}
         </h2>
         {pending.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+          <p className="rounded-xl2 border border-dashed border-hairline bg-white p-6 text-center text-sm text-muted">
             {t('pendingEmpty')}
           </p>
         ) : (
@@ -55,16 +55,16 @@ export default async function PeerReviewPage() {
             {pending.map((r) => (
               <li key={r.review_id}>
                 <Link href={`/peer-review/${r.review_id}`}>
-                  <Card className="p-3 transition hover:border-indigo-400">
+                  <Card className="p-3">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium text-slate-800">{r.assignment_title}</p>
+                      <p className="font-bold text-ink">{r.assignment_title}</p>
                       <span
-                        className={`shrink-0 rounded px-2 py-0.5 text-xs font-semibold ${STATUS_COLOR[r.status]}`}
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold ${STATUS_COLOR[r.status]}`}
                       >
                         {STATUS_LABEL[r.status]}
                       </span>
                     </div>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-muted">
                       {t('assignedDate', { date: formatDate(r.created_at) })}
                     </p>
                   </Card>
@@ -77,7 +77,7 @@ export default async function PeerReviewPage() {
 
       {done.length > 0 && (
         <section className="space-y-2">
-          <h2 className="text-sm font-semibold text-slate-700">
+          <h2 className="text-sm font-bold text-bodytx">
             {t('doneTitle', { count: done.length })}
           </h2>
           <ul className="space-y-2">
@@ -85,8 +85,8 @@ export default async function PeerReviewPage() {
               <li key={r.review_id}>
                 <Card className="p-3 opacity-60">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium text-slate-700">{r.assignment_title}</p>
-                    <span className={`shrink-0 rounded px-2 py-0.5 text-xs font-semibold ${STATUS_COLOR.completed}`}>
+                    <p className="font-bold text-bodytx">{r.assignment_title}</p>
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold ${STATUS_COLOR.completed}`}>
                       {STATUS_LABEL.completed}
                     </span>
                   </div>
@@ -98,11 +98,11 @@ export default async function PeerReviewPage() {
       )}
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-700">
+        <h2 className="text-sm font-bold text-bodytx">
           {t('receivedTitle', { count: received.length })}
         </h2>
         {received.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+          <p className="rounded-xl2 border border-dashed border-hairline bg-white p-6 text-center text-sm text-muted">
             {t('receivedEmpty')}
           </p>
         ) : (
@@ -113,46 +113,46 @@ export default async function PeerReviewPage() {
                 <li key={req.request_id}>
                   <Card className="p-3">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium text-slate-800">{req.assignment_title}</p>
+                      <p className="font-bold text-ink">{req.assignment_title}</p>
                       <span
-                        className={`shrink-0 rounded px-2 py-0.5 text-xs font-semibold ${STATUS_COLOR[req.request_status]}`}
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold ${STATUS_COLOR[req.request_status]}`}
                       >
                         {STATUS_LABEL[req.request_status]}
                       </span>
                     </div>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-muted">
                       {t('requestDate', { date: formatDate(req.request_created_at) })}
                     </p>
 
                     {completedReviews.length > 0 && (
                       <div className="mt-2 space-y-2">
                         {completedReviews.map((rv, i) => (
-                          <div key={rv.id} className="rounded bg-slate-50 p-2 text-sm">
-                            <p className="mb-1 text-xs font-semibold text-slate-600">
+                          <div key={rv.id} className="rounded-xl2 bg-ivory p-2 text-sm">
+                            <p className="mb-1 text-xs font-bold text-bodytx">
                               {t('feedbackLabel', { num: i + 1 })}
                             </p>
                             {rv.feedback_text && (
-                              <p className="mb-2 text-slate-700 whitespace-pre-wrap">{rv.feedback_text}</p>
+                              <p className="mb-2 whitespace-pre-wrap text-bodytx">{rv.feedback_text}</p>
                             )}
                             <div className="flex flex-wrap gap-3">
                               {rv.grammar_score !== null && (
-                                <span className="text-xs text-slate-600">
-                                  {t('scoreGrammar')} <strong className="text-slate-800">{rv.grammar_score}</strong>/5
+                                <span className="text-xs text-muted">
+                                  {t('scoreGrammar')} <strong className="text-ink">{rv.grammar_score}</strong>/5
                                 </span>
                               )}
                               {rv.vocab_score !== null && (
-                                <span className="text-xs text-slate-600">
-                                  {t('scoreVocab')} <strong className="text-slate-800">{rv.vocab_score}</strong>/5
+                                <span className="text-xs text-muted">
+                                  {t('scoreVocab')} <strong className="text-ink">{rv.vocab_score}</strong>/5
                                 </span>
                               )}
                               {rv.content_score !== null && (
-                                <span className="text-xs text-slate-600">
-                                  {t('scoreContent')} <strong className="text-slate-800">{rv.content_score}</strong>/5
+                                <span className="text-xs text-muted">
+                                  {t('scoreContent')} <strong className="text-ink">{rv.content_score}</strong>/5
                                 </span>
                               )}
                               {rv.overall_score !== null && (
-                                <span className="text-xs text-slate-600">
-                                  {t('scoreOverall')} <strong className="text-slate-800">{rv.overall_score}</strong>/5
+                                <span className="text-xs text-muted">
+                                  {t('scoreOverall')} <strong className="text-ink">{rv.overall_score}</strong>/5
                                 </span>
                               )}
                             </div>
@@ -162,7 +162,7 @@ export default async function PeerReviewPage() {
                     )}
 
                     {req.request_status !== 'completed' && (
-                      <p className="mt-2 text-xs text-slate-400">
+                      <p className="mt-2 text-xs text-muted">
                         {t('reviewerWorking')}
                       </p>
                     )}
@@ -173,6 +173,6 @@ export default async function PeerReviewPage() {
           </ul>
         )}
       </section>
-    </main>
+    </div>
   )
 }
