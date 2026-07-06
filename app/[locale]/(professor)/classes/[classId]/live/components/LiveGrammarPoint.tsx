@@ -48,11 +48,11 @@ export default function LiveGrammarPoint({ classId, initialValue, onSaved, disab
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-3">
-      <label className="block text-xs font-medium text-slate-600">
+    <div className="card-pop rounded-xl2 border border-hairline bg-white p-3">
+      <label className="block text-xs font-medium text-bodytx">
         당주 문법 포인트 (실시간 감지 강화)
       </label>
-      <p className="mt-0.5 text-[11px] text-slate-400">
+      <p className="mt-0.5 text-[11px] text-muted">
         예: <span className="font-mono">把자문</span> / <span className="font-mono">被자문</span> —
         설정한 항목은 이번 주 분석 시 자동 우선 탐지 대상이 됩니다.
       </p>
@@ -63,15 +63,15 @@ export default function LiveGrammarPoint({ classId, initialValue, onSaved, disab
           onChange={e => setValue(e.target.value)}
           disabled={disabled || saving}
           placeholder="이번 주 집중 문법 포인트"
-          className="flex-1 rounded-md border border-slate-300 px-2.5 py-1 text-sm focus:border-indigo-500 focus:outline-none disabled:bg-slate-100"
+          className="flex-1 rounded-md border border-hairline px-2.5 py-1 text-sm focus:border-blue focus:outline-none disabled:bg-ivory"
         />
         <Button size="sm" onClick={handleSave} disabled={disabled || saving}>
           {saving ? '저장 중…' : '저장'}
         </Button>
       </div>
-      {error && <p className="mt-1 text-xs text-rose-600">저장 실패: {error}</p>}
+      {error && <p className="mt-1 text-xs text-terra">저장 실패: {error}</p>}
       {!error && savedAt && (
-        <p className="mt-1 text-[11px] text-emerald-600">저장됨 · {savedAt}</p>
+        <p className="mt-1 text-[11px] text-jade">저장됨 · {savedAt}</p>
       )}
     </div>
   )

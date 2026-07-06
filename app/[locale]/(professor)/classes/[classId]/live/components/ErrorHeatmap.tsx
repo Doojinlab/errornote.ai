@@ -21,7 +21,7 @@ export default function ErrorHeatmap({ cells, maxBuckets = 24 }: Props) {
 
   if (subtypes.length === 0 || buckets.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-xs text-slate-500">
+      <div className="rounded-xl2 border border-dashed border-hairline bg-white p-6 text-center text-xs text-muted">
         집계된 오류가 아직 없습니다. 학생이 제출하면 실시간으로 표시됩니다.
       </div>
     )
@@ -32,13 +32,13 @@ export default function ErrorHeatmap({ cells, maxBuckets = 24 }: Props) {
       <table className="min-w-full border-separate border-spacing-0.5 text-xs">
         <thead>
           <tr>
-            <th className="sticky left-0 z-10 bg-white px-2 py-1 text-left font-medium text-slate-500">
+            <th className="sticky left-0 z-10 bg-white px-2 py-1 text-left font-medium text-muted">
               오류 유형
             </th>
             {buckets.map(b => (
               <th
                 key={b}
-                className="whitespace-nowrap px-1 py-1 text-[10px] font-normal text-slate-400"
+                className="whitespace-nowrap px-1 py-1 text-[10px] font-normal text-muted"
                 title={b}
               >
                 {formatBucketLabel(b)}
@@ -49,7 +49,7 @@ export default function ErrorHeatmap({ cells, maxBuckets = 24 }: Props) {
         <tbody>
           {subtypes.map(subtype => (
             <tr key={subtype}>
-              <td className="sticky left-0 z-10 bg-white px-2 py-1 font-medium text-slate-700">
+              <td className="sticky left-0 z-10 bg-white px-2 py-1 font-medium text-bodytx">
                 {subtype}
               </td>
               {buckets.map(b => {
@@ -57,8 +57,8 @@ export default function ErrorHeatmap({ cells, maxBuckets = 24 }: Props) {
                 return (
                   <td
                     key={b}
-                    className="h-6 w-6 rounded text-center text-[10px]"
-                    style={{ backgroundColor: heatColor(v, maxCount), color: v > 0 ? '#fff' : '#cbd5e1' }}
+                    className={`h-6 w-6 rounded text-center text-[10px] ${v > 0 ? 'text-white' : 'text-muted'}`}
+                    style={{ backgroundColor: cellBg(v, maxCount) }}
                     title={`${subtype} · ${formatBucketLabel(b)} · ${v}건`}
                   >
                     {v > 0 ? v : ''}
@@ -97,11 +97,11 @@ function build(cells: LiveHeatmapCell[], maxBuckets: number) {
   return { subtypes, buckets, grid, maxCount }
 }
 
-function heatColor(value: number, max: number): string {
-  if (value <= 0 || max <= 0) return '#f8fafc'
-  // indigo scale — 0 → 0.15, max → 0.9
-  const intensity = 0.15 + (value / max) * 0.75
-  return `rgba(79, 70, 229, ${intensity.toFixed(2)})`
+function cellBg(value: number, max: number): string {
+  if (value <= 0 || max <= 0) return 'transparent'
+  // blue 토큰 강도 스케일 — 0 → 15%, max → 90% (인라인 hex 금지, 토큰 기반)
+  const pct = Math.round((0.15 + (value / max) * 0.75) * 100)
+  return `color-mix(in srgb, var(--color-blue) ${pct}%, transparent)`
 }
 
 function formatBucketLabel(iso: string): string {
