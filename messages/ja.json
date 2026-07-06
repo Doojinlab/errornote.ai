@@ -626,7 +626,10 @@
         "errorVowelError": "母音エラー",
         "errorConsonantError": "子音エラー",
         "langEnUS": "英語",
-        "langKoKR": "韓国語"
+        "langKoKR": "韓国語",
+        "recordHint": "サンプルを選ぶか文を入力してから、録音を開始してください。",
+        "unsupportedTitle": "このブラウザでは利用できません",
+        "unsupportedBody": "発音練習は、音声認識に対応した Chrome または Edge でご利用いただけます。"
       },
       "live": {
         "pickerTitle": "ライブ授業",
