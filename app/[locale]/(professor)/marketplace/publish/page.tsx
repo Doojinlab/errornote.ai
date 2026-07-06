@@ -20,7 +20,7 @@ export default async function MarketplacePublishPage() {
 
   return (
     <main className="mx-auto w-full max-w-4xl space-y-5 p-4">
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted">
         <Link href="/marketplace" className="hover:underline">
           {t('breadcrumbMarketplace')}
         </Link>{' '}
@@ -29,16 +29,16 @@ export default async function MarketplacePublishPage() {
 
       <header className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-lg font-bold text-slate-900">{t('title')}</h1>
-          <p className="mt-0.5 text-xs text-slate-500">{t('subtitle')}</p>
+          <h1 className="text-lg font-bold text-ink">{t('title')}</h1>
+          <p className="mt-0.5 text-xs text-muted">{t('subtitle')}</p>
         </div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           {t('publicCount', { publicCount, total: items.length })}
         </p>
       </header>
 
       {items.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+        <p className="rounded-xl2 border border-dashed border-hairline bg-white p-8 text-center text-sm text-muted">
           {t('emptyState')}
         </p>
       ) : (
