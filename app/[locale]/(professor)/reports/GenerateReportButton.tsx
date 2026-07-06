@@ -50,12 +50,12 @@ export default function GenerateReportButton({ classes }: { classes: ClassOption
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <label className="text-xs text-slate-600">
+      <label className="text-xs text-bodytx">
         수업
         <select
           value={classId}
           onChange={e => setClassId(e.target.value)}
-          className="ml-2 rounded-md border border-slate-300 px-2 py-1 text-xs"
+          className="ml-2 rounded-lg border border-hairline px-2 py-1 text-xs"
         >
           {classes.map(c => (
             <option key={c.id} value={c.id}>
@@ -65,13 +65,13 @@ export default function GenerateReportButton({ classes }: { classes: ClassOption
         </select>
       </label>
 
-      <label className="text-xs text-slate-600">
+      <label className="text-xs text-bodytx">
         주 시작(월)
         <input
           type="date"
           value={weekStart}
           onChange={e => setWeekStart(e.target.value)}
-          className="ml-2 rounded-md border border-slate-300 px-2 py-1 text-xs"
+          className="ml-2 rounded-lg border border-hairline px-2 py-1 text-xs"
         />
       </label>
 
@@ -80,7 +80,7 @@ export default function GenerateReportButton({ classes }: { classes: ClassOption
       </Button>
 
       {error && (
-        <p role="alert" className="w-full text-xs text-red-600">
+        <p role="alert" className="w-full text-xs text-terra-dark">
           {error}
         </p>
       )}

@@ -33,14 +33,14 @@ function FocusBar({
   const pct = max > 0 ? Math.round((incidence / max) * 100) : 0
   return (
     <li className="grid grid-cols-[160px_1fr_36px] items-center gap-2 text-xs">
-      <span className="truncate text-slate-700" title={subtype}>{subtype}</span>
-      <div className="h-2.5 rounded-full bg-slate-100">
+      <span className="truncate text-bodytx" title={subtype}>{subtype}</span>
+      <div className="h-2.5 rounded-full bg-hairline">
         <div
-          className="h-full rounded-full bg-indigo-500"
+          className="h-full rounded-full bg-blue"
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-right text-slate-600">{incidence}</span>
+      <span className="text-right text-bodytx">{incidence}</span>
     </li>
   )
 }
@@ -57,14 +57,14 @@ function FossilBar({
   const pct = max > 0 ? Math.round((count / max) * 100) : 0
   return (
     <li className="grid grid-cols-[120px_1fr_36px] items-center gap-2 text-xs">
-      <span className="truncate text-slate-700" title={name}>{name}</span>
-      <div className="h-2.5 rounded-full bg-slate-100">
+      <span className="truncate text-bodytx" title={name}>{name}</span>
+      <div className="h-2.5 rounded-full bg-hairline">
         <div
-          className="h-full rounded-full bg-amber-500"
+          className="h-full rounded-full bg-gold"
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-right text-amber-700">{count}</span>
+      <span className="text-right text-gold-dark">{count}</span>
     </li>
   )
 }
@@ -77,11 +77,11 @@ interface Block {
 }
 
 const BLOCK_STYLE: Record<Block['tone'], string> = {
-  focus: 'border-indigo-200 bg-indigo-50',
-  praise: 'border-emerald-200 bg-emerald-50',
-  care: 'border-sky-200 bg-sky-50',
-  alert: 'border-amber-200 bg-amber-50',
-  suggest: 'border-slate-200 bg-slate-50'
+  focus: 'border-blue/30 bg-blue-soft',
+  praise: 'border-jade/30 bg-jade-soft',
+  care: 'border-terra/30 bg-terra-soft',
+  alert: 'border-gold/30 bg-gold-soft',
+  suggest: 'border-hairline bg-ivory'
 }
 
 function BlockShell({
@@ -95,7 +95,7 @@ function BlockShell({
 }) {
   return (
     <Card className={`p-4 ${BLOCK_STYLE[tone]}`}>
-      <h3 className="text-sm font-semibold text-slate-800">{title}</h3>
+      <h3 className="text-sm font-semibold text-ink">{title}</h3>
       <div className="mt-2 space-y-2">{children}</div>
     </Card>
   )
@@ -123,7 +123,7 @@ export default async function ReportDetailPage(
 
   return (
     <main className="mx-auto w-full max-w-4xl space-y-5 p-4">
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted">
         <Link href="/reports" className="hover:underline">
           {t('breadcrumbReports')}
         </Link>{' '}
@@ -131,10 +131,10 @@ export default async function ReportDetailPage(
       </p>
 
       <header className="space-y-1">
-        <h1 className="text-lg font-bold text-slate-900">
+        <h1 className="text-lg font-bold text-ink">
           {t('titleSuffix', { className: report.class_name })}
         </h1>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           {t('dateRange', {
             weekStart: formatDate(report.week_start),
             weekEnd: formatDate(weekEnd),
@@ -145,35 +145,35 @@ export default async function ReportDetailPage(
 
       <section className="grid gap-2 sm:grid-cols-5">
         <Card className="p-3">
-          <p className="text-[10px] text-slate-500">{t('statStudents')}</p>
-          <p className="mt-1 text-base font-bold text-slate-900">
+          <p className="text-[10px] text-muted">{t('statStudents')}</p>
+          <p className="mt-1 text-base font-bold text-ink">
             {report.metrics.total_students}
           </p>
-          <p className="text-[10px] text-slate-500">
+          <p className="text-[10px] text-muted">
             {t('statActiveSub', { count: report.metrics.active_students })}
           </p>
         </Card>
         <Card className="p-3">
-          <p className="text-[10px] text-slate-500">{t('statSessions')}</p>
-          <p className="mt-1 text-base font-bold text-slate-900">
+          <p className="text-[10px] text-muted">{t('statSessions')}</p>
+          <p className="mt-1 text-base font-bold text-ink">
             {report.metrics.total_sessions}
           </p>
         </Card>
         <Card className="p-3">
-          <p className="text-[10px] text-slate-500">{t('statErrors')}</p>
-          <p className="mt-1 text-base font-bold text-slate-900">
+          <p className="text-[10px] text-muted">{t('statErrors')}</p>
+          <p className="mt-1 text-base font-bold text-ink">
             {report.metrics.total_errors}
           </p>
         </Card>
         <Card className="p-3">
-          <p className="text-[10px] text-slate-500">{t('statAvgErrors')}</p>
-          <p className="mt-1 text-base font-bold text-slate-900">
+          <p className="text-[10px] text-muted">{t('statAvgErrors')}</p>
+          <p className="mt-1 text-base font-bold text-ink">
             {report.metrics.avg_errors_per_session.toFixed(2)}
           </p>
         </Card>
         <Card className="p-3">
-          <p className="text-[10px] text-slate-500">{t('statFossil')}</p>
-          <p className="mt-1 text-base font-bold text-amber-700">
+          <p className="text-[10px] text-muted">{t('statFossil')}</p>
+          <p className="mt-1 text-base font-bold text-gold-dark">
             {report.fossilization_alerts.length}
           </p>
         </Card>
@@ -184,7 +184,7 @@ export default async function ReportDetailPage(
         <section className="grid gap-3 sm:grid-cols-2">
           {report.focus_points.length > 0 && (
             <Card className="p-4">
-              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
                 포커스 포인트 발생 빈도
               </h3>
               <ul className="space-y-2" role="img" aria-label="포커스 포인트 막대 차트">
@@ -200,7 +200,7 @@ export default async function ReportDetailPage(
 
           {report.fossilization_alerts.length > 0 && (
             <Card className="p-4">
-              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
                 화석화 반복 횟수
               </h3>
               <ul className="space-y-2" role="img" aria-label="화석화 위험 막대 차트">
@@ -225,18 +225,18 @@ export default async function ReportDetailPage(
       <section className="space-y-3">
         <BlockShell tone="focus" title={t('blockFocus')}>
           {report.focus_points.length === 0 ? (
-            <p className="text-xs text-slate-500">{t('blockFocusEmpty')}</p>
+            <p className="text-xs text-muted">{t('blockFocusEmpty')}</p>
           ) : (
             <ul className="space-y-2">
               {report.focus_points.map((f, i) => (
-                <li key={i} className="rounded bg-white p-2">
-                  <p className="text-sm font-medium text-slate-800">
+                <li key={i} className="rounded-lg bg-white p-2">
+                  <p className="text-sm font-medium text-ink">
                     {f.error_subtype}{' '}
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-muted">
                       {t('blockFocusIncidence', { count: f.incidence })}
                     </span>
                   </p>
-                  <p className="mt-1 text-xs text-slate-600">{f.reason}</p>
+                  <p className="mt-1 text-xs text-bodytx">{f.reason}</p>
                 </li>
               ))}
             </ul>
@@ -245,13 +245,13 @@ export default async function ReportDetailPage(
 
         <BlockShell tone="praise" title={t('blockPraise')}>
           {report.praise_students.length === 0 ? (
-            <p className="text-xs text-slate-500">{t('blockPraiseEmpty')}</p>
+            <p className="text-xs text-muted">{t('blockPraiseEmpty')}</p>
           ) : (
             <ul className="space-y-2">
               {report.praise_students.map(p => (
-                <li key={p.student_id} className="rounded bg-white p-2">
-                  <p className="text-sm font-medium text-slate-800">{p.name}</p>
-                  <p className="mt-1 text-xs text-slate-600">{p.highlight}</p>
+                <li key={p.student_id} className="rounded-lg bg-white p-2">
+                  <p className="text-sm font-medium text-ink">{p.name}</p>
+                  <p className="mt-1 text-xs text-bodytx">{p.highlight}</p>
                 </li>
               ))}
             </ul>
@@ -260,14 +260,14 @@ export default async function ReportDetailPage(
 
         <BlockShell tone="care" title={t('blockCare')}>
           {report.care_students.length === 0 ? (
-            <p className="text-xs text-slate-500">{t('blockCareEmpty')}</p>
+            <p className="text-xs text-muted">{t('blockCareEmpty')}</p>
           ) : (
             <ul className="space-y-2">
               {report.care_students.map(c => (
-                <li key={c.student_id} className="rounded bg-white p-2">
-                  <p className="text-sm font-medium text-slate-800">{c.name}</p>
-                  <p className="mt-1 text-xs text-slate-600">{c.concern}</p>
-                  <p className="mt-1 text-xs text-indigo-700">→ {c.suggested_action}</p>
+                <li key={c.student_id} className="rounded-lg bg-white p-2">
+                  <p className="text-sm font-medium text-ink">{c.name}</p>
+                  <p className="mt-1 text-xs text-bodytx">{c.concern}</p>
+                  <p className="mt-1 text-xs text-blue-dark">→ {c.suggested_action}</p>
                 </li>
               ))}
             </ul>
@@ -276,17 +276,17 @@ export default async function ReportDetailPage(
 
         <BlockShell tone="alert" title={t('blockAlert')}>
           {report.fossilization_alerts.length === 0 ? (
-            <p className="text-xs text-slate-500">{t('blockAlertEmpty')}</p>
+            <p className="text-xs text-muted">{t('blockAlertEmpty')}</p>
           ) : (
             <ul className="space-y-1 text-xs">
               {report.fossilization_alerts.map((a, i) => (
                 <li
                   key={`${a.student_id}-${a.error_subtype}-${i}`}
-                  className="flex items-center justify-between rounded bg-white px-2 py-1.5"
+                  className="flex items-center justify-between rounded-lg bg-white px-2 py-1.5"
                 >
-                  <span className="font-medium text-slate-800">{a.name}</span>
-                  <span className="text-slate-600">{a.error_subtype}</span>
-                  <span className="text-amber-700">
+                  <span className="font-medium text-ink">{a.name}</span>
+                  <span className="text-bodytx">{a.error_subtype}</span>
+                  <span className="text-gold-dark">
                     {t('blockAlertCountSuffix', { count: a.count })}
                   </span>
                 </li>
@@ -296,7 +296,7 @@ export default async function ReportDetailPage(
         </BlockShell>
 
         <BlockShell tone="suggest" title={t('blockSuggest')}>
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-800">
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink">
             {report.next_class_suggestion || t('blockSuggestEmpty')}
           </p>
         </BlockShell>

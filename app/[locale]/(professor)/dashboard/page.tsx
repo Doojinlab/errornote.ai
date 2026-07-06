@@ -174,34 +174,34 @@ export default async function DashboardPage() {
   return (
     <main className="mx-auto w-full max-w-5xl space-y-5 p-4">
       <div className="flex items-baseline justify-between">
-        <h1 className="text-lg font-bold text-slate-900">{t('title')}</h1>
-        <Link href="/marketplace" className="text-xs text-indigo-600 hover:underline">
+        <h1 className="text-lg font-bold text-ink">{t('title')}</h1>
+        <Link href="/marketplace" className="text-xs text-blue hover:underline">
           {t('marketplace')}
         </Link>
       </div>
 
       <section className="grid gap-3 sm:grid-cols-3">
         <Card className="p-4">
-          <p className="text-xs text-slate-500">{t('statActiveClasses')}</p>
-          <p className="mt-1 text-xl font-bold text-slate-900">
+          <p className="text-xs text-muted">{t('statActiveClasses')}</p>
+          <p className="mt-1 text-xl font-bold text-ink">
             {t('statActiveClassesUnit', { count: classes.length })}
           </p>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted">
             {t('statActiveClassesActive', { count: classes.filter(c => c.is_active).length })}
           </p>
         </Card>
         <Card className="p-4">
-          <p className="text-xs text-slate-500">{t('statTotalStudents')}</p>
-          <p className="mt-1 text-xl font-bold text-slate-900">
+          <p className="text-xs text-muted">{t('statTotalStudents')}</p>
+          <p className="mt-1 text-xl font-bold text-ink">
             {t('statPeopleUnit', { count: totalStudents })}
           </p>
         </Card>
         <Card
-          className={`p-4 ${totalFossils > 0 ? 'border-amber-300 bg-amber-50' : ''}`}
+          className={`p-4 ${totalFossils > 0 ? 'border-gold bg-gold-soft' : ''}`}
         >
-          <p className="text-xs text-slate-500">{t('statFossilRecent30')}</p>
+          <p className="text-xs text-muted">{t('statFossilRecent30')}</p>
           <p
-            className={`mt-1 text-xl font-bold ${totalFossils > 0 ? 'text-amber-700' : 'text-slate-900'}`}
+            className={`mt-1 text-xl font-bold ${totalFossils > 0 ? 'text-gold-dark' : 'text-ink'}`}
           >
             {t('statFossilUnit', { count: totalFossils })}
           </p>
@@ -210,14 +210,14 @@ export default async function DashboardPage() {
 
       <section className="space-y-2">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-sm font-semibold text-slate-700">{t('sectionTitle')}</h2>
-          <Link href="/reports" className="text-xs text-indigo-600 hover:underline">
+          <h2 className="text-sm font-semibold text-bodytx">{t('sectionTitle')}</h2>
+          <Link href="/reports" className="text-xs text-blue hover:underline">
             {t('reportsAll')}
           </Link>
         </div>
 
         {classes.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+          <p className="rounded-xl2 border border-dashed border-hairline bg-white p-8 text-center text-sm text-muted">
             {t('emptyClasses')}
           </p>
         ) : (
@@ -227,19 +227,19 @@ export default async function DashboardPage() {
               const fossils = fossilByClass.get(c.id) ?? []
               const studentCount = c.enrollments[0]?.count ?? 0
               return (
-                <Card key={c.id} className="p-4">
+                <Card key={c.id} className="card-pop p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <Link
                         href={`/classes/${c.id}`}
-                        className="block truncate font-semibold text-slate-900 hover:underline"
+                        className="block truncate font-semibold text-ink hover:underline"
                       >
                         {c.name}
                       </Link>
-                      <p className="mt-0.5 text-xs text-slate-500">{c.semester}</p>
+                      <p className="mt-0.5 text-xs text-muted">{c.semester}</p>
                     </div>
                     {!c.is_active && (
-                      <span className="shrink-0 rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                      <span className="shrink-0 rounded-full bg-hairline px-2 py-0.5 text-xs text-muted">
                         {t('ended')}
                       </span>
                     )}
@@ -247,48 +247,48 @@ export default async function DashboardPage() {
 
                   <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
                     <div>
-                      <dt className="text-slate-500">{t('colStudents')}</dt>
-                      <dd className="font-semibold text-slate-800">
+                      <dt className="text-muted">{t('colStudents')}</dt>
+                      <dd className="font-semibold text-ink">
                         {t('statPeopleUnit', { count: studentCount })}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-slate-500">{t('colWeekSessions')}</dt>
-                      <dd className="font-semibold text-slate-800">
+                      <dt className="text-muted">{t('colWeekSessions')}</dt>
+                      <dd className="font-semibold text-ink">
                         {latest?.metrics?.total_sessions ?? 0}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-slate-500">{t('colErrors')}</dt>
-                      <dd className="font-semibold text-slate-800">
+                      <dt className="text-muted">{t('colErrors')}</dt>
+                      <dd className="font-semibold text-ink">
                         {latest?.metrics?.total_errors ?? 0}
                       </dd>
                     </div>
                   </dl>
 
                   {c.current_grammar_focus && (
-                    <p className="mt-3 rounded bg-indigo-50 px-2 py-1 text-xs text-indigo-700">
+                    <p className="mt-3 rounded-lg bg-blue-soft px-2 py-1 text-xs text-blue-dark">
                       {t('thisWeekPoint', { focus: c.current_grammar_focus })}
                     </p>
                   )}
 
                   {fossils.length > 0 && (
-                    <p className="mt-2 rounded bg-amber-50 px-2 py-1 text-xs text-amber-700">
+                    <p className="mt-2 rounded-lg bg-gold-soft px-2 py-1 text-xs text-gold-dark">
                       {t('fossilWarning', { count: fossils.length })}
                     </p>
                   )}
 
                   {latest && (
-                    <div className="mt-3 rounded border border-slate-200 bg-slate-50 p-2">
-                      <p className="text-[10px] font-semibold uppercase text-slate-500">
+                    <div className="mt-3 rounded-xl2 border border-hairline bg-ivory p-2">
+                      <p className="text-[10px] font-semibold uppercase text-muted">
                         {t('recentReport', { date: formatDate(latest.week_start) })}
                       </p>
-                      <p className="mt-1 line-clamp-2 text-xs text-slate-700">
+                      <p className="mt-1 line-clamp-2 text-xs text-bodytx">
                         {latest.next_class_suggestion || t('suggestionEmpty')}
                       </p>
                       <Link
                         href={`/reports/${latest.id}`}
-                        className="mt-1 inline-block text-[11px] text-indigo-600 hover:underline"
+                        className="mt-1 inline-block text-[11px] text-blue hover:underline"
                       >
                         {t('detail')}
                       </Link>
@@ -298,17 +298,17 @@ export default async function DashboardPage() {
                   <div className="mt-3 flex items-center gap-3 text-xs">
                     <Link
                       href={`/classes/${c.id}`}
-                      className="text-indigo-600 hover:underline"
+                      className="text-blue hover:underline"
                     >
                       {t('studentsLink')}
                     </Link>
                     <Link
                       href={`/classes/${c.id}/corpus`}
-                      className="text-indigo-600 hover:underline"
+                      className="text-blue hover:underline"
                     >
                       {t('corpusLink')}
                     </Link>
-                    <span className="ml-auto font-mono text-[11px] text-slate-500">
+                    <span className="ml-auto font-mono text-[11px] text-muted">
                       {c.invite_code}
                     </span>
                   </div>
