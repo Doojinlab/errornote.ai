@@ -47,20 +47,20 @@ export default async function AssignmentsPage(
     <main className="mx-auto w-full max-w-4xl space-y-5 p-4">
       <div className="flex items-baseline justify-between">
         <div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted">
             <Link href="/dashboard" className="hover:underline">
               {t('breadcrumbDashboard')}
             </Link>{' '}
             › {t('breadcrumbAssignments')}
           </p>
-          <h1 className="text-lg font-bold text-slate-900">
+          <h1 className="text-lg font-bold text-ink">
             {classInfo.name}{' '}
-            <span className="text-sm font-normal text-slate-500">({classInfo.semester})</span>
+            <span className="text-sm font-normal text-muted">({classInfo.semester})</span>
           </h1>
         </div>
         <Link
           href={`/classes/${classInfo.id}/rubrics`}
-          className="text-xs text-indigo-600 hover:underline"
+          className="text-xs text-blue hover:underline"
         >
           {t('rubricsLink')}
         </Link>

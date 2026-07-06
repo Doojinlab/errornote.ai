@@ -121,7 +121,7 @@ export default function RubricManager({ initialRubrics }: Props) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-700">내 루브릭 ({rubrics.length})</h2>
+        <h2 className="text-sm font-semibold text-bodytx">내 루브릭 ({rubrics.length})</h2>
         {editingId === null && (
           <Button size="sm" onClick={startNew}>
             + 새 루브릭
@@ -132,7 +132,7 @@ export default function RubricManager({ initialRubrics }: Props) {
       {editingId !== null && (
         <Card className="space-y-3 p-4">
           <div>
-            <label className="block text-xs font-medium text-slate-700">루브릭 이름</label>
+            <label className="block text-xs font-medium text-bodytx">루브릭 이름</label>
             <Input
               className="mt-1"
               value={name}
@@ -144,10 +144,10 @@ export default function RubricManager({ initialRubrics }: Props) {
 
           <div>
             <div className="mb-1 flex items-center justify-between">
-              <label className="block text-xs font-medium text-slate-700">평가 기준 (그리드)</label>
+              <label className="block text-xs font-medium text-bodytx">평가 기준 (그리드)</label>
               <span
                 className={`text-xs ${
-                  weightOk ? "text-emerald-600" : "text-amber-600"
+                  weightOk ? "text-jade-dark" : "text-gold-dark"
                 }`}
               >
                 가중치 합: {totalWeight.toFixed(1)} / 100
@@ -156,7 +156,7 @@ export default function RubricManager({ initialRubrics }: Props) {
 
             <div className="overflow-hidden rounded-md border">
               <table className="w-full text-xs">
-                <thead className="bg-slate-50 text-slate-600">
+                <thead className="bg-ivory text-muted">
                   <tr>
                     <th className="p-2 text-left">항목명</th>
                     <th className="w-20 p-2 text-right">가중치</th>
@@ -212,7 +212,7 @@ export default function RubricManager({ initialRubrics }: Props) {
                       <td className="p-1 text-center">
                         <button
                           type="button"
-                          className="text-xs text-red-500 hover:underline disabled:opacity-50"
+                          className="text-xs text-terra hover:underline disabled:opacity-50"
                           onClick={() => removeCriterion(i)}
                           disabled={busy || criteria.length <= 1}
                           aria-label={`기준 ${i + 1} 삭제`}
@@ -239,7 +239,7 @@ export default function RubricManager({ initialRubrics }: Props) {
           </div>
 
           {error && (
-            <p role="alert" className="text-xs text-red-600">
+            <p role="alert" className="text-xs text-terra-dark">
               {error}
             </p>
           )}
@@ -256,18 +256,18 @@ export default function RubricManager({ initialRubrics }: Props) {
       )}
 
       {rubrics.length === 0 && editingId === null ? (
-        <p className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+        <p className="rounded-xl2 border border-dashed border-hairline bg-white p-6 text-center text-sm text-muted">
           아직 생성한 루브릭이 없습니다.
         </p>
       ) : (
         <ul className="space-y-2">
           {rubrics.map((r) => (
             <li key={r.id}>
-              <Card className="p-3">
+              <Card className="card-pop p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-slate-800">{r.name}</p>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="font-medium text-ink">{r.name}</p>
+                    <p className="mt-1 text-xs text-muted">
                       {r.criteria.length}개 기준 · {r.criteria.map((c) => c.name).join(" / ")}
                     </p>
                   </div>
@@ -279,7 +279,7 @@ export default function RubricManager({ initialRubrics }: Props) {
                       variant="secondary"
                       size="sm"
                       onClick={() => remove(r.id)}
-                      className="text-red-600"
+                      className="text-terra-dark"
                     >
                       삭제
                     </Button>

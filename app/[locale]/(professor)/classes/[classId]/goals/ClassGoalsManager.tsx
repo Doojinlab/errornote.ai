@@ -72,19 +72,19 @@ export default function ClassGoalsManager({ classId, initialGoals, species }: Pr
     <div className="space-y-4">
       <button
         onClick={() => setShowForm((v) => !v)}
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+        className="rounded-xl2 bg-blue px-4 py-2 text-sm font-medium text-white hover:bg-blue-dark"
       >
         {t('newGoal')}
       </button>
 
       {showForm && (
-        <form onSubmit={create} className="space-y-3 rounded-xl border bg-white p-4 shadow-sm">
+        <form onSubmit={create} className="space-y-3 rounded-xl2 border border-hairline bg-white p-4 shadow-sm">
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">{t('species')}</label>
+            <label className="mb-1 block text-xs font-medium text-muted">{t('species')}</label>
             <select
               value={speciesCode}
               onChange={(e) => setSpeciesCode(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-xl2 border border-hairline px-3 py-2 text-sm"
             >
               {species.map((s) => (
                 <option key={s.id} value={s.code}>
@@ -94,57 +94,57 @@ export default function ClassGoalsManager({ classId, initialGoals, species }: Pr
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">{t('titleLabel')}</label>
+            <label className="mb-1 block text-xs font-medium text-muted">{t('titleLabel')}</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={t('titlePlaceholder')}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-xl2 border border-hairline px-3 py-2 text-sm"
             />
           </div>
           <div className="flex gap-3">
             <div className="flex-1">
-              <label className="mb-1 block text-xs font-medium text-slate-600">{t('target')}</label>
+              <label className="mb-1 block text-xs font-medium text-muted">{t('target')}</label>
               <input
                 type="number"
                 min={1}
                 value={targetCount}
                 onChange={(e) => setTargetCount(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="w-full rounded-xl2 border border-hairline px-3 py-2 text-sm"
               />
             </div>
             <div className="flex-1">
-              <label className="mb-1 block text-xs font-medium text-slate-600">{t('periodStart')}</label>
+              <label className="mb-1 block text-xs font-medium text-muted">{t('periodStart')}</label>
               <input
                 type="date"
                 value={periodStart}
                 onChange={(e) => setPeriodStart(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="w-full rounded-xl2 border border-hairline px-3 py-2 text-sm"
               />
             </div>
             <div className="flex-1">
-              <label className="mb-1 block text-xs font-medium text-slate-600">{t('periodEnd')}</label>
+              <label className="mb-1 block text-xs font-medium text-muted">{t('periodEnd')}</label>
               <input
                 type="date"
                 value={periodEnd}
                 onChange={(e) => setPeriodEnd(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="w-full rounded-xl2 border border-hairline px-3 py-2 text-sm"
               />
             </div>
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-terra-dark">{error}</p>}
           <div className="flex gap-2">
             <button
               type="submit"
               disabled={busy}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="rounded-xl2 bg-blue px-4 py-2 text-sm text-white hover:bg-blue-dark disabled:opacity-50"
             >
               {busy ? t('creating') : t('create')}
             </button>
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"
+              className="rounded-xl2 border border-hairline px-4 py-2 text-sm text-muted hover:bg-ivory"
             >
               {t('cancel')}
             </button>
@@ -153,41 +153,41 @@ export default function ClassGoalsManager({ classId, initialGoals, species }: Pr
       )}
 
       {goals.length === 0 ? (
-        <p className="rounded-lg bg-white p-6 text-center text-sm text-slate-500 shadow-sm">{t('empty')}</p>
+        <p className="rounded-xl2 bg-white p-6 text-center text-sm text-muted shadow-sm">{t('empty')}</p>
       ) : (
         <ul className="space-y-3">
           {goals.map((g) => {
             const pct = Math.min(100, Math.round((g.currentCount / g.targetCount) * 100))
             return (
-              <li key={g.id} className="rounded-xl border bg-white p-4 shadow-sm">
+              <li key={g.id} className="card-pop rounded-xl2 border border-hairline bg-white p-4 shadow-sm">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="font-semibold text-slate-900">
+                    <p className="font-semibold text-ink">
                       {g.title || speciesById.get(g.speciesId) || t('untitled')}
                     </p>
-                    <p className="mt-0.5 text-xs text-slate-500">
+                    <p className="mt-0.5 text-xs text-muted">
                       {speciesById.get(g.speciesId)} · {g.periodStart} ~ {g.periodEnd}
                     </p>
                   </div>
                   <button
                     onClick={() => remove(g.id)}
-                    className="shrink-0 text-xs text-red-500 hover:text-red-700 hover:underline"
+                    className="shrink-0 text-xs text-terra hover:text-terra-dark hover:underline"
                   >
                     {t('delete')}
                   </button>
                 </div>
                 <div className="mt-3">
                   <div className="mb-1 flex items-center justify-between text-xs">
-                    <span className={g.achieved ? 'font-semibold text-emerald-600' : 'text-slate-500'}>
+                    <span className={g.achieved ? 'font-semibold text-jade-dark' : 'text-muted'}>
                       {g.achieved ? `🎉 ${t('achieved')}` : t('inProgress')}
                     </span>
-                    <span className="tabular-nums text-slate-600">
+                    <span className="tabular-nums text-muted">
                       {g.currentCount} / {g.targetCount}
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-2 overflow-hidden rounded-full bg-hairline">
                     <div
-                      className={`h-full rounded-full ${g.achieved ? 'bg-emerald-500' : 'bg-indigo-500'}`}
+                      className={`h-full rounded-full ${g.achieved ? 'bg-jade' : 'bg-blue'}`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>

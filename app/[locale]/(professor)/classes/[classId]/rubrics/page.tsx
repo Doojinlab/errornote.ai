@@ -39,7 +39,7 @@ export default async function RubricsPage(props: { params: Promise<{ classId: st
   return (
     <main className="mx-auto w-full max-w-4xl space-y-5 p-4">
       <div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           <Link href="/dashboard" className="hover:underline">
             {t('breadcrumbDashboard')}
           </Link>{' '}
@@ -49,11 +49,11 @@ export default async function RubricsPage(props: { params: Promise<{ classId: st
           </Link>{' '}
           › {t('breadcrumbRubrics')}
         </p>
-        <h1 className="text-lg font-bold text-slate-900">
+        <h1 className="text-lg font-bold text-ink">
           {t('title')}{' '}
-          <span className="text-sm font-normal text-slate-500">({classInfo.semester})</span>
+          <span className="text-sm font-normal text-muted">({classInfo.semester})</span>
         </h1>
-        <p className="mt-1 text-xs text-slate-500">{t('description')}</p>
+        <p className="mt-1 text-xs text-muted">{t('description')}</p>
       </div>
 
       <RubricManager initialRubrics={rubrics} />

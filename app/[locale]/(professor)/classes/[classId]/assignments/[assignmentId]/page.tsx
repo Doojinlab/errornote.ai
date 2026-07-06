@@ -48,7 +48,7 @@ export default async function AssignmentDetailPage(
   return (
     <main className="mx-auto w-full max-w-5xl space-y-4 p-4">
       <div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           <Link href="/dashboard" className="hover:underline">
             {t('breadcrumbDashboard')}
           </Link>{' '}
@@ -58,16 +58,16 @@ export default async function AssignmentDetailPage(
           </Link>{' '}
           › {t('breadcrumbAssignments')}
         </p>
-        <h1 className="text-lg font-bold text-slate-900">{assignment.title}</h1>
+        <h1 className="text-lg font-bold text-ink">{assignment.title}</h1>
         {assignment.due_date && (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted">
             {t('due', {
               datetime: new Date(assignment.due_date).toLocaleString(),
             })}
           </p>
         )}
-        <details className="mt-2 rounded border bg-white p-2 text-xs text-slate-700">
-          <summary className="cursor-pointer text-slate-500">{t('promptToggle')}</summary>
+        <details className="mt-2 rounded-xl2 border border-hairline bg-white p-2 text-xs text-bodytx">
+          <summary className="cursor-pointer text-muted">{t('promptToggle')}</summary>
           <p className="mt-2 whitespace-pre-wrap">{assignment.prompt_text}</p>
         </details>
       </div>
