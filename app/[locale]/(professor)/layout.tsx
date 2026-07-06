@@ -43,9 +43,9 @@ export default async function ProfessorLayout({ children }: { children: React.Re
   ])
 
   return (
-    <div className="flex min-h-dvh flex-col bg-slate-100">
-      <header className="flex items-center gap-3 border-b bg-white px-4 py-2">
-        <Link href="/dashboard" className="text-sm font-bold text-indigo-600">
+    <div className="flex min-h-dvh flex-col bg-ivory">
+      <header className="flex items-center gap-3 border-b border-hairline bg-white px-4 py-2">
+        <Link href="/dashboard" className="text-sm font-bold text-blue">
           {tMeta('appName')}
         </Link>
         <nav className="hidden gap-1 sm:flex" aria-label={tMeta('appName')}>
@@ -53,7 +53,7 @@ export default async function ProfessorLayout({ children }: { children: React.Re
             <Link
               key={n.href}
               href={n.href}
-              className="rounded px-2 py-1 text-xs text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              className="rounded-lg px-2 py-1 text-xs text-muted hover:bg-ivory hover:text-ink"
             >
               {safeT(t, n.key, n.fallback)}
             </Link>

@@ -49,7 +49,7 @@ export default async function ReportsListPage(
 
   return (
     <main className="mx-auto w-full max-w-5xl space-y-5 p-4">
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted">
         <Link href="/dashboard" className="hover:underline">
           대시보드
         </Link>{' '}
@@ -58,8 +58,8 @@ export default async function ReportsListPage(
 
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold text-slate-900">주간 AI 리포트</h1>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <h1 className="text-lg font-bold text-ink">주간 AI 리포트</h1>
+          <p className="mt-0.5 text-xs text-muted">
             수업 한 주간의 집계와 Claude 기반 5블록 분석을 생성·열람합니다.
           </p>
         </div>
@@ -68,7 +68,7 @@ export default async function ReportsListPage(
           <select
             name="classId"
             defaultValue={filterClassId}
-            className="rounded-md border border-slate-300 px-2 py-1.5 text-xs"
+            className="rounded-lg border border-hairline px-2 py-1.5 text-xs"
           >
             <option value="">전체 수업</option>
             {classes.map(c => (
@@ -79,7 +79,7 @@ export default async function ReportsListPage(
           </select>
           <button
             type="submit"
-            className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-hairline bg-white px-3 py-1.5 text-xs text-bodytx hover:bg-ivory"
           >
             필터
           </button>
@@ -87,9 +87,9 @@ export default async function ReportsListPage(
       </div>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-700">리포트 생성</h2>
+        <h2 className="text-sm font-semibold text-bodytx">리포트 생성</h2>
         {classes.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-center text-xs text-slate-500">
+          <p className="rounded-xl2 border border-dashed border-hairline bg-white p-4 text-center text-xs text-muted">
             수업을 먼저 개설해야 리포트를 만들 수 있습니다.
           </p>
         ) : (
@@ -100,11 +100,11 @@ export default async function ReportsListPage(
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-slate-700">
-          저장된 리포트 {reports.length > 0 && <span className="text-slate-400">({reports.length})</span>}
+        <h2 className="text-sm font-semibold text-bodytx">
+          저장된 리포트 {reports.length > 0 && <span className="text-muted">({reports.length})</span>}
         </h2>
         {reports.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+          <p className="rounded-xl2 border border-dashed border-hairline bg-white p-8 text-center text-sm text-muted">
             아직 생성된 리포트가 없습니다. 위에서 주차를 선택해 생성하세요.
           </p>
         ) : (
@@ -112,23 +112,23 @@ export default async function ReportsListPage(
             {reports.map(r => (
               <li key={r.id}>
                 <Link href={`/reports/${r.id}`} className="block">
-                  <Card className="p-4 transition hover:border-indigo-300 hover:shadow-md">
+                  <Card className="card-pop p-4">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="truncate font-semibold text-slate-900">{r.class_name}</p>
-                        <p className="mt-0.5 text-xs text-slate-500">
+                        <p className="truncate font-semibold text-ink">{r.class_name}</p>
+                        <p className="mt-0.5 text-xs text-muted">
                           {formatDate(r.week_start)} ~ {formatDate(addDays(r.week_start, 6))}
                         </p>
                       </div>
-                      <span className="shrink-0 rounded bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">
+                      <span className="shrink-0 rounded-full bg-hairline px-2 py-0.5 text-[10px] text-muted">
                         세션 {r.metrics.total_sessions}
                       </span>
                     </div>
-                    <p className="mt-2 line-clamp-2 text-xs text-slate-700">
+                    <p className="mt-2 line-clamp-2 text-xs text-bodytx">
                       {r.next_class_suggestion || '다음 수업 제안이 비어 있습니다.'}
                     </p>
                     {r.fossilization_alerts.length > 0 && (
-                      <p className="mt-2 text-xs text-amber-700">
+                      <p className="mt-2 text-xs text-gold-dark">
                         ⚠ 화석화 {r.fossilization_alerts.length}건
                       </p>
                     )}
