@@ -1181,7 +1181,10 @@
       "documentEditor": {
         "heading": "문서 작성",
         "analyzing": "분석 중…",
+        "analyze": "AI 분석",
         "submit": "재진단",
+        "placeholder": "여기에 중국어 문장을 작성한 뒤 [AI 분석]을 누르세요.",
+        "submitHint": "Ctrl / ⌘ + Enter 로 분석",
         "ariaLabel": "중국어 문장 입력"
       },
       "offlineQueue": {
