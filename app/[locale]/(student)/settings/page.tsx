@@ -9,8 +9,8 @@ export default async function StudentSettingsPage() {
   return (
     <main className="mx-auto w-full max-w-lg space-y-4 p-4">
       <div>
-        <h1 className="text-lg font-bold text-slate-900">{t('title')}</h1>
-        <p className="mt-0.5 text-xs text-slate-500">{t('subtitle')}</p>
+        <h1 className="text-lg font-bold text-ink">{t('title')}</h1>
+        <p className="mt-0.5 text-xs text-muted">{t('subtitle')}</p>
       </div>
       <SoundSettings />
 

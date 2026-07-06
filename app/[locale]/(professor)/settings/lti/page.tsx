@@ -93,14 +93,14 @@ export default function LtiPlatformsPage() {
 
   const field = (key: keyof typeof EMPTY_FORM, label: string, required = true, placeholder = '') => (
     <div className="mb-3">
-      <label className="mb-1 block text-xs font-medium text-slate-600">{label}</label>
+      <label className="mb-1 block text-xs font-medium text-bodytx">{label}</label>
       <input
         type="text"
         value={form[key]}
         onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
         placeholder={placeholder}
         required={required}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        className="w-full rounded-xl2 border border-hairline px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue"
       />
     </div>
   )
@@ -115,27 +115,27 @@ export default function LtiPlatformsPage() {
     <div className="mx-auto max-w-3xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{t('title')}</h1>
-          <p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p>
+          <h1 className="text-2xl font-bold text-ink">{t('title')}</h1>
+          <p className="mt-1 text-sm text-muted">{t('subtitle')}</p>
         </div>
         <button
           onClick={() => setShowForm((v) => !v)}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+          className="rounded-xl2 bg-blue px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-dark"
         >
           {t('registerButton')}
         </button>
       </div>
 
       {/* LMS 에 errornote 를 도구로 등록할 때 입력하는 URL 안내 */}
-      <div className="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
-        <p className="mb-2 text-sm font-semibold text-slate-700">{t('toolConfigTitle')}</p>
-        <p className="mb-3 text-xs text-slate-500">{t('toolConfigHint')}</p>
+      <div className="mb-6 rounded-xl2 border border-hairline bg-ivory p-4">
+        <p className="mb-2 text-sm font-semibold text-bodytx">{t('toolConfigTitle')}</p>
+        <p className="mb-3 text-xs text-muted">{t('toolConfigHint')}</p>
         <dl className="space-y-1.5">
           {toolUrls.map((u) => (
             <div key={u.label} className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
-              <dt className="w-40 shrink-0 text-xs font-medium text-slate-500">{u.label}</dt>
+              <dt className="w-40 shrink-0 text-xs font-medium text-muted">{u.label}</dt>
               <dd className="min-w-0 flex-1">
-                <code className="block break-all rounded border border-slate-200 bg-white px-2 py-1 font-mono text-xs text-slate-700">
+                <code className="block break-all rounded border border-hairline bg-white px-2 py-1 font-mono text-xs text-bodytx">
                   {u.url || '…'}
                 </code>
               </dd>
@@ -145,7 +145,7 @@ export default function LtiPlatformsPage() {
       </div>
 
       {error && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mb-4 rounded-xl2 border border-terra bg-terra-soft px-4 py-3 text-sm text-terra-dark">
           {error}
           <button className="ml-2 underline" onClick={() => setError(null)}>
             {t('errorClose')}
@@ -154,8 +154,8 @@ export default function LtiPlatformsPage() {
       )}
 
       {showForm && (
-        <form onSubmit={handleCreate} className="mb-6 rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-3 text-sm font-semibold text-slate-700">{t('formTitle')}</h2>
+        <form onSubmit={handleCreate} className="mb-6 rounded-xl2 border border-hairline bg-white p-5">
+          <h2 className="mb-3 text-sm font-semibold text-bodytx">{t('formTitle')}</h2>
           {field('name', t('fieldName'), true, t('fieldNamePlaceholder'))}
           {field('issuer', t('fieldIssuer'), true, 'https://canvas.instructure.com')}
           {field('clientId', t('fieldClientId'), true, '')}
@@ -167,14 +167,14 @@ export default function LtiPlatformsPage() {
             <button
               type="submit"
               disabled={creating}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+              className="rounded-xl2 bg-blue px-4 py-2 text-sm text-white transition-colors hover:bg-blue-dark disabled:opacity-50"
             >
               {creating ? t('formSubmitting') : t('formSubmit')}
             </button>
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm text-slate-600 transition-colors hover:bg-slate-50"
+              className="rounded-xl2 border border-hairline bg-white px-4 py-2 text-sm text-bodytx transition-colors hover:bg-ivory"
             >
               {t('formCancel')}
             </button>
@@ -183,27 +183,27 @@ export default function LtiPlatformsPage() {
       )}
 
       {loading ? (
-        <p className="py-8 text-center text-sm text-slate-500">{t('loading')}</p>
+        <p className="py-8 text-center text-sm text-muted">{t('loading')}</p>
       ) : platforms.length === 0 ? (
-        <div className="rounded-xl border-2 border-dashed border-slate-200 py-12 text-center">
-          <p className="text-sm text-slate-400">{t('emptyState')}</p>
+        <div className="rounded-xl2 border-2 border-dashed border-hairline py-12 text-center">
+          <p className="text-sm text-muted">{t('emptyState')}</p>
         </div>
       ) : (
         <ul className="space-y-3">
           {platforms.map((p) => (
-            <li key={p.id} className="rounded-xl border border-slate-200 bg-white p-4">
+            <li key={p.id} className="rounded-xl2 border border-hairline bg-white p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="font-semibold text-slate-900">{p.name}</p>
-                  <p className="mt-0.5 truncate text-xs text-slate-500">{p.issuer}</p>
-                  <p className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-400">
+                  <p className="font-semibold text-ink">{p.name}</p>
+                  <p className="mt-0.5 truncate text-xs text-muted">{p.issuer}</p>
+                  <p className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted">
                     <span>client_id: {p.client_id}</span>
                     {p.deployment_id && <span>deployment: {p.deployment_id}</span>}
                   </p>
                 </div>
                 <button
                   onClick={() => handleDelete(p.id)}
-                  className="shrink-0 text-xs text-red-500 hover:text-red-700 hover:underline"
+                  className="shrink-0 text-xs text-terra hover:text-terra-dark hover:underline"
                 >
                   {t('delete')}
                 </button>

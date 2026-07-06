@@ -57,10 +57,10 @@ export default function PublishRow({ item }: Props) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <p className="min-w-0 truncate text-xs text-slate-500">
+        <p className="min-w-0 truncate text-xs text-muted">
           {item.class_name} · {item.file_name}
         </p>
-        <label className="flex shrink-0 items-center gap-2 text-xs text-slate-700">
+        <label className="flex shrink-0 items-center gap-2 text-xs text-bodytx">
           <input
             type="checkbox"
             checked={isPublic}
@@ -75,7 +75,7 @@ export default function PublishRow({ item }: Props) {
         onChange={e => setTitle(e.target.value)}
         placeholder={t('titlePlaceholder')}
         maxLength={200}
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500"
+        className="w-full rounded-md border border-hairline px-3 py-2 text-sm outline-none focus:border-blue"
       />
       <textarea
         value={description}
@@ -83,24 +83,24 @@ export default function PublishRow({ item }: Props) {
         placeholder={t('descriptionPlaceholder')}
         maxLength={500}
         rows={2}
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500"
+        className="w-full rounded-md border border-hairline px-3 py-2 text-sm outline-none focus:border-blue"
       />
 
-      <div className="flex items-center gap-3 text-xs text-slate-500">
-        <span className="text-amber-500">★</span>
+      <div className="flex items-center gap-3 text-xs text-muted">
+        <span className="text-gold">★</span>
         <span>
           {t('ratingSummary', {
             rating: item.avg_rating.toFixed(1),
             count: item.rating_count
           })}
         </span>
-        <span className="text-slate-400">
+        <span className="text-muted">
           {t('downloadsSummary', { count: item.download_count })}
         </span>
         <div className="ml-auto flex items-center gap-2">
-          {okMsg && <span className="text-emerald-600">{okMsg}</span>}
+          {okMsg && <span className="text-jade">{okMsg}</span>}
           {error && (
-            <span role="alert" className="text-red-600">
+            <span role="alert" className="text-terra">
               {error}
             </span>
           )}

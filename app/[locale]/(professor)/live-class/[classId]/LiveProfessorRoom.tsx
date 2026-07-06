@@ -159,11 +159,11 @@ export default function LiveProfessorRoom({
     <main className="mx-auto w-full max-w-7xl space-y-4 p-4">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold text-slate-900">{labels.title}</h1>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <h1 className="text-lg font-bold text-ink">{labels.title}</h1>
+          <p className="mt-0.5 text-xs text-muted">
             {grammarFocus ? labels.weeklyFocus : labels.weeklyFocusEmpty}
           </p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-muted">
             {labels.consentedCount.replace('{count}', String(consentedCount)).replace(
               '{total}',
               String(students.length)
@@ -173,7 +173,7 @@ export default function LiveProfessorRoom({
         <div className="flex items-center gap-2">
           <span
             className={`rounded-full px-2 py-1 text-xs font-medium ${
-              sessionLive ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'
+              sessionLive ? 'bg-terra-soft text-terra-dark' : 'bg-hairline text-muted'
             }`}
           >
             {sessionLive ? labels.sessionLive : labels.sessionIdle}
@@ -182,7 +182,7 @@ export default function LiveProfessorRoom({
             <button
               onClick={handleEnd}
               disabled={busy !== null}
-              className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+              className="rounded-xl2 border border-terra bg-white px-4 py-2 text-sm font-medium text-terra hover:bg-terra-soft disabled:opacity-50"
             >
               {busy === 'ending' ? labels.ending : labels.endBtn}
             </button>
@@ -190,7 +190,7 @@ export default function LiveProfessorRoom({
             <button
               onClick={handleStart}
               disabled={busy !== null}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="rounded-xl2 bg-blue px-4 py-2 text-sm font-medium text-white hover:bg-blue-dark disabled:opacity-50"
             >
               {busy === 'starting' ? labels.starting : labels.startBtn}
             </button>
@@ -199,13 +199,13 @@ export default function LiveProfessorRoom({
       </header>
 
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+        <div className="rounded-xl2 border border-terra bg-terra-soft p-3 text-xs text-terra-dark">
           {error}
         </div>
       )}
 
       {students.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
+        <div className="rounded-xl2 border border-hairline bg-white p-8 text-center text-sm text-muted">
           {labels.gridEmpty}
         </div>
       ) : (
@@ -218,33 +218,33 @@ export default function LiveProfessorRoom({
                 <button
                   onClick={() => setFullviewStudentId(s.student_id)}
                   disabled={!s.consented}
-                  className={`w-full rounded-xl border bg-white p-4 text-left transition-shadow hover:shadow-md ${
+                  className={`w-full rounded-xl2 border bg-white p-4 text-left transition-shadow hover:shadow-md ${
                     s.consented
                       ? hasText
-                        ? 'border-indigo-300'
-                        : 'border-slate-200'
-                      : 'border-slate-100 opacity-60'
+                        ? 'border-blue'
+                        : 'border-hairline'
+                      : 'border-hairline opacity-60'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-slate-900">
+                    <p className="text-sm font-semibold text-ink">
                       {s.name ?? labels.anonymous}
                     </p>
                     {!s.consented && (
-                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] text-amber-700">
+                      <span className="rounded-full bg-gold-soft px-2 py-0.5 text-[10px] text-gold-dark">
                         {labels.gridStudentNotConsented}
                       </span>
                     )}
                   </div>
                   <p
                     className={`mt-2 line-clamp-4 min-h-[60px] whitespace-pre-wrap break-words text-xs ${
-                      hasText ? 'text-slate-700' : 'text-slate-400'
+                      hasText ? 'text-bodytx' : 'text-muted'
                     }`}
                   >
                     {hasText ? snap!.text : labels.gridStudentNoText}
                   </p>
                   {hasText && (
-                    <p className="mt-2 text-[10px] text-indigo-600">
+                    <p className="mt-2 text-[10px] text-blue">
                       {labels.gridStudentTyping}
                     </p>
                   )}
@@ -267,16 +267,16 @@ export default function LiveProfessorRoom({
               aria-modal="true"
             >
               <div
-                className="max-h-[80vh] w-full max-w-3xl overflow-auto rounded-xl bg-white p-6 shadow-xl"
+                className="max-h-[80vh] w-full max-w-3xl overflow-auto rounded-xl2 bg-white p-6 shadow-xl"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-base font-bold text-slate-900">
+                    <p className="text-base font-bold text-ink">
                       {info?.name ?? labels.anonymous}
                     </p>
                     {snap && (
-                      <p className="mt-0.5 text-xs text-slate-500">
+                      <p className="mt-0.5 text-xs text-muted">
                         {labels.fullviewLastSeen}{' '}
                         {new Date(snap.last_seen).toLocaleTimeString()}
                       </p>
@@ -284,12 +284,12 @@ export default function LiveProfessorRoom({
                   </div>
                   <button
                     onClick={() => setFullviewStudentId(null)}
-                    className="rounded-lg border border-slate-200 px-3 py-1 text-xs text-slate-600 hover:bg-slate-50"
+                    className="rounded-xl2 border border-hairline px-3 py-1 text-xs text-bodytx hover:bg-ivory"
                   >
                     {labels.fullviewClose}
                   </button>
                 </div>
-                <pre className="mt-4 max-h-[60vh] overflow-auto whitespace-pre-wrap break-words rounded-lg bg-slate-50 p-4 text-sm text-slate-800">
+                <pre className="mt-4 max-h-[60vh] overflow-auto whitespace-pre-wrap break-words rounded-xl2 bg-ivory p-4 text-sm text-ink">
                   {snap?.text ?? labels.gridStudentNoText}
                 </pre>
               </div>

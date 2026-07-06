@@ -88,19 +88,19 @@ export default function ApiKeysPage() {
     <div className="mx-auto max-w-3xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{t('title')}</h1>
-          <p className="mt-1 text-sm text-slate-500">{t('subtitle')}</p>
+          <h1 className="text-2xl font-bold text-ink">{t('title')}</h1>
+          <p className="mt-1 text-sm text-muted">{t('subtitle')}</p>
         </div>
         <button
           onClick={() => { setShowForm(true); setGeneratedKey(null) }}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+          className="rounded-xl2 bg-blue px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-dark"
         >
           {t('createButton')}
         </button>
       </div>
 
       {error && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mb-4 rounded-xl2 border border-terra bg-terra-soft px-4 py-3 text-sm text-terra-dark">
           {error}
           <button className="ml-2 underline" onClick={() => setError(null)}>
             {t('errorClose')}
@@ -109,23 +109,23 @@ export default function ApiKeysPage() {
       )}
 
       {generatedKey && (
-        <div className="mb-6 rounded-lg border border-green-300 bg-green-50 p-4">
-          <p className="mb-2 text-sm font-semibold text-green-800">
+        <div className="mb-6 rounded-xl2 border border-jade bg-jade-soft p-4">
+          <p className="mb-2 text-sm font-semibold text-jade-dark">
             {t('generatedTitle')}
           </p>
           <div className="flex items-center gap-2">
-            <code className="block flex-1 break-all rounded border border-green-200 bg-white px-3 py-2 font-mono text-xs text-slate-800">
+            <code className="block flex-1 break-all rounded border border-jade bg-white px-3 py-2 font-mono text-xs text-ink">
               {generatedKey.key}
             </code>
             <button
               onClick={copyKey}
-              className="whitespace-nowrap rounded bg-green-600 px-3 py-2 text-xs text-white transition-colors hover:bg-green-700"
+              className="whitespace-nowrap rounded bg-jade px-3 py-2 text-xs text-white transition-colors hover:bg-jade-dark"
             >
               {copied ? t('copiedButton') : t('copyButton')}
             </button>
           </div>
           <button
-            className="mt-2 text-xs text-green-700 underline"
+            className="mt-2 text-xs text-jade-dark underline"
             onClick={() => setGeneratedKey(null)}
           >
             {t('generatedClose')}
@@ -136,11 +136,11 @@ export default function ApiKeysPage() {
       {showForm && (
         <form
           onSubmit={handleCreate}
-          className="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-5"
+          className="mb-6 rounded-xl2 border border-hairline bg-ivory p-5"
         >
-          <h2 className="mb-3 text-sm font-semibold text-slate-700">{t('formTitle')}</h2>
+          <h2 className="mb-3 text-sm font-semibold text-bodytx">{t('formTitle')}</h2>
           <div className="mb-3">
-            <label className="mb-1 block text-xs font-medium text-slate-600">
+            <label className="mb-1 block text-xs font-medium text-bodytx">
               {t('formNameLabel')}
             </label>
             <input
@@ -148,12 +148,12 @@ export default function ApiKeysPage() {
               value={formName}
               onChange={e => setFormName(e.target.value)}
               placeholder={t('formNamePlaceholder')}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full rounded-xl2 border border-hairline px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue"
               required
             />
           </div>
           <div className="mb-4">
-            <label className="mb-2 block text-xs font-medium text-slate-600">
+            <label className="mb-2 block text-xs font-medium text-bodytx">
               {t('formScopesLabel')}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -165,7 +165,7 @@ export default function ApiKeysPage() {
                     onChange={() => toggleScope(scope)}
                     className="rounded"
                   />
-                  <span className="font-mono text-slate-700">{scope}</span>
+                  <span className="font-mono text-bodytx">{scope}</span>
                 </label>
               ))}
             </div>
@@ -174,14 +174,14 @@ export default function ApiKeysPage() {
             <button
               type="submit"
               disabled={creating}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+              className="rounded-xl2 bg-blue px-4 py-2 text-sm text-white transition-colors hover:bg-blue-dark disabled:opacity-50"
             >
               {creating ? t('formSubmitting') : t('formSubmit')}
             </button>
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm text-slate-600 transition-colors hover:bg-slate-50"
+              className="rounded-xl2 border border-hairline bg-white px-4 py-2 text-sm text-bodytx transition-colors hover:bg-ivory"
             >
               {t('formCancel')}
             </button>
@@ -190,21 +190,21 @@ export default function ApiKeysPage() {
       )}
 
       {loading ? (
-        <p className="py-8 text-center text-sm text-slate-500">{t('loadingKeys')}</p>
+        <p className="py-8 text-center text-sm text-muted">{t('loadingKeys')}</p>
       ) : keys.length === 0 ? (
-        <div className="rounded-xl border-2 border-dashed border-slate-200 py-12 text-center">
-          <p className="text-sm text-slate-400">{t('emptyState')}</p>
+        <div className="rounded-xl2 border-2 border-dashed border-hairline py-12 text-center">
+          <p className="text-sm text-muted">{t('emptyState')}</p>
           <button
             onClick={() => setShowForm(true)}
-            className="mt-3 text-sm text-indigo-600 hover:underline"
+            className="mt-3 text-sm text-blue hover:underline"
           >
             {t('createFirstKey')}
           </button>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-slate-200">
+        <div className="overflow-hidden rounded-xl2 border border-hairline">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <thead className="bg-ivory text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th className="px-4 py-3 text-left">{t('thName')}</th>
                 <th className="px-4 py-3 text-left">{t('thPrefix')}</th>
@@ -214,32 +214,32 @@ export default function ApiKeysPage() {
                 <th className="px-4 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-hairline">
               {keys.map(k => (
                 <tr key={k.id} className={k.is_active ? '' : 'opacity-50'}>
-                  <td className="px-4 py-3 font-medium text-slate-800">{k.name}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-slate-500">{k.key_prefix}</td>
+                  <td className="px-4 py-3 font-medium text-ink">{k.name}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-muted">{k.key_prefix}</td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1">
                       {(k.scopes ?? []).map(s => (
                         <span
                           key={s}
-                          className="rounded bg-indigo-50 px-1.5 py-0.5 font-mono text-xs text-indigo-700"
+                          className="rounded bg-blue-soft px-1.5 py-0.5 font-mono text-xs text-blue-dark"
                         >
                           {s}
                         </span>
                       ))}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-xs text-slate-500">
+                  <td className="px-4 py-3 text-xs text-muted">
                     {k.last_used_at ? new Date(k.last_used_at).toLocaleDateString() : '–'}
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                         k.is_active
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-slate-100 text-slate-500'
+                          ? 'bg-jade-soft text-jade-dark'
+                          : 'bg-hairline text-muted'
                       }`}
                     >
                       {k.is_active ? t('statusActive') : t('statusInactive')}
@@ -249,7 +249,7 @@ export default function ApiKeysPage() {
                     {k.is_active && (
                       <button
                         onClick={() => handleRevoke(k.id)}
-                        className="text-xs text-red-500 hover:text-red-700 hover:underline"
+                        className="text-xs text-terra hover:text-terra-dark hover:underline"
                       >
                         {t('revokeButton')}
                       </button>
@@ -262,18 +262,18 @@ export default function ApiKeysPage() {
         </div>
       )}
 
-      <p className="mt-6 text-xs text-slate-400">
+      <p className="mt-6 text-xs text-muted">
         {t('footerLmsGuide')}{' '}
-        <code className="rounded bg-slate-100 px-1 font-mono">
+        <code className="rounded bg-hairline px-1 font-mono">
           Authorization: Bearer {'<api-key>'}
         </code>{' '}
         {t('footerInclude')}{' '}
-        <code className="rounded bg-slate-100 px-1 font-mono">/api/lms/*</code>{' '}
+        <code className="rounded bg-hairline px-1 font-mono">/api/lms/*</code>{' '}
         {t('footerInRequests')}{' '}
         {t('footerDocsLabel')}{' '}
         <a
           href="/api/docs"
-          className="text-indigo-500 hover:underline"
+          className="text-blue hover:underline"
           target="_blank"
           rel="noreferrer"
         >

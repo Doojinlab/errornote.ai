@@ -40,13 +40,13 @@ export default async function LiveClassPickerPage() {
   return (
     <main className="mx-auto w-full max-w-4xl space-y-4 p-4">
       <header>
-        <h1 className="text-lg font-bold text-slate-900">{t('pickerTitle')}</h1>
-        <p className="mt-0.5 text-xs text-slate-500">{t('pickerSubtitle')}</p>
+        <h1 className="text-lg font-bold text-ink">{t('pickerTitle')}</h1>
+        <p className="mt-0.5 text-xs text-muted">{t('pickerSubtitle')}</p>
       </header>
 
       {rows.length === 0 ? (
         <Card>
-          <p className="p-6 text-sm text-slate-500">{t('emptyClasses')}</p>
+          <p className="p-6 text-sm text-muted">{t('emptyClasses')}</p>
         </Card>
       ) : (
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -56,29 +56,29 @@ export default async function LiveClassPickerPage() {
               <li key={c.id}>
                 <Link
                   href={`/live-class/${c.id}`}
-                  className="block rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-indigo-300 hover:bg-indigo-50/40"
+                  className="block rounded-xl2 border border-hairline bg-white p-4 transition-colors hover:border-blue hover:bg-blue-soft/40"
                 >
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-slate-900">{c.name}</p>
+                    <p className="text-sm font-semibold text-ink">{c.name}</p>
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                         c.is_active
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-slate-100 text-slate-500'
+                          ? 'bg-jade-soft text-jade-dark'
+                          : 'bg-hairline text-muted'
                       }`}
                     >
                       {c.is_active ? t('badgeActive') : t('badgeInactive')}
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-muted">
                     {c.semester} · {t('enrollCount', { count: enrollCount })}
                   </p>
                   {c.current_grammar_focus && (
-                    <p className="mt-2 line-clamp-2 text-xs text-slate-600">
+                    <p className="mt-2 line-clamp-2 text-xs text-bodytx">
                       {t('weeklyFocus', { focus: c.current_grammar_focus })}
                     </p>
                   )}
-                  <p className="mt-3 text-xs font-medium text-indigo-600">
+                  <p className="mt-3 text-xs font-medium text-blue">
                     {t('enterRoom')} →
                   </p>
                 </Link>
