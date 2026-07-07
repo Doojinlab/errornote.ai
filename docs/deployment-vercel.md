@@ -106,7 +106,7 @@ Vercel **Settings → Environment Variables** 에 입력한다. 권위 있는 �
 | `KAKAO_CLIENT_ID` / `KAKAO_CLIENT_SECRET` / `NEXT_PUBLIC_KAKAO_REDIRECT_URI` / `KAKAO_TOKEN_ENCRYPTION_KEY` | 카카오 알림(OAuth). 리다이렉트 URI 는 카카오 앱 설정에도 동일 등록 |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `WEB_PUSH_SUBJECT` | PWA Web Push (`npx web-push generate-vapid-keys`) |
 | `DEEPL_API_KEY` / `PAPAGO_CLIENT_ID` / `PAPAGO_CLIENT_SECRET` / `OPENAI_API_KEY` / `OPENAI_TRANSLATE_MODEL` | 역방향 번역 비교(3엔진 병렬, 미설정 엔진은 생략) |
-| `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_TRACES_SAMPLE_RATE` | 에러 모니터링. 활성화하려면 `npm install @sentry/nextjs` 선행. 미설정 시 구조적 JSON 로그로만 남음 |
+| `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_TRACES_SAMPLE_RATE` | 에러 모니터링. `@sentry/nextjs` 는 기본 설치됨 — DSN 만 설정하면 자동 활성. 미설정 시 구조적 JSON 로그로만 남음 |
 | `ANTHROPIC_LOG_USAGE` | Claude 토큰/비용 상세 로그(`1`=on) |
 | `SUPABASE_REALTIME_CONCURRENT_LIMIT` | Realtime 동시연결 경보 임계(free≈200, pro≈500, 기본 200) |
 | `LTI_TOOL_PUBLIC_JWK` / `LTI_TOOL_PRIVATE_KEY` / `LTI_TOOL_KID` / `LTI_DL_SECRET` | LTI 1.3 (Canvas/Moodle). 런치 검증엔 `npm install jose` 선행([lti-1.3.md](lti-1.3.md)) |
@@ -148,7 +148,7 @@ Vercel **Settings → Environment Variables** 에 입력한다. 권위 있는 �
 
 `next build` 시 다음 경고가 나오지만 빌드는 성공하며 동작에 영향 없다:
 
-- **Sentry 동적 import 2건** (`app/global-error.tsx`, `instrumentation-client.ts`) — `@sentry/nextjs` 미설치 시의 의도된 회피 코드. Sentry 를 쓰려면 패키지를 설치한다.
+- **Sentry 동적 import 2건** (`app/global-error.tsx`, `instrumentation-client.ts`) — 계산된 모듈 지정자(`['@sentry','nextjs'].join('/')`)로 번들러 정적 해석을 회피하는 의도된 패턴이라, `@sentry/nextjs` 가 기본 의존성으로 설치된 뒤에도 이 경고 2건은 그대로 남는다(빌드·동작 영향 없음).
 > `middleware` → `proxy` 이전은 완료됨(`proxy.ts`). Next.js 16 deprecation 경고 해소.
 
 ---

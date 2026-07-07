@@ -852,7 +852,7 @@ KAKAO_API_KEY=
 - [x] AI 모델 라우터 + dispatchJSON wrapper + 1h prompt cache — PR #22, #23, #29, #31
 - [x] 개인정보 처리방침 / 이용약관 페이지 — `app/[locale]/(legal)/{privacy,terms}`, 회원가입 동의 화면에서 링크 (#49)
 - [x] 테스트 커버리지 게이트 — CI(`.github/workflows/ci.yml`) + `vitest.config.ts` thresholds (#51, #73)
-- [x] 운영 모니터링 — `lib/monitoring.ts`(Sentry/JSON 이중 모드) + `instrumentation.ts`(`onRequestError`) + Realtime quota 평가·알림(`lib/realtime-quota.ts`) (#50, #74) · Sentry 는 `SENTRY_DSN`/`@sentry/nextjs` 설정 시 자동 활성, 미설정 시 구조적 JSON 로그 폴백(코드 완료, 환경설정만)
+- [x] 운영 모니터링 — `lib/monitoring.ts`(Sentry/JSON 이중 모드) + `instrumentation.ts`(`onRequestError`) + Realtime quota 평가·알림(`lib/realtime-quota.ts`) (#50, #74) · Sentry 는 `@sentry/nextjs` 기본 의존성 설치 완료(#130) — `SENTRY_DSN`/`NEXT_PUBLIC_SENTRY_DSN` 설정 시 자동 활성, 미설정 시 구조적 JSON 로그 폴백
 - [x] AI 튜터 고도화 — 멀티턴 컨텍스트 강화(#75) + 적응형 난이도(#76) + tool use 스트리밍 통합(#97). 범위 결정 문서 `docs/decisions/ai-tutor-roadmap.md`(상태: 종료 가능). 음성 입출력(D)은 발음 UI 트랙으로 분리(비범위) (#48)
 - [x] 모바일 전략 결정 — 옵션 A(PWA 우선) 확정, 네이티브(RN/Capacitor) 보류. `docs/decisions/mobile-strategy.md` (#46). PWA 경험 강화·전환율 메트릭은 (#86)에서 추적
 - [x] LTI 1.3 표준 연동 (Canvas/Moodle) — OIDC 로그인 + Deep Linking 2.0 + AGS(점수 회신) + NRPS(수강생 동기화) + JWKS + 플랫폼 등록 UI(`lib/lti-*`, `app/api/lti/*`, 마이그레이션 3종) + OpenAPI 문서화(#105). 잔여: 라이브 Canvas/Moodle 인증 테스트 (#47)
