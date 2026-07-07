@@ -6,7 +6,7 @@ import {
   isValidGoalInput,
   type GoalStats,
 } from './goals'
-import type { GoalType, LearningGoal } from '@/types/goals'
+import type { LearningGoal } from '@/types/goals'
 
 // ── Supabase 모의 ─────────────────────────────────────────────────────────────
 // goals.ts 는 supabase 클라이언트를 인자로 주입받으므로(DI) 모듈 목킹 없이
