@@ -60,6 +60,7 @@ Copy `.env.example` to `.env.local` and fill in the values below.
 | `OPENAI_API_KEY` / `OPENAI_TRANSLATE_MODEL` | GPT translation comparison |
 | `NEXT_PUBLIC_APP_URL` | Public URL for email links (default: `http://localhost:3000`) |
 | `CRON_SECRET` | Vercel Cron authentication secret |
+| `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` | Error monitoring (`@sentry/nextjs` is installed; set DSN to activate, else structured JSON logs) |
 
 ---
 
