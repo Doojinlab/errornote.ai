@@ -37,8 +37,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      # 정보성(차단 안 함): high+ 취약점을 로그로 노출하되 머지는 막지 않는다.
-      # 진짜 게이트는 typecheck/lint/test. 신뢰되는 lock 정착 후 차단형으로 승격 가능.
-      - name: Security audit (informational)
-        continue-on-error: true
+      # 차단형 게이트: high+ 취약점이 있으면 CI 실패. lock 정착(npm ci) 완료로
+      # 신뢰 가능해져 정보성→차단형으로 승격(#53). 현재 `found 0 vulnerabilities`.
+      # 외부 신규 advisory 로 실패 시: 해당 의존성 bump 또는 (불가피하면) 일시적으로
+      # `continue-on-error: true` 로 되돌리고 별도 이슈로 추적한다.
+      - name: Security audit (blocking, high+)
         run: npm audit --audit-level=high
