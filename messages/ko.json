@@ -269,6 +269,24 @@
   },
   "pages": {
     "student": {
+      "quickAsk": {
+        "title": "이거 자연스러워?",
+        "subtitle": "중국어 문장이 자연스러운지 원어민 친구처럼 즉답해 드려요. 같이 다듬어 봐요.",
+        "inputLabel": "확인할 중국어 문장",
+        "placeholder": "예: 我今天很累了",
+        "submit": "물어보기",
+        "checking": "확인 중…",
+        "scoreLabel": "자연스러움 {score}점",
+        "verdict": {
+          "natural": "자연스러워요 👍",
+          "awkward": "조금 어색해요",
+          "incorrect": "고칠 부분이 있어요"
+        },
+        "suggestionHeading": "이렇게 하면 더 자연스러워요",
+        "noteHeading": "설명",
+        "hint": "짧은 문장 하나를 넣어보세요. 최대 300자",
+        "genericError": "확인에 실패했어요. 잠시 후 다시 시도해 주세요."
+      },
       "quests": {
         "title": "오늘의 퀘스트",
         "subtitle": "어제 오류에서 만든 2분 미션이에요. 误 동반자와 함께해요.",
