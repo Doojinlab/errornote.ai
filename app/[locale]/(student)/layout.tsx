@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { Bell, User } from "lucide-react";
 import { createServerClient } from "@/lib/supabase";
@@ -5,6 +6,8 @@ import { getCurrentUser } from "@/lib/auth";
 import StudentSoundShell from "@/components/gamification/StudentSoundShell";
 import StudentShellWidth from "@/components/student/StudentShellWidth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import Companion from "@/components/gamification/Companion";
+import { companionStage, companionEmoji } from "@/lib/companion";
 import { BottomNav, StatChip } from "@/components/student-ui";
 
 interface GameStats {
@@ -49,10 +52,16 @@ export default async function StudentLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [stats, earnedBadgeIds] = await Promise.all([
+  const [stats, earnedBadgeIds, t] = await Promise.all([
     loadStats(),
     loadEarnedBadgeIds(),
+    getTranslations("pages.components.companion"),
   ]);
+
+  const streakDays = stats?.streak_days ?? 0;
+  const stage = companionStage(stats?.mastery_points ?? 0);
+  const companionSubtitle =
+    streakDays > 0 ? t("streak", { days: streakDays }) : t("welcome");
 
   return (
     <StudentSoundShell
@@ -69,6 +78,12 @@ export default async function StudentLayout({
             >
               error<span className="text-blue">note</span>
             </Link>
+            <Companion
+              emoji={companionEmoji(stage)}
+              title={t(`stage${stage}`)}
+              subtitle={companionSubtitle}
+              ariaLabel={t("ariaLabel")}
+            />
             <div className="ml-auto flex items-center gap-2">
               <StatChip type="flame" value={stats?.streak_days ?? 0} />
               <LanguageSwitcher />
