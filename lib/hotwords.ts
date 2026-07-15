@@ -35,6 +35,10 @@ export const HOTWORD_COOLDOWN_DAYS = numEnv('HOTWORD_COOLDOWN_DAYS', 30)
 // 노출 신선도 창(일).
 const EXPOSURE_DAYS = 21
 
+// hotwords 전체 컬럼 명시 — select('*') 대신 명시적으로 나열(스키마 변경에 안전).
+const HOTWORD_COLS =
+  'id, term, category, pinyin, literal, meaning, example, origin, register_tag, sources, first_seen, status, exposure_until, dormant_at, impressions, likes, dislikes, created_at'
+
 export const HOTWORD_CATEGORY_LABEL: Record<HotwordCategory, string> = {
   game: '게임',
   entertainment: '연예',
@@ -104,7 +108,7 @@ export async function setInterests(
 export async function getTodayHotword(studentId: string): Promise<Hotword | null> {
   const supabase = createServerClient()
 
-  // 관심분야·비추 표를 병렬 조회.
+  // 관심분야·비추 표를 병렬 조회(순차 왕복 제거).
   const [interests, votesRes] = await Promise.all([
     getInterests(studentId),
     supabase
@@ -114,8 +118,9 @@ export async function getTodayHotword(studentId: string): Promise<Hotword | null
       .eq('vote', 'dislike'),
   ])
 
+  // 명시 컬럼(HOTWORD_COLS)으로 조회. 관심분야 필터는 선택적.
   const runQuery = async (categories: HotwordCategory[] | null) => {
-    let q = supabase.from('hotwords').select('*').eq('status', 'active')
+    let q = supabase.from('hotwords').select(HOTWORD_COLS).eq('status', 'active')
     if (categories && categories.length > 0) q = q.in('category', categories)
     const { data } = await q.order('first_seen', { ascending: false }).limit(20)
     return data ?? []
@@ -136,7 +141,7 @@ export async function getActiveHotwordById(id: string): Promise<Hotword | null> 
   const supabase = createServerClient()
   const { data } = await supabase
     .from('hotwords')
-    .select('*')
+    .select(HOTWORD_COLS)
     .eq('id', id)
     .eq('status', 'active')
     .maybeSingle()

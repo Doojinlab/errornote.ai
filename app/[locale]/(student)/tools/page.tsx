@@ -1,4 +1,5 @@
 import { ScanText, Mic, Link2, Languages, FolderOpen, Download, Radio } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth";
 import { createServerClient } from "@/lib/supabase";
 import { HubGrid, type HubLink } from "@/components/student-ui";
 import ToolCard, { type Tool } from "./_components/ToolCard";
@@ -20,9 +21,7 @@ async function loadToolUsage(): Promise<{
   urls: number;
 }> {
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return { errors: 0, pronunciation: 0, urls: 0 };
 
   const [errorsRes, pronRes, urlRes] = await Promise.all([

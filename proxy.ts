@@ -3,6 +3,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import createIntlMiddleware from 'next-intl/middleware'
 import type { Database } from '@/types/database'
 import { routing } from '@/i18n/routing'
+import { ROLE_COOKIE, roleCookieOptions } from '@/lib/role-cookie'
 
 type CookieToSet = { name: string; value: string; options: CookieOptions }
 
@@ -32,6 +33,10 @@ const STUDENT_PREFIXES = [
 const PROFESSOR_PREFIXES = ['/dashboard', '/classes', '/marketplace']
 
 const AUTH_PAGES = ['/login', '/signup']
+
+// 역할(student/professor)은 프로필 테이블에만 있어 매 요청 DB 왕복을 유발했다.
+// 라우팅 가드는 보안 경계가 아니라(실 데이터는 RLS+requireAuth 가 지킨다) UX 라우팅이므로,
+// 역할을 짧은 수명 쿠키(lib/role-cookie)에 캐시해 보호 라우트 이동마다 profiles 를 다시 읽지 않는다.
 
 function hasPrefix(pathname: string, prefixes: string[]) {
   return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`))
@@ -97,62 +102,78 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // getClaims: 비대칭 서명키를 로컬(WebCrypto)로 검증 → GoTrue 네트워크 왕복 제거.
+  // 만료 토큰은 내부 getSession 이 갱신하고, setAll 훅이 응답 쿠키를 유지한다.
+  const { data: claimsData } = await supabase.auth.getClaims()
+  const userId =
+    typeof claimsData?.claims?.sub === 'string' ? claimsData.claims.sub : null
 
   const { locale, rest } = stripLocale(request.nextUrl.pathname)
   const isStudentRoute = hasPrefix(rest, STUDENT_PREFIXES)
   const isProfessorRoute = hasPrefix(rest, PROFESSOR_PREFIXES)
   const isAuthPage = AUTH_PAGES.includes(rest)
 
-  if (!user && (isStudentRoute || isProfessorRoute)) {
+  if (!userId && (isStudentRoute || isProfessorRoute)) {
     const url = request.nextUrl.clone()
     url.pathname = localize(locale, '/login')
     url.searchParams.set('redirect', request.nextUrl.pathname)
     return NextResponse.redirect(url)
   }
 
-  if (user && isAuthPage) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .returns<Array<{ role: 'professor' | 'student' }>>()
-      .single()
-    const url = request.nextUrl.clone()
-    url.pathname = localize(locale, profile?.role === 'professor' ? '/dashboard' : '/learn')
-    url.search = ''
-    return NextResponse.redirect(url)
+  // 역할은 보호 라우트/인증 페이지에서만 필요. 쿠키 캐시 우선, 없을 때만 profiles 1회 조회.
+  let role: 'student' | 'professor' | null = null
+  let roleFetchedFromDb = false
+  if (userId && (isAuthPage || isStudentRoute || isProfessorRoute)) {
+    const cached = request.cookies.get(ROLE_COOKIE)?.value
+    if (cached === 'student' || cached === 'professor') {
+      role = cached
+    } else {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .maybeSingle()
+      role =
+        profile?.role === 'professor'
+          ? 'professor'
+          : profile?.role === 'student'
+            ? 'student'
+            : null
+      roleFetchedFromDb = role !== null
+    }
   }
 
-  if (user && (isStudentRoute || isProfessorRoute)) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .returns<Array<{ role: 'professor' | 'student' }>>()
-      .single()
-    const role = profile?.role
+  // DB 에서 새로 읽은 역할만 쿠키에 실어 다음 이동의 왕복을 없앤다.
+  const attachRole = (res: NextResponse): NextResponse => {
+    if (roleFetchedFromDb && role) {
+      res.cookies.set(ROLE_COOKIE, role, roleCookieOptions())
+    }
+    return res
+  }
 
-    // 반대 역할일 때만 리디렉트한다. role 이 'student'/'professor' 로 해석되지
-    // 않는 경우(프로필 row 없음 / 조회 실패)에는 어느 쪽으로도 보내지 않는다.
-    // 예전 `role !== 'student'` / `role !== 'professor'` 조건은 role 미해결 시
-    // 두 분기가 동시에 참이 되어 /learn ↔ /dashboard 무한 리디렉트
-    // (ERR_TOO_MANY_REDIRECTS)를 일으켰다.
+  if (userId && isAuthPage) {
+    const url = request.nextUrl.clone()
+    url.pathname = localize(locale, role === 'professor' ? '/dashboard' : '/learn')
+    url.search = ''
+    return attachRole(NextResponse.redirect(url))
+  }
+
+  if (userId && (isStudentRoute || isProfessorRoute)) {
+    // 반대 역할일 때만 리디렉트한다. role 미해결(프로필 없음/조회 실패) 시엔 어느 쪽으로도
+    // 보내지 않는다 — 과거 무한 리디렉트(ERR_TOO_MANY_REDIRECTS) 방지.
     if (isStudentRoute && role === 'professor') {
       const url = request.nextUrl.clone()
       url.pathname = localize(locale, '/dashboard')
-      return NextResponse.redirect(url)
+      return attachRole(NextResponse.redirect(url))
     }
     if (isProfessorRoute && role === 'student') {
       const url = request.nextUrl.clone()
       url.pathname = localize(locale, '/learn')
-      return NextResponse.redirect(url)
+      return attachRole(NextResponse.redirect(url))
     }
   }
 
-  return response
+  return attachRole(response)
 }
 
 export const config = {

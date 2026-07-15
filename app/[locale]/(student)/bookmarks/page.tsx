@@ -1,12 +1,11 @@
 import { getTranslations } from "next-intl/server";
+import { getCurrentUser } from "@/lib/auth";
 import { createServerClient } from "@/lib/supabase";
 import BookmarksList, { type BookmarkItem } from "./BookmarksList";
 
 async function loadBookmarks(): Promise<BookmarkItem[]> {
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return [];
   const { data } = await supabase
     .from("bookmarks")

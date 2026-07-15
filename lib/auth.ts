@@ -1,8 +1,13 @@
 import { cache } from 'react'
-import type { User } from '@supabase/supabase-js'
 import { createServerClient } from './supabase'
 
 export type UserRole = 'student' | 'professor'
+
+/** 인증 신원 최소 형태 — id/email 만 사용한다(getClaims 로 로컬 검증). */
+export interface AuthUser {
+  id: string
+  email: string | null
+}
 
 export interface AuthContext {
   userId: string
@@ -11,16 +16,22 @@ export interface AuthContext {
 }
 
 /**
- * 현재 요청의 인증 사용자(getUser)를 1회만 조회한다. supabase.auth.getUser() 는
- * 매번 Supabase Auth 네트워크 왕복이므로, 한 요청 안에서 레이아웃·페이지·로더가
- * 제각기 호출하면 왕복이 수 배로 늘어난다. React cache() 로 요청 스코프에서 결과를
- * 공유해 렌더 트리 전체가 단 한 번의 getUser 만 유발하도록 한다.
+ * 현재 요청의 인증 신원을 1회만 확인한다.
+ *
+ * 성능: 예전에는 supabase.auth.getUser() 로 매 호출마다 Supabase Auth(GoTrue) 네트워크
+ * 왕복이 발생했다. getClaims() 는 비대칭 서명키의 JWKS 를 캐시해 JWT 를 **로컬(WebCrypto)**
+ * 로 검증하므로 네트워크 왕복이 없다(만료 시에만 getSession 이 토큰을 갱신). 대칭키 프로젝트
+ * 에서는 내부적으로 getUser 로 폴백하므로 기존 대비 무회귀. React cache() 로 요청 스코프에서
+ * 결과를 공유해 레이아웃·페이지·로더가 한 번만 검증을 유발하도록 한다.
  */
-export const getCurrentUser = cache(async (): Promise<User | null> => {
+export const getCurrentUser = cache(async (): Promise<AuthUser | null> => {
   const supabase = createServerClient()
-  const { data, error } = await supabase.auth.getUser()
-  if (error || !data?.user) return null
-  return data.user
+  const { data, error } = await supabase.auth.getClaims()
+  const claims = data?.claims
+  const sub = typeof claims?.sub === 'string' ? claims.sub : null
+  if (error || !sub) return null
+  const email = typeof claims?.email === 'string' ? claims.email : null
+  return { id: sub, email }
 })
 
 /**

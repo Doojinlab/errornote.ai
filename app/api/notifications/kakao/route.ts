@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
+import { getCurrentUser } from '@/lib/auth'
 import { notifyKakaoEvent } from '@/lib/kakao'
 import type { KakaoConnectionStatus, KakaoEnabledEvents, KakaoEventType } from '@/types/kakao'
 
@@ -27,11 +28,8 @@ const DEFAULT_ENABLED: KakaoEnabledEvents = {
 export async function GET() {
   const supabase = createServerClient()
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-  if (authError || !user) {
+  const user = await getCurrentUser()
+  if (!user) {
     return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 })
   }
 
@@ -56,11 +54,8 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const supabase = createServerClient()
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-  if (authError || !user) {
+  const user = await getCurrentUser()
+  if (!user) {
     return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 })
   }
 

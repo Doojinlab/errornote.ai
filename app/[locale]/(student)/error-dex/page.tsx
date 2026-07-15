@@ -1,12 +1,9 @@
 import { getTranslations } from "next-intl/server";
-import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import { getDex, type DexCell, type DexCellStatus } from "@/lib/error-dex";
 
 async function loadDex(): Promise<DexCell[]> {
-  const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return [];
   try {
     return await getDex(user.id);

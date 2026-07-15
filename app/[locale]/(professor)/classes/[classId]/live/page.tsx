@@ -83,10 +83,11 @@ export default function LiveClassPage(props: PageProps) {
     void refresh()
   }, [refresh])
 
-  // 5초 폴링 — Supabase realtime 유실 대비.
+  // 5초 폴링 — Supabase realtime 유실 대비. 세션 종료 후엔 돌지 않는다(불필요한 네트워크·리렌더 방지).
   useEffect(() => {
+    if (!session || session.ended_at) return
     return createPollTicker(POLL_INTERVAL_MS, () => void refresh())
-  }, [refresh])
+  }, [session, refresh])
 
   // Realtime — error_cards INSERT 이벤트를 구독해 즉시 재조회.
   useEffect(() => {

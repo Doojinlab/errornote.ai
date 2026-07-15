@@ -22,13 +22,15 @@ const STUDY_LINKS: HubLink[] = [
 ];
 
 export default async function LearnHomePage() {
-  const data = await loadLearnData();
+  // getCurrentUser 는 getClaims 로 로컬 검증(네트워크 왕복 없음)이라 먼저 받고,
+  // 무거운 홈 데이터와 오늘의 단어 조회를 병렬로 돌려 순차 왕복을 없앤다.
+  const user = await getCurrentUser();
+  const [data, todayHotword] = await Promise.all([
+    loadLearnData(),
+    user ? getTodayHotword(user.id) : Promise.resolve(null),
+  ]);
   const studentName = data?.studentName ?? "학생";
   const active = data?.hasActiveClass ?? false;
-
-  // 대시보드 좌·우 신규 기능(docs/dashboard-features.md) — 오늘의 단어는 서버에서 조회.
-  const user = active ? await getCurrentUser() : null;
-  const todayHotword = user ? await getTodayHotword(user.id) : null;
 
   return (
     <div className="space-y-5">

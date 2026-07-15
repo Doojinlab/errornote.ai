@@ -4,7 +4,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { randomBytes } from 'crypto'
-import { createServerClient, createAdminClient } from '@/lib/supabase'
+import { createAdminClient } from '@/lib/supabase'
+import { getCurrentUser } from '@/lib/auth'
 import {
   buildKakaoAuthUrl,
   exchangeCodeForToken,
@@ -66,13 +67,9 @@ export async function GET(req: NextRequest) {
     return res
   }
 
-  const supabase = createServerClient()
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
 
-  if (authError || !user) {
+  if (!user) {
     const res = NextResponse.redirect(new URL('/login', req.url))
     res.cookies.delete(STATE_COOKIE)
     return res
@@ -115,13 +112,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(_req: NextRequest) {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
 
-  if (authError || !user) {
+  if (!user) {
     return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
   }
 

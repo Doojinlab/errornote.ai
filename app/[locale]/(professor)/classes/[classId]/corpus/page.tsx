@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getCurrentUser } from '@/lib/auth';
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createServerClient } from '@/lib/supabase'
@@ -56,10 +57,7 @@ export default async function CorpusPage(
 ) {
   const params = await props.params;
   const t = await getTranslations('pages.professor.corpus')
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) return null
 
   const classInfo = await loadClass(params.classId, user.id)
