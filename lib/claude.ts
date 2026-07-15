@@ -2,6 +2,11 @@ import Anthropic from '@anthropic-ai/sdk'
 
 export const MODEL_ID = 'claude-opus-4-8' as const
 
+// 지연에 민감한 경로(문서 분석 등)용 저지연 모델. 오류 카드 생성은 ICL 예시가 충분해
+// Haiku 4.5 로도 정확도를 유지하면서 응답이 크게 빨라진다. 과외 채팅 등 품질 우선
+// 경로는 계속 MODEL_ID(Opus)를 사용한다.
+export const FAST_MODEL_ID = 'claude-haiku-4-5-20251001' as const
+
 let _client: Anthropic | null = null
 
 function getClient(): Anthropic {
@@ -34,6 +39,8 @@ export interface CompleteOptions {
   maxTokens?: number
   cacheSystem?: CacheTier
   thinking?: boolean
+  /** 호출별 모델 오버라이드. 미지정 시 MODEL_ID(Opus). 지연 민감 경로는 FAST_MODEL_ID 지정. */
+  model?: string
 }
 
 function toCacheControl(cache: CacheTier | undefined):
@@ -59,7 +66,7 @@ function toSystemBlocks(system: SystemInput, cache: CacheTier | undefined): Anth
 
 function buildCreateParams(opts: CompleteOptions): Anthropic.MessageCreateParamsNonStreaming {
   const params: Anthropic.MessageCreateParamsNonStreaming = {
-    model: MODEL_ID,
+    model: opts.model ?? MODEL_ID,
     max_tokens: opts.maxTokens ?? 16000,
     system: toSystemBlocks(opts.system, opts.cacheSystem),
     messages: opts.messages

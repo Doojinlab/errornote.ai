@@ -13,6 +13,11 @@ const baseSecurityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // 배럴 임포트(lucide-react 아이콘 등)를 실제 사용한 모듈만 남기도록 최적화해
+  // 학생 셸·에디터 경로의 클라이언트 번들 크기와 초기 로드를 줄인다.
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
   async headers() {
     return [
       // 1) 전 경로 공통 보안 헤더(프레이밍 정책 제외).
