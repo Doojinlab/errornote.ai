@@ -1,10 +1,11 @@
-import { AlertCircle, Rss, Library, LineChart } from "lucide-react";
+import { AlertCircle, Rss, Library, LineChart, NotebookPen } from "lucide-react";
 import { HubGrid, LipButton, type HubLink } from "@/components/student-ui";
 import { loadErrorsData } from "@/lib/student-dashboard";
 import WeeklySummary from "./_components/WeeklySummary";
 import ErrorReviewCard from "./_components/ErrorReviewCard";
 
 const ERROR_LINKS: HubLink[] = [
+  { href: "/quiz-mistakes", icon: NotebookPen, title: "오답 노트", desc: "틀린 퀴즈 모아보기", tone: "terra" },
   { href: "/mistake-feed", icon: Rss, title: "실수 피드", desc: "자주 틀리는 표현", tone: "terra" },
   { href: "/error-dex", icon: Library, title: "오류 도감", desc: "모은 오류 유형", tone: "blue" },
   { href: "/progress", icon: LineChart, title: "진도·통계", desc: "학습 추이 보기", tone: "jade" },

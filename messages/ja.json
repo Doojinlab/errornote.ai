@@ -1071,6 +1071,9 @@
         "headingBase": "エラーカード",
         "headingWithCount": "エラーカード ({count})",
         "loading": "解析中…",
+        "loadingStage1": "文の構造を確認中…",
+        "loadingStage2": "エラーを検出中…",
+        "loadingStage3": "エラーカードを整理中…",
         "emptyState": "文章を書いて再解析を押してください。",
         "zeroErrors": "エラーは見つかりませんでした ✅",
         "overallFeedback": "全体フィードバック",
@@ -1086,7 +1089,14 @@
         "vocabAdded": "単語帳に追加しました: {word}",
         "quizHeading": "練習クイズ",
         "quizCorrect": "正解です！🎉",
-        "quizWrong": "おしい！もう一度見てみましょう。"
+        "quizWrong": "おしい！もう一度見てみましょう。",
+        "quizOpenCta": "解く",
+        "quizQuestionCount": "{count}問",
+        "quizProgress": "{done}/{total}問 回答",
+        "quizCloseCta": "閉じる",
+        "quizNotesHint": "間違えた問題は復習ノートに自動保存されます。",
+        "quizSavedToNotes": "復習ノートに保存しました",
+        "quizViewNotes": "復習ノートを見る"
       },
       "documentEditor": {
         "heading": "文章作成",

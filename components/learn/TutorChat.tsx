@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { ArrowUp } from "lucide-react";
 import type { AnalysisError, ChatMessage, ChatRequest } from "@/types";
 import type { TutorQuiz, AddToVocabInput } from "@/lib/tutor-tools";
-import TutorQuizCard from "./TutorQuizCard";
+import QuizModal from "./QuizModal";
 
 interface Props {
   focusedError: AnalysisError | null;
@@ -34,6 +34,9 @@ export default function TutorChat({ focusedError, chapterNumber }: Props) {
   const [messages, setMessages] = useState<UiMessage[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  // 연습 퀴즈는 좁은 채팅 창 대신 중앙 대형 모달로 푼다. 도착 시 자동으로 열리고,
+  // 닫아도 채팅의 "풀기" 버튼으로 언제든 다시 열 수 있다.
+  const [activeQuiz, setActiveQuiz] = useState<TutorQuiz | null>(null);
 
   /** 마지막(어시스턴트) 말풍선을 갱신. */
   function patchLast(fn: (m: UiMessage) => UiMessage) {
@@ -58,6 +61,8 @@ export default function TutorChat({ focusedError, chapterNumber }: Props) {
             : null;
       if (artifact) {
         patchLast((m) => ({ ...m, artifacts: [...(m.artifacts ?? []), artifact] }));
+        // 퀴즈가 도착하면 곧바로 대형 모달을 띄운다.
+        if (artifact.kind === "quiz") setActiveQuiz(artifact.quiz);
       }
     } else if (ev.type === "error") {
       patchLast((m) => ({
@@ -163,9 +168,17 @@ export default function TutorChat({ focusedError, chapterNumber }: Props) {
             )}
             {m.artifacts?.map((a, ai) =>
               a.kind === "quiz" ? (
-                <div key={ai} className="mt-2 w-[90%]">
-                  <TutorQuizCard quiz={a.quiz} />
-                </div>
+                <button
+                  key={ai}
+                  type="button"
+                  onClick={() => setActiveQuiz(a.quiz)}
+                  className="mt-2 inline-flex items-center gap-2 rounded-full border border-blue bg-blue-soft px-3.5 py-1.5 text-xs font-semibold text-blue-dark transition-colors hover:bg-blue-soft/70"
+                >
+                  🎯 {t("quizHeading")}
+                  {a.quiz.topic ? ` · ${a.quiz.topic}` : ""} ·{" "}
+                  {t("quizQuestionCount", { count: a.quiz.questions.length })} ·{" "}
+                  {t("quizOpenCta")}
+                </button>
               ) : (
                 <div
                   key={ai}
@@ -200,6 +213,14 @@ export default function TutorChat({ focusedError, chapterNumber }: Props) {
           <ArrowUp size={18} aria-hidden />
         </button>
       </form>
+
+      {activeQuiz && (
+        <QuizModal
+          quiz={activeQuiz}
+          chapterNumber={chapterNumber}
+          onClose={() => setActiveQuiz(null)}
+        />
+      )}
     </div>
   );
 }
