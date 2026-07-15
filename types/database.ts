@@ -1124,6 +1124,35 @@ export type Database = {
           },
         ]
       }
+      feature_waitlist: {
+        Row: {
+          id: string
+          student_id: string
+          feature: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          feature: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          feature?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'feature_waitlist_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       student_hotword_interests: {
         Row: {
           id: string

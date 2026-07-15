@@ -73,7 +73,7 @@ export default async function StudentLayout({
               <StatChip type="flame" value={stats?.streak_days ?? 0} />
               <LanguageSwitcher />
               <Link
-                href="/notifications"
+                href="/notifications/inbox"
                 aria-label="알림"
                 className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-white text-bodytx"
               >

@@ -25,11 +25,32 @@ export default function HskEntryCard({
   const [level, setLevel] = useState<HskLevel>(4);
   const [area, setArea] = useState<HskArea>("writing"); // 쓰기 = 킬러 영역, 기본 강조
   const [mode, setMode] = useState<HskMode>("practice");
+  // 말하기(곧) 출시 알림 신청 상태.
+  const [speakingRequested, setSpeakingRequested] = useState(false);
+  const [requesting, setRequesting] = useState(false);
 
   function enter() {
     router.push(
       `/learn/${chapterId}?mode=hsk&level=${level}&area=${area}&hskMode=${mode}`,
     );
+  }
+
+  // 말하기 영역은 아직 비활성 — 클릭 시 출시 알림 대기자 신청(§1.2).
+  async function requestSpeaking() {
+    if (requesting || speakingRequested) return;
+    setRequesting(true);
+    setSpeakingRequested(true); // 낙관적
+    try {
+      await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ feature: "hsk_speaking" }),
+      });
+    } catch {
+      /* 실패해도 UX 흐름은 유지 */
+    } finally {
+      setRequesting(false);
+    }
   }
 
   return (
@@ -73,10 +94,13 @@ export default function HskEntryCard({
                 <button
                   key={a.value}
                   type="button"
-                  disabled
-                  aria-disabled="true"
-                  title="곧 출시됩니다"
-                  className={`${chip} inline-flex items-center justify-center gap-1 cursor-not-allowed border border-dashed border-blue/30 bg-white/50 text-muted`}
+                  onClick={requestSpeaking}
+                  disabled={requesting}
+                  aria-pressed={speakingRequested}
+                  title={speakingRequested ? "신청 완료" : "출시 알림 신청"}
+                  className={`${chip} inline-flex items-center justify-center gap-1 border border-dashed border-blue/30 text-muted ${
+                    speakingRequested ? "bg-blue-soft" : "bg-white/50 hover:bg-white"
+                  }`}
                 >
                   {a.label}
                   <span className="rounded-full bg-blue/10 px-1.5 text-[9px] font-bold text-blue">
@@ -97,7 +121,9 @@ export default function HskEntryCard({
             )}
           </div>
           <div className="mt-1.5 text-[11px] text-blue/70">
-            ✓ 말하기 모드가 열리면 알려줄게
+            {speakingRequested
+              ? "✓ 신청 완료! 말하기 출시되면 알려드릴게요"
+              : "말하기를 누르면 출시 알림을 신청할 수 있어요"}
           </div>
         </div>
 

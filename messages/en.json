@@ -85,7 +85,7 @@
     "demo": {
       "eyebrow": "Three-panel workspace", "title": "Here's how it flows — AI analyzes in real time",
       "kicker": "Write on the left, error cards top-right, AI tutor chat bottom-right. As the learner types, analysis, highlights, cards, and solutions appear in sequence.",
-      "windowTitle": "wunote.app · Writing — Intermediate Chinese Writing (CHIN-301)",
+      "windowTitle": "errornote.ai · Writing — Intermediate Chinese Writing (CHIN-301)",
       "saved": "Saved", "draftTitle": "Write your draft", "analyzeBtn": "AI analysis", "analyzing": "Analyzing…", "analyzingTip": "Claude API is analyzing your sentences…",
       "countLabel": "characters", "errorsLabel": "errors", "hskAvgLabel": "HSK average", "hskAvgValue": "Level 4",
       "errorCardTitle": "Error cards", "cardEmpty": "Start writing and your error cards will appear here",
@@ -136,8 +136,8 @@
     "cta": { "titlePre": "From today, your ", "titleHighlight": "mistakes", "titlePost": " are an asset.", "sub": "Free for students. Professors can upload a corpus and run a class the moment they open it. With PWA, it works the same on mobile.", "ctaStudent": "Start as a student", "ctaProfessor": "Request professor demo" },
     "footer": {
       "desc": "An AI-powered Chinese error-correction PWA for undergraduate Chinese majors at Korean universities.",
-      "affiliation": "Kyonggi University Dept. of Chinese Language & Literature × Sogang University Dept. of Chinese Culture\n© 2026 Wunote / AI오답노트",
-      "columns": [ { "title": "Product", "items": ["Learner app", "Professor tools", "Marketplace", "Roadmap"] }, { "title": "Resources", "items": ["Kang (2025) paper", "Technical development plan", "Prompt design", "Privacy"] }, { "title": "Contact", "items": ["Request a demo", "Partnerships", "Conference talks", "press@wunote.app"] } ]
+      "affiliation": "Kyonggi University Dept. of Chinese Language & Literature × Sogang University Dept. of Chinese Culture\n© 2026 errornote / AI오답노트",
+      "columns": [ { "title": "Product", "items": ["Learner app", "Professor tools", "Marketplace", "Roadmap"] }, { "title": "Resources", "items": ["Kang (2025) paper", "Technical development plan", "Prompt design", "Privacy"] }, { "title": "Contact", "items": ["Request a demo", "Partnerships", "Conference talks", "press@errornote.ai"] } ]
     }
   },
   "common": {
