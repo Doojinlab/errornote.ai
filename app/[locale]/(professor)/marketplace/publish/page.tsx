@@ -1,6 +1,6 @@
 import Link from 'next/link'
+import { getCurrentUser } from '@/lib/auth';
 import { getTranslations } from 'next-intl/server'
-import { createServerClient } from '@/lib/supabase'
 import { listMyCorpus } from '@/lib/marketplace'
 import Card from '@/components/ui/Card'
 import PublishRow from './PublishRow'
@@ -9,10 +9,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function MarketplacePublishPage() {
   const t = await getTranslations('pages.professor.marketplacePublish')
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) return null
 
   const items = await listMyCorpus(user.id)

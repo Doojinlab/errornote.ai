@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getCurrentUser } from '@/lib/auth';
 import { getTranslations } from 'next-intl/server'
 import { createServerClient } from '@/lib/supabase'
 import Card from '@/components/ui/Card'
@@ -155,10 +156,7 @@ function formatDate(iso: string): string {
 
 export default async function DashboardPage() {
   const t = await getTranslations('pages.professor.dashboard')
-  const supabase = createServerClient()
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) return null
 
   // classes 와 latestReports 는 서로 독립이므로 병렬로 먼저 조회한다(순차 왕복 제거).

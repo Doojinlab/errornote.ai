@@ -1,12 +1,11 @@
 import { getTranslations } from "next-intl/server";
+import { getCurrentUser } from "@/lib/auth";
 import { createServerClient } from "@/lib/supabase";
 import VocabularyList, { type VocabItem } from "./VocabularyList";
 
 async function loadVocab(): Promise<VocabItem[]> {
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return [];
   const { data } = await supabase
     .from("vocabulary")

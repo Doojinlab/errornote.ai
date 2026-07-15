@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import { getRewardInventory, GACHA_COST, type RewardCell } from "@/lib/gacha";
 import { getSnapshot } from "@/lib/gamification";
 import GachaRoom from "./GachaRoom";
@@ -10,10 +10,7 @@ interface GachaData {
 }
 
 async function loadGacha(): Promise<GachaData | null> {
-  const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
   try {
     const [inventory, snapshot] = await Promise.all([

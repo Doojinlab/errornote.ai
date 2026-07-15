@@ -1,7 +1,7 @@
 import Link from 'next/link'
+import { getCurrentUser } from '@/lib/auth';
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { createServerClient } from '@/lib/supabase'
 import { getReport } from '@/lib/professor-reports'
 import Card from '@/components/ui/Card'
 
@@ -110,10 +110,7 @@ export default async function ReportDetailPage(
 ) {
   const params = await props.params;
   const t = await getTranslations('pages.professor.reportDetail')
-  const supabase = createServerClient()
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) return null
 
   const report = await getReport(user.id, params.weekId)

@@ -27,6 +27,10 @@ export const MIN_SAMPLE = 30
 export const LIKE_THRESHOLD = 0.6
 export const DISLIKE_THRESHOLD = 0.3
 
+// hotwords 전체 컬럼 명시 — select('*') 대신 명시적으로 나열(스키마 변경에 안전).
+const HOTWORD_COLS =
+  'id, term, category, pinyin, literal, meaning, example, origin, register_tag, sources, first_seen, status, exposure_until, impressions, likes, dislikes, created_at'
+
 export const HOTWORD_CATEGORY_LABEL: Record<HotwordCategory, string> = {
   game: '게임',
   entertainment: '연예',
@@ -68,23 +72,26 @@ export function mapHotword(row: HotwordRow): Hotword {
 export async function getTodayHotword(studentId: string): Promise<Hotword | null> {
   const supabase = createServerClient()
 
-  const { data: rows } = await supabase
-    .from('hotwords')
-    .select('*')
-    .eq('status', 'active')
-    .order('first_seen', { ascending: false })
-    .limit(20)
+  // 활성 풀 조회와 본인 비추 표 조회는 서로 독립 → 병렬로 한 번에.
+  const [rowsRes, votesRes] = await Promise.all([
+    supabase
+      .from('hotwords')
+      .select(HOTWORD_COLS)
+      .eq('status', 'active')
+      .order('first_seen', { ascending: false })
+      .limit(20),
+    supabase
+      .from('hotword_feedback')
+      .select('hotword_id')
+      .eq('student_id', studentId)
+      .eq('vote', 'dislike'),
+  ])
 
+  const rows = rowsRes.data
   if (!rows || rows.length === 0) return null
 
   // 본인이 비추한 카드는 노출에서 제외(RLS self — 본인 표만 조회됨).
-  const { data: votes } = await supabase
-    .from('hotword_feedback')
-    .select('hotword_id, vote')
-    .eq('student_id', studentId)
-    .eq('vote', 'dislike')
-
-  const disliked = new Set((votes ?? []).map((v) => v.hotword_id))
+  const disliked = new Set((votesRes.data ?? []).map((v) => v.hotword_id))
   const pick = rows.find((r) => !disliked.has(r.id)) ?? rows[0]
   return mapHotword(pick)
 }
@@ -94,7 +101,7 @@ export async function getActiveHotwordById(id: string): Promise<Hotword | null> 
   const supabase = createServerClient()
   const { data } = await supabase
     .from('hotwords')
-    .select('*')
+    .select(HOTWORD_COLS)
     .eq('id', id)
     .eq('status', 'active')
     .maybeSingle()

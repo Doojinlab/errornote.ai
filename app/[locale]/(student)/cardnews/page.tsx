@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth";
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
 import Card from "@/components/ui/Card";
@@ -13,9 +14,7 @@ interface CardnewsListRow {
 
 async function loadWeeks(): Promise<CardnewsListRow[]> {
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return [];
   const { data } = await supabase
     .from("weekly_cardnews")
