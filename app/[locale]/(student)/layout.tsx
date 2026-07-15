@@ -4,6 +4,8 @@ import { createServerClient } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/auth";
 import StudentSoundShell from "@/components/gamification/StudentSoundShell";
 import StudentShellWidth from "@/components/student/StudentShellWidth";
+import Companion from "@/components/gamification/Companion";
+import { companionEmoji, companionStage, nextStageThreshold } from "@/lib/companion";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { BottomNav, StatChip } from "@/components/student-ui";
 
@@ -54,6 +56,11 @@ export default async function StudentLayout({
     loadEarnedBadgeIds(),
   ]);
 
+  // 误 동반자 — 마스터리 포인트로 단계 계산(무벌점·진척 기반). 헤더에 표시.
+  const mastery = stats?.mastery_points ?? 0;
+  const companionStg = companionStage(mastery);
+  const companionNext = nextStageThreshold(companionStg);
+
   return (
     <StudentSoundShell
       level={stats?.level ?? null}
@@ -70,6 +77,16 @@ export default async function StudentLayout({
               error<span className="text-blue">note</span>
             </Link>
             <div className="ml-auto flex items-center gap-2">
+              <Companion
+                emoji={companionEmoji(companionStg)}
+                title="误 동반자"
+                subtitle={
+                  companionNext != null
+                    ? `마스터리 ${mastery}/${companionNext}`
+                    : "최고 단계!"
+                }
+                ariaLabel={`误 동반자 ${companionStg}단계`}
+              />
               <StatChip type="flame" value={stats?.streak_days ?? 0} />
               <LanguageSwitcher />
               <Link
