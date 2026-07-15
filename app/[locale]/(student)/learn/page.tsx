@@ -44,36 +44,44 @@ export default async function LearnHomePage() {
       </header>
 
       {active && data ? (
-        <>
-          <GoalCard
-            current={data.goal.current}
-            total={data.goal.total}
-            streakDays={data.streakDays}
-            gems={data.gems}
-          />
-
-          <HeroCard title={data.today.title} subtitle={data.today.subtitle}>
-            <LipButton variant="white" href={`/learn/${data.today.chapterId}`}>
-              시작하기
-              <ArrowRight size={16} aria-hidden />
-            </LipButton>
-          </HeroCard>
-
-          {/* 좌: 실전 HSK · 우: 今日热词 (docs/dashboard-features.md) */}
-          <div className="grid grid-cols-2 gap-3">
+        // 데스크톱: 참조 레퍼런스의 2컬럼(좌 실전HSK+今日热词 / 우 목표·학습·과제·바로가기).
+        // 모바일: 단일 컬럼으로 자연 스택(좌 컬럼 → 우 컬럼 순).
+        <div className="lg:grid lg:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] lg:items-start lg:gap-5">
+          {/* 좌측 — 실전 HSK · 今日热词 */}
+          <div className="flex flex-col gap-5">
             <HskEntryCard chapterId={data.today.chapterId} />
             <HotwordCard hotword={todayHotword} chapterId={data.today.chapterId} />
           </div>
 
-          <MiniGrid tasks={data.tasks} />
+          {/* 우측(중앙) — 기존 대시보드 */}
+          <div className="mt-5 space-y-4 lg:mt-0">
+            <GoalCard
+              current={data.goal.current}
+              total={data.goal.total}
+              streakDays={data.streakDays}
+              gems={data.gems}
+            />
 
-          {data.cardNews.length > 0 && <CardNewsRail items={data.cardNews} />}
-        </>
+            <HeroCard title={data.today.title} subtitle={data.today.subtitle}>
+              <LipButton variant="white" href={`/learn/${data.today.chapterId}`}>
+                시작하기
+                <ArrowRight size={16} aria-hidden />
+              </LipButton>
+            </HeroCard>
+
+            <MiniGrid tasks={data.tasks} />
+
+            <HubGrid title="바로가기" links={STUDY_LINKS} />
+
+            {data.cardNews.length > 0 && <CardNewsRail items={data.cardNews} />}
+          </div>
+        </div>
       ) : (
-        <LearnEmptyState />
+        <>
+          <LearnEmptyState />
+          <HubGrid title="바로가기" links={STUDY_LINKS} />
+        </>
       )}
-
-      <HubGrid title="바로가기" links={STUDY_LINKS} />
     </div>
   );
 }
