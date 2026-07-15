@@ -214,6 +214,12 @@ export default function PronunciationPage() {
         <div>
           <h1 className="text-xl font-extrabold tracking-tight text-ink">{t('title')}</h1>
           <p className="mt-1 text-sm text-bodytx">{t('subtitle')}</p>
+          <Link
+            href="/pronunciation/tone"
+            className="mt-2 inline-flex items-center gap-1 rounded-full bg-blue-soft px-3 py-1 text-xs font-bold text-blue-dark"
+          >
+            🔊 {t('toneDrillLink')}
+          </Link>
         </div>
         <Link
           href="/pronunciation/history"
