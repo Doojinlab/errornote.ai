@@ -56,10 +56,42 @@ export interface ChatMessage {
   content: string
 }
 
+// ── 워크스페이스 입장 컨텍스트 (docs/dashboard-features.md ★공통 상호작용 모델) ──
+// 실전 HSK / 今日热词 는 새 화면을 만들지 않고 기존 3분할 워크스페이스를 재사용한다.
+// 차이는 AI 과외 채팅에 주입되는 시작 컨텍스트(시스템 프롬프트)뿐이다.
+export type WorkspaceEntryMode = 'hsk' | 'hotword'
+
+export type HskLevel = 3 | 4 | 5 | 6
+export type HskArea = 'reading' | 'writing' | 'speaking'
+export type HskMode = 'practice' | 'concept'
+
+export interface HskEntryContext {
+  level: HskLevel
+  area: HskArea
+  mode: HskMode
+}
+
+export interface HotwordEntryContext {
+  term: string
+  category: string
+  pinyin?: string
+  literal?: string
+  meaning?: string
+  example?: string
+  origin?: string
+  registerTag?: string
+}
+
 export interface ChatRequest {
   messages: ChatMessage[]
   errorContext?: AnalysisError
   chapterNumber?: number
+  /** 입장 모드 — 있으면 시스템 프롬프트가 문제 제시/작문 과제 제시로 분기한다. */
+  entryMode?: WorkspaceEntryMode
+  /** entryMode === 'hsk' 일 때의 급수·영역·모드. */
+  hskContext?: HskEntryContext
+  /** entryMode === 'hotword' 일 때의 오늘의 단어 정보. */
+  hotwordContext?: HotwordEntryContext
 }
 
 export interface RemedialQuiz {

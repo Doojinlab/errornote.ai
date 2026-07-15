@@ -1,8 +1,12 @@
 import { ArrowRight, BookA, Bookmark, Target, Sparkles } from "lucide-react";
 import { HeroCard, HubGrid, LipButton, type HubLink } from "@/components/student-ui";
 import { loadLearnData } from "@/lib/student-dashboard";
+import { getCurrentUser } from "@/lib/auth";
+import { getTodayHotword } from "@/lib/hotwords";
 import CardNewsRail from "./_components/CardNewsRail";
 import GoalCard from "./_components/GoalCard";
+import HotwordCard from "./_components/HotwordCard";
+import HskEntryCard from "./_components/HskEntryCard";
 import LearnEmptyState from "./_components/LearnEmptyState";
 import MiniGrid from "./_components/MiniGrid";
 
@@ -21,6 +25,10 @@ export default async function LearnHomePage() {
   const data = await loadLearnData();
   const studentName = data?.studentName ?? "학생";
   const active = data?.hasActiveClass ?? false;
+
+  // 대시보드 좌·우 신규 기능(docs/dashboard-features.md) — 오늘의 단어는 서버에서 조회.
+  const user = active ? await getCurrentUser() : null;
+  const todayHotword = user ? await getTodayHotword(user.id) : null;
 
   return (
     <div className="space-y-5">
@@ -48,6 +56,12 @@ export default async function LearnHomePage() {
               <ArrowRight size={16} aria-hidden />
             </LipButton>
           </HeroCard>
+
+          {/* 좌: 실전 HSK · 우: 今日热词 (docs/dashboard-features.md) */}
+          <div className="grid grid-cols-2 gap-3">
+            <HskEntryCard />
+            <HotwordCard hotword={todayHotword} />
+          </div>
 
           <MiniGrid tasks={data.tasks} />
 
