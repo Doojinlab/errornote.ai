@@ -1,3 +1,5 @@
+import { cache } from 'react'
+import type { User } from '@supabase/supabase-js'
 import { createServerClient } from './supabase'
 
 export type UserRole = 'student' | 'professor'
@@ -9,16 +11,28 @@ export interface AuthContext {
 }
 
 /**
+ * 현재 요청의 인증 사용자(getUser)를 1회만 조회한다. supabase.auth.getUser() 는
+ * 매번 Supabase Auth 네트워크 왕복이므로, 한 요청 안에서 레이아웃·페이지·로더가
+ * 제각기 호출하면 왕복이 수 배로 늘어난다. React cache() 로 요청 스코프에서 결과를
+ * 공유해 렌더 트리 전체가 단 한 번의 getUser 만 유발하도록 한다.
+ */
+export const getCurrentUser = cache(async (): Promise<User | null> => {
+  const supabase = createServerClient()
+  const { data, error } = await supabase.auth.getUser()
+  if (error || !data?.user) return null
+  return data.user
+})
+
+/**
  * 현재 요청의 Supabase 세션에서 인증된 사용자와 profiles.role 을 읽어온다.
  * 미인증 시 null 을 반환한다. 역할 체크는 호출 측에서 수행한다.
+ * getCurrentUser/getAuthContext 모두 요청 스코프 캐시로 중복 왕복을 제거한다.
  */
-export async function getAuthContext(): Promise<AuthContext | null> {
+export const getAuthContext = cache(async (): Promise<AuthContext | null> => {
+  const user = await getCurrentUser()
+  if (!user) return null
+
   const supabase = createServerClient()
-
-  const { data: userData, error: userErr } = await supabase.auth.getUser()
-  if (userErr || !userData?.user) return null
-  const user = userData.user
-
   const { data: profile, error: profileErr } = await supabase
     .from('profiles')
     .select('role')
@@ -38,7 +52,7 @@ export async function getAuthContext(): Promise<AuthContext | null> {
     role,
     email: user.email ?? null
   }
-}
+})
 
 export class AuthError extends Error {
   status: number

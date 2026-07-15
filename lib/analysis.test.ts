@@ -255,7 +255,10 @@ describe('analyzeDraft()', () => {
       overall_feedback: '좋아요'
     }
 
-    vi.doMock('./claude', () => ({ completeJSON: vi.fn().mockResolvedValue(mockResponse) }))
+    vi.doMock('./claude', () => ({
+      completeJSON: vi.fn().mockResolvedValue(mockResponse),
+      FAST_MODEL_ID: 'claude-haiku-4-5-20251001'
+    }))
     vi.doMock('./prompts/base', () => ({
       buildSystemBlocks: vi.fn().mockReturnValue([]),
       buildAnalyzeUserPrompt: vi.fn().mockReturnValue('prompt')
@@ -273,7 +276,10 @@ describe('analyzeDraft()', () => {
   })
 
   it('completeJSON 실패 → 에러 throw', async () => {
-    vi.doMock('./claude', () => ({ completeJSON: vi.fn().mockRejectedValue(new Error('API 오류')) }))
+    vi.doMock('./claude', () => ({
+      completeJSON: vi.fn().mockRejectedValue(new Error('API 오류')),
+      FAST_MODEL_ID: 'claude-haiku-4-5-20251001'
+    }))
     vi.doMock('./prompts/base', () => ({
       buildSystemBlocks: vi.fn().mockReturnValue([]),
       buildAnalyzeUserPrompt: vi.fn().mockReturnValue('prompt')

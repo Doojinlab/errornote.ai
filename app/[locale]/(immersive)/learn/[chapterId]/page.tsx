@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import LearnClient from "./LearnClient";
 
 interface EnrollmentRow {
@@ -23,10 +24,7 @@ async function loadActiveClassId(userId: string): Promise<string | null> {
 export default async function LearnPage(props: { params: Promise<{ chapterId: string }> }) {
   const params = await props.params;
   const t = await getTranslations("pages.student.learn");
-  const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   const classId = await loadActiveClassId(user.id);

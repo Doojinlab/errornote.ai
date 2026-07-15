@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/routing";
 import { Bell, User } from "lucide-react";
 import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import StudentSoundShell from "@/components/gamification/StudentSoundShell";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { BottomNav, StatChip } from "@/components/student-ui";
@@ -17,11 +18,9 @@ interface BadgeRow {
 }
 
 async function loadStats(): Promise<GameStats | null> {
-  const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
+  const supabase = createServerClient();
   const { data } = await supabase
     .from("gamification_stats")
     .select("level, xp, streak_days, mastery_points")
@@ -31,11 +30,9 @@ async function loadStats(): Promise<GameStats | null> {
 }
 
 async function loadEarnedBadgeIds(): Promise<string[]> {
-  const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return [];
+  const supabase = createServerClient();
   const { data } = await supabase
     .from("badges")
     .select("badge_type")
