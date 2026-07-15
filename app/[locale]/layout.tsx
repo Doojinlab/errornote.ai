@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
-import PwaInstallPrompt from '@/components/PwaInstallPrompt'
 import OfflineIndicator from '@/components/OfflineIndicator'
 import OfflineQueueFlusher from '@/components/OfflineQueueFlusher'
 
@@ -32,7 +31,6 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       {children}
-      <PwaInstallPrompt />
       {/* Offline chrome must live inside NextIntlClientProvider — OfflineQueueFlusher
           calls useTranslations(). Rendering it from the root layout (outside the
           provider) throws "context not found" and 500s every page. */}
