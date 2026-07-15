@@ -78,7 +78,11 @@ export async function POST(req: Request) {
     errorContext: body.errorContext,
     chapterNumber: body.chapterNumber,
     learnerProfileSection,
-    adaptiveDifficultySection
+    adaptiveDifficultySection,
+    // 워크스페이스 입장 컨텍스트(실전 HSK / 今日热词) — 있으면 시작 프롬프트가 분기한다.
+    entryMode: body.entryMode,
+    hskContext: body.hskContext,
+    hotwordContext: body.hotwordContext
   })
 
   try {
