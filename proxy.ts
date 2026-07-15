@@ -28,6 +28,8 @@ const STUDENT_PREFIXES = [
   '/pronunciation',
   '/notifications',
   '/data-export',
+  '/quick-ask',
+  '/graded-reading',
 ]
 
 const PROFESSOR_PREFIXES = ['/dashboard', '/classes', '/marketplace']
