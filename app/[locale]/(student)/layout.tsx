@@ -3,6 +3,7 @@ import { Bell, User } from "lucide-react";
 import { createServerClient } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/auth";
 import StudentSoundShell from "@/components/gamification/StudentSoundShell";
+import StudentShellWidth from "@/components/student/StudentShellWidth";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { BottomNav, StatChip } from "@/components/student-ui";
 
@@ -60,7 +61,7 @@ export default async function StudentLayout({
       earnedBadgeIds={earnedBadgeIds}
     >
       <div className="min-h-dvh bg-ivory text-ink">
-        <div className="mx-auto flex min-h-dvh w-full max-w-[420px] flex-col bg-ivory">
+        <StudentShellWidth>
           <header className="sticky top-0 z-30 flex items-center gap-2 border-b border-hairline bg-ivory/90 px-4 py-3 backdrop-blur">
             <Link
               href="/learn"
@@ -91,7 +92,7 @@ export default async function StudentLayout({
           <main className="flex-1 px-4 pb-[90px] pt-4">{children}</main>
 
           <BottomNav />
-        </div>
+        </StudentShellWidth>
       </div>
     </StudentSoundShell>
   );
