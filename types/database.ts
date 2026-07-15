@@ -963,6 +963,7 @@ export type Database = {
           first_seen: string
           status: 'active' | 'dormant'
           exposure_until: string | null
+          dormant_at: string | null
           impressions: number
           likes: number
           dislikes: number
@@ -982,6 +983,7 @@ export type Database = {
           first_seen?: string
           status?: 'active' | 'dormant'
           exposure_until?: string | null
+          dormant_at?: string | null
           impressions?: number
           likes?: number
           dislikes?: number
@@ -1001,6 +1003,7 @@ export type Database = {
           first_seen?: string
           status?: 'active' | 'dormant'
           exposure_until?: string | null
+          dormant_at?: string | null
           impressions?: number
           likes?: number
           dislikes?: number
@@ -1114,6 +1117,35 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'hsk_generated_questions_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      student_hotword_interests: {
+        Row: {
+          id: string
+          student_id: string
+          category: 'game' | 'entertainment' | 'society' | 'economy' | 'daily' | 'meme'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          category: 'game' | 'entertainment' | 'society' | 'economy' | 'daily' | 'meme'
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          category?: 'game' | 'entertainment' | 'society' | 'economy' | 'daily' | 'meme'
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'student_hotword_interests_student_id_fkey'
             columns: ['student_id']
             isOneToOne: false
             referencedRelation: 'profiles'

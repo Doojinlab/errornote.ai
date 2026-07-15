@@ -40,6 +40,23 @@ export interface Hotword {
   dislikes: number
 }
 
+/** 파이프라인 1단계 산출 — 웹 검색으로 수집한 후보(해설 생성 전). */
+export interface HotwordCandidate {
+  term: string
+  category: HotwordCategory
+  sources: HotwordSource[]
+}
+
+/** 파이프라인 실행 요약 — cron/관리 응답용. */
+export interface HotwordPipelineResult {
+  collected: number
+  passedExistence: number
+  explained: number
+  passedSafety: number
+  published: number
+  skippedDuplicate: number
+}
+
 /** 피드백 기록 결과 — 큐레이션 판정과 함께 클라이언트에 돌려준다. */
 export interface HotwordVoteResult {
   vote: HotwordVote

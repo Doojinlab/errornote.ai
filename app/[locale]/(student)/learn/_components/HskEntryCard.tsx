@@ -11,7 +11,7 @@ import type { HskArea, HskLevel, HskMode } from "@/types";
 const chipBase =
   "rounded-full px-3 py-1 text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue/60 focus-visible:ring-offset-1 focus-visible:ring-offset-white";
 
-export default function HskEntryCard() {
+export default function HskEntryCard({ chapterId = 1 }: { chapterId?: number | string }) {
   const router = useRouter();
   // 온보딩 목표 급수 프리필 자리 — 데이터 연동 전까지 4급 기본(§3 후속).
   const [level, setLevel] = useState<HskLevel>(4);
@@ -19,8 +19,9 @@ export default function HskEntryCard() {
   const [mode, setMode] = useState<HskMode>("practice");
 
   function enter() {
+    // 학생의 현재 챕터로 워크스페이스 진입(하드코딩 1 대신).
     router.push(
-      `/learn/1?mode=hsk&level=${level}&area=${area}&hskMode=${mode}`,
+      `/learn/${chapterId}?mode=hsk&level=${level}&area=${area}&hskMode=${mode}`,
     );
   }
 
