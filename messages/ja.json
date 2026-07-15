@@ -163,6 +163,21 @@
   },
   "pages": {
     "student": {
+      "handwriting": {
+        "title": "漢字の筆順",
+        "subtitle": "筆順アニメーションを見て、指やマウスでなぞって覚えましょう。",
+        "pickChar": "文字を選んでください",
+        "showStroke": "筆順を見る",
+        "practice": "なぞる",
+        "reset": "リセット",
+        "loading": "読み込み中…",
+        "loadError": "筆順データを読み込めませんでした。",
+        "quizStart": "枠の中に順番どおりなぞってみましょう。",
+        "correctStroke": "いいですね！続けましょう。",
+        "mistake": "この画をもう一度書いてみましょう。",
+        "complete": "完成！よくできました 🎉（ミス {mistakes} 回）",
+        "progress": "{done}/{total} 画 · ミス {mistakes} 回"
+      },
       "quests": {
         "title": "今日のクエスト",
         "subtitle": "昨日のミスから作った2分ミッションです。误といっしょに取り組みましょう。",
