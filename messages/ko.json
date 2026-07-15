@@ -269,6 +269,22 @@
   },
   "pages": {
     "student": {
+      "gradedReading": {
+        "title": "맞춤 리딩",
+        "subtitle": "내가 자주 틀리는 문법을 자연스럽게 심은 짧은 지문을 만들어 드려요.",
+        "emptyHint": "버튼을 누르면 내 오류 프로필에 맞춘 지문이 만들어져요.",
+        "regenerateHint": "다른 지문을 원하면 새로 만들어 보세요.",
+        "generate": "지문 생성하기",
+        "regenerate": "새 지문",
+        "generating": "생성 중…",
+        "hskLevelLabel": "HSK {level}급 수준",
+        "targetedGrammar": "이번 지문이 노린 약점",
+        "noWeakness": "특정 약점이 없어 기초 문형 위주로 만들었어요.",
+        "glossaryHeading": "낱말 풀이",
+        "questionsHeading": "이해 확인",
+        "showAnswer": "정답 보기",
+        "genericError": "생성에 실패했어요. 잠시 후 다시 시도해 주세요."
+      },
       "quests": {
         "title": "오늘의 퀘스트",
         "subtitle": "어제 오류에서 만든 2분 미션이에요. 误 동반자와 함께해요.",

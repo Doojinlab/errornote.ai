@@ -163,6 +163,22 @@
   },
   "pages": {
     "student": {
+      "gradedReading": {
+        "title": "Targeted reading",
+        "subtitle": "We build a short passage that naturally weaves in the grammar you tend to get wrong.",
+        "emptyHint": "Tap the button to generate a passage tailored to your error profile.",
+        "regenerateHint": "Want a different passage? Generate a new one.",
+        "generate": "Generate passage",
+        "regenerate": "New passage",
+        "generating": "Generating…",
+        "hskLevelLabel": "HSK {level} level",
+        "targetedGrammar": "Weak points this passage targets",
+        "noWeakness": "No specific weak points yet, so we focused on basic patterns.",
+        "glossaryHeading": "Glossary",
+        "questionsHeading": "Comprehension",
+        "showAnswer": "Show answer",
+        "genericError": "Generation failed. Please try again in a moment."
+      },
       "quests": {
         "title": "Today's Quests",
         "subtitle": "Two-minute missions built from yesterday's mistakes. Tackle them with 误.",
