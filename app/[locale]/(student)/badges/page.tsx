@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import BadgeDisplay, { type BadgeDisplayItem } from "@/components/gamification/BadgeDisplay";
 
 const CATALOG: Omit<BadgeDisplayItem, "earned">[] = [
@@ -18,9 +19,7 @@ interface BadgeRow {
 
 async function loadEarned(): Promise<Set<string>> {
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return new Set();
   const { data } = await supabase
     .from("badges")

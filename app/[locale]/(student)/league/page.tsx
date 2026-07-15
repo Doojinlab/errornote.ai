@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import {
   getLeagueStandings,
   leagueTier,
@@ -25,9 +26,7 @@ interface LeagueData {
 /** 학생의 활성 수업 1개를 고른다(여러 개면 첫 번째 활성). 없으면 null. */
 async function resolveActiveClass(): Promise<ClassRef | null> {
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   const { data } = await supabase

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import { getAssignment, getRubric } from "@/lib/assignments";
 import SubmitClient from "./SubmitClient";
 import type { RubricEvaluation } from "@/types/assignments";
@@ -21,9 +22,7 @@ export default async function StudentAssignmentPage(
   const params = await props.params;
   const t = await getTranslations("pages.student.assignmentDetail");
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   const assignment = await getAssignment(params.assignmentId);

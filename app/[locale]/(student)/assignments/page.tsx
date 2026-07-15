@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import { listAssignmentsForStudent } from "@/lib/assignments";
 import Card from "@/components/ui/Card";
 
@@ -24,10 +24,7 @@ function formatDue(
 
 export default async function StudentAssignmentsPage() {
   const t = await getTranslations("pages.student.assignments");
-  const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   const items = await listAssignmentsForStudent(user.id);

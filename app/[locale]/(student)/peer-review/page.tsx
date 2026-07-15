@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { createServerClient } from '@/lib/supabase'
+import { getCurrentUser } from '@/lib/auth'
 import { listAssignedReviews, listReceivedReviews } from '@/lib/peer-review'
 import { Card } from '@/components/student-ui'
 import type { ReviewStatus } from '@/types/peer-review'
@@ -17,10 +17,7 @@ function formatDate(iso: string): string {
 }
 
 export default async function PeerReviewPage() {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) return null
 
   const [t, assigned, received] = await Promise.all([

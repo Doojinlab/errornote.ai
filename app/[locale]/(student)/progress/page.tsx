@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import Card from "@/components/ui/Card";
 import type { ErrorType } from "@/types";
 
@@ -21,9 +22,7 @@ interface SubtypeBucket {
 
 async function loadErrors(): Promise<ErrorRow[]> {
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return [];
   const since = new Date();
   since.setDate(since.getDate() - 30);

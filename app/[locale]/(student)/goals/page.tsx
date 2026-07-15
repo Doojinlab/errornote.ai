@@ -1,14 +1,13 @@
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import { calcProgressForGoals } from "@/lib/goals";
 import type { GoalProgress, LearningGoal } from "@/types/goals";
 import GoalsManager from "./GoalsManager";
 
 async function loadGoals(): Promise<{ goals: LearningGoal[]; progress: GoalProgress[] }> {
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return { goals: [], progress: [] };
 
   const { data } = await supabase

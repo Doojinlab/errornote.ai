@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import { getOrCreateTodayQuest } from "@/lib/daily-quests";
 import { processGraduations } from "@/lib/graduation";
 import { getClassGoals, type ClassGoal } from "@/lib/class-goals";
@@ -15,9 +16,7 @@ interface ClassGoalsView {
 /** 학생이 수강 중인 첫 반의 협동 목표 + 종 이름 맵(읽기 전용 표시용). */
 async function loadClassGoals(): Promise<ClassGoalsView | null> {
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
   try {
     const { data: enr } = await supabase
@@ -39,10 +38,7 @@ async function loadClassGoals(): Promise<ClassGoalsView | null> {
 }
 
 async function loadTodayQuest(): Promise<DailyQuest | null> {
-  const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   try {

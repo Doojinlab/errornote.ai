@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import Card from "@/components/ui/Card";
 import AnalyzeUrlClient from "./AnalyzeUrlClient";
 import type { UrlAnalysisRecord, UrlAnalysisResult } from "@/types/url-analysis";
@@ -41,10 +42,7 @@ async function loadHistory(studentId: string): Promise<UrlAnalysisRecord[]> {
 
 export default async function AnalyzeUrlPage() {
   const t = await getTranslations("pages.student.urlAnalyze");
-  const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   const history = user ? await loadHistory(user.id) : [];
 
   return (

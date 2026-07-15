@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import CardNewsViewer from "@/components/cardnews/CardNewsViewer";
 import SendSelfButton from "./SendSelfButton";
 import type { CardnewsRecord } from "@/types/cardnews";
@@ -42,9 +43,7 @@ function toRecord(row: CardnewsRow): CardnewsRecord {
 
 async function loadWeek(weekStart: string): Promise<CardnewsRecord | null> {
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
   const { data } = await supabase
     .from("weekly_cardnews")
