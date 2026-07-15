@@ -132,7 +132,7 @@
       "eyebrow": "3분할 학습 화면",
       "title": "이렇게 흘러갑니다 AI가 실시간으로 분석합니다",
       "kicker": "왼쪽에 작성, 오른쪽 상단에 오류 카드, 오른쪽 하단에 AI 과외 채팅. 학습자가 타이핑하면 분석·하이라이트·카드·솔루션이 순차적으로 제시됩니다.",
-      "windowTitle": "wunote.app · 작문 — 중급 중국어 작문 (CHIN-301)",
+      "windowTitle": "errornote.ai · 작문 — 중급 중국어 작문 (CHIN-301)",
       "saved": "저장됨",
       "draftTitle": "초고 작성",
       "analyzeBtn": "AI 분석",
@@ -238,11 +238,11 @@
     },
     "footer": {
       "desc": "한국 대학교 중국어 전공 학부생을 위한 AI 기반 중국어 오류 교정 PWA.",
-      "affiliation": "경기대학교 중어중문학과 × 서강대학교 중국문화학과\n© 2026 Wunote / AI오답노트",
+      "affiliation": "경기대학교 중어중문학과 × 서강대학교 중국문화학과\n© 2026 errornote / AI오답노트",
       "columns": [
         { "title": "제품", "items": ["학습자 앱", "교수자 도구", "마켓플레이스", "로드맵"] },
         { "title": "자료", "items": ["강병규 2025 논문", "개발 기술 기획서", "프롬프트 설계", "프라이버시"] },
-        { "title": "연락", "items": ["데모 신청", "파트너십", "학회 발표", "press@wunote.app"] }
+        { "title": "연락", "items": ["데모 신청", "파트너십", "학회 발표", "press@errornote.ai"] }
       ]
     }
   },

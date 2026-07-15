@@ -228,6 +228,15 @@ export default async function ClassDetailPage(
           <span className="font-mono text-muted">
             {t('inviteCode', { code: info.invite_code })}
           </span>
+          <Link href={`/classes/${info.id}/assignments`} className="text-blue hover:underline">
+            과제
+          </Link>
+          <Link href={`/classes/${info.id}/rubrics`} className="text-blue hover:underline">
+            루브릭
+          </Link>
+          <Link href={`/classes/${info.id}/live`} className="text-blue hover:underline">
+            실시간
+          </Link>
           <Link href={`/classes/${info.id}/corpus`} className="text-blue hover:underline">
             {t('corpusLink')}
           </Link>

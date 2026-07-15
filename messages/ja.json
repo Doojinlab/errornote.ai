@@ -85,7 +85,7 @@
     "demo": {
       "eyebrow": "3分割学習画面", "title": "このように進みます AIがリアルタイムで分析します",
       "kicker": "左に作成、右上に誤りカード、右下にAI家庭教師チャット。学習者がタイピングすると、分析・ハイライト・カード・解決策が順に提示されます。",
-      "windowTitle": "wunote.app · 作文 — 中級中国語作文 (CHIN-301)",
+      "windowTitle": "errornote.ai · 作文 — 中級中国語作文 (CHIN-301)",
       "saved": "保存済み", "draftTitle": "下書き作成", "analyzeBtn": "AI分析", "analyzing": "分析中…", "analyzingTip": "Claude API が文を分析中…",
       "countLabel": "文字", "errorsLabel": "誤り", "hskAvgLabel": "HSK 平均", "hskAvgValue": "4級",
       "errorCardTitle": "誤りカード", "cardEmpty": "作成すると誤りカードがここに表示されます",
@@ -136,8 +136,8 @@
     "cta": { "titlePre": "今日から ", "titleHighlight": "間違い", "titlePost": "が資産になる。", "sub": "学生は無料。教員はコーパスをアップロードして授業を開設すればすぐ運用可能。PWA でモバイルでもそのまま動作します。", "ctaStudent": "学生として始める", "ctaProfessor": "教員デモを申し込む" },
     "footer": {
       "desc": "韓国の大学で中国語を専攻する学部生のための、AI ベースの中国語誤り訂正 PWA。",
-      "affiliation": "京畿大学校 中語中文学科 × 西江大学校 中国文化学科\n© 2026 Wunote / AI오답노트",
-      "columns": [ { "title": "製品", "items": ["学習者アプリ", "教員ツール", "マーケットプレイス", "ロードマップ"] }, { "title": "資料", "items": ["カン・ビョンギュ 2025 論文", "開発技術企画書", "プロンプト設計", "プライバシー"] }, { "title": "連絡", "items": ["デモ申込", "パートナーシップ", "学会発表", "press@wunote.app"] } ]
+      "affiliation": "京畿大学校 中語中文学科 × 西江大学校 中国文化学科\n© 2026 errornote / AI오답노트",
+      "columns": [ { "title": "製品", "items": ["学習者アプリ", "教員ツール", "マーケットプレイス", "ロードマップ"] }, { "title": "資料", "items": ["カン・ビョンギュ 2025 論文", "開発技術企画書", "プロンプト設計", "プライバシー"] }, { "title": "連絡", "items": ["デモ申込", "パートナーシップ", "学会発表", "press@errornote.ai"] } ]
     }
   },
   "common": {

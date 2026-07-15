@@ -1,11 +1,13 @@
 // 今日热词 — 서버 로직 (docs/dashboard-features.md §2)
 //
-// · getTodayHotword       : 관심분야 개인화 배포(현재는 신선도 기준) — 학생이 비추한 카드 제외
+// · getTodayHotword       : 관심분야 개인화 배포(미설정 시 신선도) — 학생이 비추한 카드 제외
+// · getInterests/setInterests : 관심분야 조회·저장(§2.1)
 // · recordImpression      : 고유 노출 집계(학생×카드 1회) — like_rate 분모
 // · recordVote            : 좋았어요/비추 1인 1표 + 집계 캐시 갱신 + 비율 판정
 // · evaluateHotwordLifecycle : §2.5 비율 판정 → 노출 연장 / 동면(cooldown)
-// · runHotwordPipeline    : §2.4 완전 자동 파이프라인 5단계 — 구조 스켈레톤(수집은 미연동)
+// · reactivateDormant     : §3 냉각 경과 동면 카드 재등판
 //
+// §2.4 완전 자동 파이프라인(수집·해설·안전필터·배포)은 lib/hotword-pipeline.ts 에 구현됨.
 // 기존 weekly_cardnews 로직·테이블은 일절 사용하지 않는다.
 
 import { createAdminClient, createServerClient } from '@/lib/supabase'
