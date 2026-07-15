@@ -1177,6 +1177,9 @@
         "headingBase": "오류 카드",
         "headingWithCount": "오류 카드 ({count})",
         "loading": "분석 중…",
+        "loadingStage1": "문장 구조를 살펴보는 중…",
+        "loadingStage2": "오류를 찾는 중…",
+        "loadingStage3": "오답 카드를 정리하는 중…",
         "emptyState": "문서를 작성하고 재진단을 눌러주세요.",
         "zeroErrors": "오류가 발견되지 않았습니다 ✅",
         "overallFeedback": "전체 피드백",
@@ -1192,7 +1195,14 @@
         "vocabAdded": "단어장에 추가했어요: {word}",
         "quizHeading": "연습 퀴즈",
         "quizCorrect": "정답이에요! 🎉",
-        "quizWrong": "아쉬워요. 다시 살펴봐요."
+        "quizWrong": "아쉬워요. 다시 살펴봐요.",
+        "quizOpenCta": "풀기",
+        "quizQuestionCount": "{count}문항",
+        "quizProgress": "{done}/{total} 문항 완료",
+        "quizCloseCta": "닫기",
+        "quizNotesHint": "틀린 문제는 오답 노트에 자동 저장돼요.",
+        "quizSavedToNotes": "오답 노트에 저장했어요",
+        "quizViewNotes": "오답 노트 보기"
       },
       "documentEditor": {
         "heading": "문서 작성",

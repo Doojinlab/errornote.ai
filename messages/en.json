@@ -1071,6 +1071,9 @@
         "headingBase": "Error cards",
         "headingWithCount": "Error cards ({count})",
         "loading": "Analyzing…",
+        "loadingStage1": "Reading sentence structure…",
+        "loadingStage2": "Detecting errors…",
+        "loadingStage3": "Preparing error cards…",
         "emptyState": "Write a document and click Re-analyze.",
         "zeroErrors": "No errors found ✅",
         "overallFeedback": "Overall feedback",
@@ -1086,7 +1089,14 @@
         "vocabAdded": "Added to your vocabulary: {word}",
         "quizHeading": "Practice quiz",
         "quizCorrect": "Correct! 🎉",
-        "quizWrong": "Not quite — take another look."
+        "quizWrong": "Not quite — take another look.",
+        "quizOpenCta": "Solve",
+        "quizQuestionCount": "{count} questions",
+        "quizProgress": "{done}/{total} answered",
+        "quizCloseCta": "Close",
+        "quizNotesHint": "Missed questions are saved to your mistake notes automatically.",
+        "quizSavedToNotes": "Saved to your mistake notes",
+        "quizViewNotes": "View mistake notes"
       },
       "documentEditor": {
         "heading": "Write",

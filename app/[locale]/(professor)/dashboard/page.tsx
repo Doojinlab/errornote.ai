@@ -161,12 +161,14 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser()
   if (!user) return null
 
-  const classes = await loadClasses(user.id)
-  const classIds = classes.map(c => c.id)
-  const [latestReports, fossilByClass] = await Promise.all([
-    loadLatestReports(user.id),
-    loadActiveFossilizations(classIds)
+  // classes 와 latestReports 는 서로 독립이므로 병렬로 먼저 조회한다(순차 왕복 제거).
+  // fossilByClass 만 classes 로 얻은 classIds 에 의존하므로 그 뒤에 조회한다.
+  const [classes, latestReports] = await Promise.all([
+    loadClasses(user.id),
+    loadLatestReports(user.id)
   ])
+  const classIds = classes.map(c => c.id)
+  const fossilByClass = await loadActiveFossilizations(classIds)
 
   const totalStudents = classes.reduce((sum, c) => sum + (c.enrollments[0]?.count ?? 0), 0)
   const totalFossils = Array.from(fossilByClass.values()).reduce((s, arr) => s + arr.length, 0)
