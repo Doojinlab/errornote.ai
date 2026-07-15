@@ -2,15 +2,18 @@
 //
 // Cache strategy:
 //   - Static assets (/_next/static, /fonts, /images, /icons, /sounds): cache-first
-//   - HTML navigations: network-first → cached page → /offline.html
+//   - HTML navigations: network-first → /offline.html (NEVER cache personalized HTML)
 //   - Manifest, root document, icons: precached on install
 //   - API/auth: NEVER cached. Failed POSTs are queued client-side via
 //     lib/offline-queue (IndexedDB) and replayed when navigator.onLine is
 //     true again. Caching API GETs caused stale fossilization counts.
 //
 // Bumping VERSION invalidates older caches on activate.
+// v3: 인증된(개인화) HTML 내비게이션을 더 이상 캐시하지 않는다. 이전엔 공용 static 캐시에
+//     각 사용자 페이지를 써서 오프라인 시 다른 사용자의 페이지가 보일 수 있었고, 매 이동마다
+//     불필요한 Cache 쓰기가 발생했다.
 
-const VERSION = 'v2'
+const VERSION = 'v3'
 const STATIC_CACHE = `errornote-static-${VERSION}`
 const ALL_CACHES = [STATIC_CACHE]
 
@@ -86,20 +89,13 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // Network-first for HTML navigations; serve cached or /offline.html if down.
+  // Network-only for HTML navigations; fall back to /offline.html when down.
+  // 개인화 페이지라 캐시에 저장하지 않는다(다른 사용자 페이지 노출·불필요한 쓰기 방지).
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then((res) => {
-          if (res.ok && res.type === 'basic') {
-            const copy = res.clone()
-            caches.open(STATIC_CACHE).then((cache) => cache.put(request, copy))
-          }
-          return res
-        })
-        .catch(() =>
-          caches.match(request).then((r) => r || caches.match('/offline.html'))
-        )
+      fetch(request).catch(() =>
+        caches.match('/offline.html').then((r) => r || Response.error())
+      )
     )
     return
   }

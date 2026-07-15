@@ -76,12 +76,22 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <head>
-        {/* 중국어 예문/브랜드 글자 전용 — .font-cn 에서 사용.
-            루트 레이아웃이라 전 페이지에 적용되므로 single-page 경고는 오탐. */}
+        {/* 중국어 예문/브랜드 글자 전용 — .font-cn 에서만 사용(본문 UI 는 Pretendard).
+            대형 CJK 스타일시트가 매 페이지 첫 페인트를 막지 않도록 논블로킹으로 로드한다:
+            preconnect 로 왕복을 앞당기고, media="print" 로 받아 로드 후 all 로 승격한다. */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
+          id="cjk-font"
           href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&display=swap"
           rel="stylesheet"
+          media="print"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "var l=document.getElementById('cjk-font');if(l){l.media='all'}",
+          }}
         />
       </head>
       <body>

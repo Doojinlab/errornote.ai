@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import {
   getMyMistakes,
   getPublicFeed,
@@ -14,10 +14,7 @@ interface Data {
 }
 
 async function load(): Promise<Data> {
-  const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return { mine: [], publicFeed: [] };
   try {
     const [mine, publicFeed] = await Promise.all([

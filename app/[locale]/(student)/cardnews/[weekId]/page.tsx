@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
@@ -42,9 +43,7 @@ function toRecord(row: CardnewsRow): CardnewsRecord {
 
 async function loadWeek(weekStart: string): Promise<CardnewsRecord | null> {
   const supabase = createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
   const { data } = await supabase
     .from("weekly_cardnews")

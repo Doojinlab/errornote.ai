@@ -1,4 +1,5 @@
 import { createAdminClient, createServerClient } from '@/lib/supabase'
+import { ROLE_COOKIE, roleCookieOptions } from '@/lib/role-cookie'
 import { NextRequest, NextResponse } from 'next/server'
 
 /**
@@ -23,20 +24,35 @@ function safeNext(next: string | null): string {
  * profiles 에는 INSERT RLS 정책이 없으므로(트리거 전담) admin 클라이언트로 upsert 한다.
  * ignoreDuplicates: 기존 프로필(역할 등)은 절대 덮어쓰지 않는다.
  */
-async function ensureProfile(userId: string, meta: Record<string, unknown>) {
+async function ensureProfileAndGetRole(
+  userId: string,
+  meta: Record<string, unknown>
+): Promise<'student' | 'professor' | null> {
   try {
     const admin = createAdminClient()
-    const role = meta.role === 'professor' ? 'professor' : 'student'
+    const fallbackRole = meta.role === 'professor' ? 'professor' : 'student'
     const name =
       (typeof meta.name === 'string' && meta.name) ||
       (typeof meta.full_name === 'string' && meta.full_name) ||
       ''
+    // 프로필 보장(방어적): 트리거가 이미 만든 경우 ignoreDuplicates 로 기존 역할 보존.
     await admin
       .from('profiles')
-      .upsert({ id: userId, role, name }, { onConflict: 'id', ignoreDuplicates: true })
+      .upsert(
+        { id: userId, role: fallbackRole, name },
+        { onConflict: 'id', ignoreDuplicates: true }
+      )
+    // 권위 있는 역할(기존 professor 등)을 읽어 역할 쿠키를 정확히 프라이밍한다 →
+    // 로그인 직후 첫 이동에서 proxy 가 profiles 를 다시 읽지 않는다.
+    const { data } = await admin
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .maybeSingle()
+    return data?.role === 'professor' ? 'professor' : data?.role === 'student' ? 'student' : null
   } catch {
-    // 프로필 보장 실패가 로그인 자체를 막아서는 안 된다. 트리거가 정상 동작하는
-    // 대다수 경우엔 이 fallback 이 필요 없으므로 조용히 넘어간다.
+    // 프로필 보장 실패가 로그인 자체를 막아서는 안 된다. 조용히 넘어간다(쿠키 미설정).
+    return null
   }
 }
 
@@ -49,10 +65,12 @@ export async function GET(request: NextRequest) {
     const supabase = createServerClient()
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      const res = NextResponse.redirect(`${origin}${next}`)
       if (data.user) {
-        await ensureProfile(data.user.id, data.user.user_metadata ?? {})
+        const role = await ensureProfileAndGetRole(data.user.id, data.user.user_metadata ?? {})
+        if (role) res.cookies.set(ROLE_COOKIE, role, roleCookieOptions())
       }
-      return NextResponse.redirect(`${origin}${next}`)
+      return res
     }
   }
   return NextResponse.redirect(`${origin}/login?error=auth_error`)
