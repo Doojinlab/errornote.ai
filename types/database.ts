@@ -575,6 +575,53 @@ export type Database = {
           },
         ]
       }
+      quiz_mistakes: {
+        Row: {
+          id: string
+          student_id: string
+          topic: string | null
+          prompt: string
+          options: Json
+          chosen_index: number
+          answer_index: number
+          explanation: string | null
+          chapter_number: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          topic?: string | null
+          prompt: string
+          options?: Json
+          chosen_index: number
+          answer_index: number
+          explanation?: string | null
+          chapter_number?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          topic?: string | null
+          prompt?: string
+          options?: Json
+          chosen_index?: number
+          answer_index?: number
+          explanation?: string | null
+          chapter_number?: number | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'quiz_mistakes_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       translation_logs: {
         Row: {
           id: string

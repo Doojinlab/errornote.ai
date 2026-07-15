@@ -191,10 +191,14 @@ export default async function ClassDetailPage(
   } = await supabase.auth.getUser()
   if (!user) return null
 
-  const info = await loadClassInfo(params.classId, user.id)
+  // 반 정보와 학생 목록은 서로 독립이므로 병렬 조회로 순차 왕복을 제거한다.
+  // (반이 없거나 소유자가 아니면 notFound — 이 드문 경우엔 students 결과만 버려진다.)
+  const [info, students] = await Promise.all([
+    loadClassInfo(params.classId, user.id),
+    loadStudents(params.classId, t('nameAnonymous'))
+  ])
   if (!info) notFound()
 
-  const students = await loadStudents(params.classId, t('nameAnonymous'))
   const activeStudents = students.filter(s => s.session_count > 0).length
   const inactiveStudents = students.length - activeStudents
   const totalSessions = students.reduce((sum, s) => sum + s.session_count, 0)
