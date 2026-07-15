@@ -163,6 +163,24 @@
   },
   "pages": {
     "student": {
+      "hskListening": {
+        "title": "HSK listening",
+        "subtitle": "We play an AI-generated script as audio. Listen and pick the right answer.",
+        "levelLabel": "Level",
+        "generate": "Generate a question",
+        "generating": "Generating…",
+        "newQuestion": "New question",
+        "play": "▶ Listen",
+        "synthesizing": "Preparing audio…",
+        "questionHeading": "Question",
+        "scriptHeading": "Script",
+        "explanationHeading": "Explanation",
+        "answerLabel": "Answer",
+        "correct": "Correct! 🎉",
+        "incorrect": "Not quite — want to listen again?",
+        "ttsUnavailable": "Audio playback isn't set up yet, so here's the script instead. (Admin: ELEVENLABS_API_KEY required)",
+        "genericError": "Something went wrong. Please try again in a moment."
+      },
       "quests": {
         "title": "Today's Quests",
         "subtitle": "Two-minute missions built from yesterday's mistakes. Tackle them with 误.",

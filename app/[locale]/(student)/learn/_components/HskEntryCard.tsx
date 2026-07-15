@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ArrowRight, Target } from "lucide-react";
+import { ArrowRight, Target, Volume2 } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
 import { HSK_AREAS, HSK_LEVELS, HSK_MODES } from "@/lib/hsk";
 import type { HskArea, HskLevel, HskMode } from "@/types";
@@ -154,6 +154,16 @@ export default function HskEntryCard({
         >
           입장하기
           <ArrowRight size={16} aria-hidden />
+        </button>
+
+        {/* 듣기(听力) — AI 대본 + TTS 음성. 워크스페이스와 별개의 전용 화면. */}
+        <button
+          type="button"
+          onClick={() => router.push(`/hsk-listening?level=${level}`)}
+          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-blue/40 bg-white/60 text-sm font-semibold text-blue-dark transition-colors hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue/60"
+        >
+          <Volume2 size={16} aria-hidden />
+          듣기 문제 (AI 음성)
         </button>
       </div>
     </div>

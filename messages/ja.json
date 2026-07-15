@@ -163,6 +163,24 @@
   },
   "pages": {
     "student": {
+      "hskListening": {
+        "title": "HSK リスニング",
+        "subtitle": "AIが作った台本を音声で流します。聞いて正しい答えを選びましょう。",
+        "levelLabel": "級",
+        "generate": "リスニング問題を生成",
+        "generating": "生成中…",
+        "newQuestion": "新しい問題",
+        "play": "▶ 聞く",
+        "synthesizing": "音声を準備中…",
+        "questionHeading": "問題",
+        "scriptHeading": "台本",
+        "explanationHeading": "解説",
+        "answerLabel": "正解",
+        "correct": "正解！ 🎉",
+        "incorrect": "惜しい、もう一度聞いてみましょう",
+        "ttsUnavailable": "音声再生がまだ設定されていません。代わりに台本を表示します。（管理者: ELEVENLABS_API_KEY が必要）",
+        "genericError": "問題が発生しました。しばらくして再度お試しください。"
+      },
       "quests": {
         "title": "今日のクエスト",
         "subtitle": "昨日のミスから作った2分ミッションです。误といっしょに取り組みましょう。",
