@@ -28,7 +28,13 @@ const CATEGORY_TONE: Record<HotwordCategory, string> = {
   meme: "bg-terra-soft text-terra-dark",
 };
 
-export default function HotwordCard({ hotword }: { hotword: Hotword | null }) {
+export default function HotwordCard({
+  hotword,
+  chapterId = 1,
+}: {
+  hotword: Hotword | null;
+  chapterId?: number | string;
+}) {
   const router = useRouter();
   const [voted, setVoted] = useState<HotwordVote | null>(null);
   const [busy, setBusy] = useState(false);
@@ -82,7 +88,7 @@ export default function HotwordCard({ hotword }: { hotword: Hotword | null }) {
   }
 
   function enter() {
-    router.push(`/learn/1?mode=hotword&hotwordId=${hotword!.id}`);
+    router.push(`/learn/${chapterId}?mode=hotword&hotwordId=${hotword!.id}`);
   }
 
   return (

@@ -20,12 +20,20 @@ import type {
 
 type HotwordRow = Database['public']['Tables']['hotwords']['Row']
 
-// ── 비율 판정 임계값 (§2.5) ────────────────────────────────
+// ── 비율 판정 임계값 (§2.5) — env 로 실측 튜닝(§3) ──────────
 // 원안의 "좋았어요/비추 10개"는 판정이 유의미해지는 최소 문턱으로 사용.
-// 실측 튜닝 대상(§3): 초기값은 보수적으로 잡는다.
-export const MIN_SAMPLE = 30
-export const LIKE_THRESHOLD = 0.6
-export const DISLIKE_THRESHOLD = 0.3
+// 배포 없이 조정할 수 있도록 환경변수로 오버라이드(미설정 시 보수적 기본값).
+function numEnv(name: string, def: number): number {
+  const v = Number(process.env[name])
+  return Number.isFinite(v) && v > 0 ? v : def
+}
+export const MIN_SAMPLE = numEnv('HOTWORD_MIN_SAMPLE', 30)
+export const LIKE_THRESHOLD = numEnv('HOTWORD_LIKE_THRESHOLD', 0.6)
+export const DISLIKE_THRESHOLD = numEnv('HOTWORD_DISLIKE_THRESHOLD', 0.3)
+// 동면(cooldown) 후 재등판까지의 냉각 기간(일). §3 재등판 정책.
+export const HOTWORD_COOLDOWN_DAYS = numEnv('HOTWORD_COOLDOWN_DAYS', 30)
+// 노출 신선도 창(일).
+const EXPOSURE_DAYS = 21
 
 export const HOTWORD_CATEGORY_LABEL: Record<HotwordCategory, string> = {
   game: '게임',
@@ -61,30 +69,64 @@ export function mapHotword(row: HotwordRow): Hotword {
   }
 }
 
+/** 학생의 관심분야 조회(§2.1). 미설정이면 빈 배열. */
+export async function getInterests(studentId: string): Promise<HotwordCategory[]> {
+  const supabase = createServerClient()
+  const { data } = await supabase
+    .from('student_hotword_interests')
+    .select('category')
+    .eq('student_id', studentId)
+  return (data ?? []).map((r) => r.category)
+}
+
+/** 관심분야 저장(전체 교체). 유효 카테고리만 반영. */
+export async function setInterests(
+  studentId: string,
+  categories: HotwordCategory[],
+): Promise<void> {
+  const supabase = createServerClient()
+  const valid = Array.from(new Set(categories)).filter((c) =>
+    (Object.keys(HOTWORD_CATEGORY_LABEL) as HotwordCategory[]).includes(c),
+  )
+  // 전체 교체 — 기존 삭제 후 재삽입(RLS self).
+  await supabase.from('student_hotword_interests').delete().eq('student_id', studentId)
+  if (valid.length > 0) {
+    await supabase
+      .from('student_hotword_interests')
+      .insert(valid.map((category) => ({ student_id: studentId, category })))
+  }
+}
+
 /**
  * 오늘의 단어 — active 풀에서 신선도 순으로, 학생이 비추(dislike)한 카드는 제외.
- * 관심분야 개인화는 관심분야 저장 후 category 필터로 확장 예정(§3).
+ * 관심분야가 설정돼 있으면 해당 분야로 개인화(§2.1). 결과가 없으면 전 분야로 폴백.
  */
 export async function getTodayHotword(studentId: string): Promise<Hotword | null> {
   const supabase = createServerClient()
 
-  const { data: rows } = await supabase
-    .from('hotwords')
-    .select('*')
-    .eq('status', 'active')
-    .order('first_seen', { ascending: false })
-    .limit(20)
+  // 관심분야·비추 표를 병렬 조회.
+  const [interests, votesRes] = await Promise.all([
+    getInterests(studentId),
+    supabase
+      .from('hotword_feedback')
+      .select('hotword_id')
+      .eq('student_id', studentId)
+      .eq('vote', 'dislike'),
+  ])
 
-  if (!rows || rows.length === 0) return null
+  const runQuery = async (categories: HotwordCategory[] | null) => {
+    let q = supabase.from('hotwords').select('*').eq('status', 'active')
+    if (categories && categories.length > 0) q = q.in('category', categories)
+    const { data } = await q.order('first_seen', { ascending: false }).limit(20)
+    return data ?? []
+  }
 
-  // 본인이 비추한 카드는 노출에서 제외(RLS self — 본인 표만 조회됨).
-  const { data: votes } = await supabase
-    .from('hotword_feedback')
-    .select('hotword_id, vote')
-    .eq('student_id', studentId)
-    .eq('vote', 'dislike')
+  // 관심분야 우선 → 없으면 전 분야 폴백.
+  let rows = await runQuery(interests.length > 0 ? interests : null)
+  if (rows.length === 0 && interests.length > 0) rows = await runQuery(null)
+  if (rows.length === 0) return null
 
-  const disliked = new Set((votes ?? []).map((v) => v.hotword_id))
+  const disliked = new Set((votesRes.data ?? []).map((v) => v.hotword_id))
   const pick = rows.find((r) => !disliked.has(r.id)) ?? rows[0]
   return mapHotword(pick)
 }
@@ -199,7 +241,11 @@ export async function evaluateHotwordLifecycle(row: HotwordRow): Promise<boolean
   const admin = createAdminClient()
 
   if (dislikeRate >= DISLIKE_THRESHOLD) {
-    await admin.from('hotwords').update({ status: 'dormant' }).eq('id', row.id)
+    // 동면 전환 시각 기록 → 냉각 기간 계산 근거(재등판 정책).
+    await admin
+      .from('hotwords')
+      .update({ status: 'dormant', dormant_at: new Date().toISOString() })
+      .eq('id', row.id)
     return true
   }
 
@@ -213,30 +259,52 @@ export async function evaluateHotwordLifecycle(row: HotwordRow): Promise<boolean
   return false
 }
 
-// ============================================================
-// §2.4 완전 자동 파이프라인 (5단계) — fail-closed 구조 스켈레톤
-// ============================================================
-// 원칙: 확신 없으면 내보내지 않는다(게이트의 침묵이 사람 검수를 대신).
-// 현재 슬라이스는 구조만 확정하고 실제 수집(1단계)은 미연동이다(§3: web search 연동 방식 미해결).
-// 시드 데이터로 대시보드를 구동하며, 아래 단계 함수를 뒤에 채운다.
+/**
+ * §3 동면 재등판 정책 — 냉각 기간이 지난 동면 카드를 새 시도 기회와 함께 active 로 복귀.
+ * 삭제가 아니므로 카운터·피드백·노출 로그를 리셋해 공정한 재시도가 되게 한다.
+ * 반환값: 재등판한 카드 수.
+ */
+export async function reactivateDormant(
+  cooldownDays: number = HOTWORD_COOLDOWN_DAYS,
+): Promise<number> {
+  const admin = createAdminClient()
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - cooldownDays)
 
-export interface HotwordCandidate {
-  term: string
-  category: HotwordCategory
-  sources: HotwordSource[]
+  const { data: due } = await admin
+    .from('hotwords')
+    .select('id')
+    .eq('status', 'dormant')
+    .not('dormant_at', 'is', null)
+    .lt('dormant_at', cutoff.toISOString())
+
+  const ids = (due ?? []).map((r) => r.id)
+  if (ids.length === 0) return 0
+
+  // 공정한 재시도 — 이전 노출/표 리셋.
+  await admin.from('hotword_impressions').delete().in('hotword_id', ids)
+  await admin.from('hotword_feedback').delete().in('hotword_id', ids)
+
+  const exposureUntil = new Date()
+  exposureUntil.setDate(exposureUntil.getDate() + EXPOSURE_DAYS)
+
+  const { error } = await admin
+    .from('hotwords')
+    .update({
+      status: 'active',
+      dormant_at: null,
+      impressions: 0,
+      likes: 0,
+      dislikes: 0,
+      exposure_until: exposureUntil.toISOString().slice(0, 10),
+    })
+    .in('id', ids)
+
+  if (error) {
+    console.error('[hotwords] 재등판 실패:', error)
+    return 0
+  }
+  return ids.length
 }
 
-/** 1. 수집 — 관심분야별 web search(微博/小红书/抖音/知乎). 넓게 수집. */
-export async function collectCandidates(_category: HotwordCategory): Promise<HotwordCandidate[]> {
-  // TODO(§3): web search 연동. 지금은 미연동 → 빈 배열(시드로 구동).
-  return []
-}
-
-/** 2. 실재검증(게이트①) — 서로 다른 출처 2곳↑ + 최근 2~3개월. 근거 약하면 폐기. */
-export function passesExistenceGate(c: HotwordCandidate): boolean {
-  const distinctSources = new Set(c.sources.map((s) => s.name)).size
-  return distinctSources >= 2
-}
-
-/** 5. 큐레이션·배포 — 중복 제거 → 신선도 정렬 → 분야별 풀 → 관심분야 개인화 배포. */
-// 3.해설생성 · 4.안전·격식필터 는 수집 연동 시 dispatchJSON 로 채운다(백지 생성 금지).
+// §2.4 완전 자동 파이프라인(수집·실재검증·해설·안전필터·배포)은 lib/hotword-pipeline.ts 참조.

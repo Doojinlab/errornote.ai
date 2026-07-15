@@ -11,7 +11,26 @@ import type {
   WorkspaceEntryMode,
 } from "@/types";
 import type { TutorQuiz, AddToVocabInput } from "@/lib/tutor-tools";
+import type { HskQuestion } from "@/types/hsk";
 import QuizModal from "./QuizModal";
+
+/** 생성된 HSK 문제를 튜터가 학습자에게 제시하도록 하는 숨김 킥오프 메시지. */
+function buildHskKickoff(q: HskQuestion): string {
+  const lines = [
+    "아래는 이번 세션용으로 생성된 HSK 문제입니다. 이 문제를 학습자에게 보기 좋게 제시하고,",
+    "학습자가 답하면 채점·해설해 주세요. 정답은 학습자가 답한 뒤에만 공개합니다.",
+    "",
+    `[유형] ${q.type}`,
+    `[지시] ${q.instructions}`,
+  ];
+  if (q.passage) lines.push(`[지문] ${q.passage}`);
+  lines.push(`[문제] ${q.prompt}`);
+  if (q.options?.length) {
+    lines.push("[보기]");
+    q.options.forEach((o, i) => lines.push(`${i + 1}. ${o}`));
+  }
+  return lines.join("\n");
+}
 
 interface Props {
   focusedError: AnalysisError | null;
@@ -96,13 +115,35 @@ export default function TutorChat({
   useEffect(() => {
     if (kickedOff.current || !entryMode || messages.length > 0) return;
     kickedOff.current = true;
-    const trigger =
-      entryMode === "hotword"
-        ? `오늘의 단어 "${hotwordContext?.term ?? ""}"로 학습을 시작할게요. 안내해 주세요.`
-        : "실전 HSK 세션을 시작할게요. 첫 문제를 내주세요.";
-    void sendText(trigger, { hidden: true });
+    void runKickoff();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entryMode]);
+
+  async function runKickoff() {
+    if (entryMode === "hotword") {
+      const trigger = `오늘의 단어 "${hotwordContext?.term ?? ""}"로 학습을 시작할게요. 안내해 주세요.`;
+      void sendText(trigger, { hidden: true });
+      return;
+    }
+    if (entryMode === "hsk" && hskContext) {
+      // 실전 HSK: 서버에서 기출 유형 기반 문제를 생성·로그한 뒤 튜터가 그 문제를 제시하게 한다.
+      let trigger = "실전 HSK 세션을 시작할게요. 첫 문제를 내주세요.";
+      try {
+        const res = await fetch("/api/hsk/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(hskContext),
+        });
+        if (res.ok) {
+          const data = (await res.json()) as { question?: HskQuestion };
+          if (data.question) trigger = buildHskKickoff(data.question);
+        }
+      } catch {
+        /* 생성 실패 시 일반 트리거로 폴백(튜터가 유형에 맞게 즉석 출제) */
+      }
+      void sendText(trigger, { hidden: true });
+    }
+  }
 
   async function sendText(text: string, opts?: { hidden?: boolean }) {
     if (!text || sending) return;

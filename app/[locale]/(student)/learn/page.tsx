@@ -59,8 +59,8 @@ export default async function LearnHomePage() {
 
           {/* 좌: 실전 HSK · 우: 今日热词 (docs/dashboard-features.md) */}
           <div className="grid grid-cols-2 gap-3">
-            <HskEntryCard />
-            <HotwordCard hotword={todayHotword} />
+            <HskEntryCard chapterId={data.today.chapterId} />
+            <HotwordCard hotword={todayHotword} chapterId={data.today.chapterId} />
           </div>
 
           <MiniGrid tasks={data.tasks} />
