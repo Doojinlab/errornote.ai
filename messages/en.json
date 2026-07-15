@@ -163,6 +163,24 @@
   },
   "pages": {
     "student": {
+      "quickAsk": {
+        "title": "Does this sound natural?",
+        "subtitle": "Get an instant, friendly take on whether your Chinese sentence sounds natural. Let's polish it together.",
+        "inputLabel": "Chinese sentence to check",
+        "placeholder": "e.g. 我今天很累了",
+        "submit": "Ask",
+        "checking": "Checking…",
+        "scoreLabel": "Naturalness {score}/100",
+        "verdict": {
+          "natural": "Sounds natural 👍",
+          "awkward": "A little awkward",
+          "incorrect": "Needs a fix"
+        },
+        "suggestionHeading": "A more natural way to say it",
+        "noteHeading": "Note",
+        "hint": "Try a short sentence. Up to 300 characters",
+        "genericError": "Something went wrong. Please try again in a moment."
+      },
       "quests": {
         "title": "Today's Quests",
         "subtitle": "Two-minute missions built from yesterday's mistakes. Tackle them with 误.",
