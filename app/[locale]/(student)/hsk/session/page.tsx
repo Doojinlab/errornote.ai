@@ -6,7 +6,27 @@ import {
   hskSessionTypeLabel,
   hskGradingModeLabel,
 } from "@/lib/hsk";
+import { createServerClient } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/auth";
 import HskSessionClient from "./HskSessionClient";
+
+/** 쓰기 영역의 AI 분석(/api/analyze)에 필요한 활성 수업 id — 수강 중인 첫 반. */
+async function loadActiveClassId(): Promise<string | null> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return null;
+    const supabase = createServerClient();
+    const { data } = await supabase
+      .from("enrollments")
+      .select("class_id")
+      .eq("student_id", user.id)
+      .limit(1)
+      .maybeSingle();
+    return (data as { class_id: string } | null)?.class_id ?? null;
+  } catch {
+    return null;
+  }
+}
 
 type SearchParams = Record<string, string | string[] | undefined>;
 function first(v: string | string[] | undefined): string | undefined {
@@ -40,6 +60,8 @@ export default async function HskSessionPage({
   }
 
   const chapterId = first(sp.chapter) ?? "1";
+  // 쓰기 영역에서만 활성 수업 id 로딩(그 외 영역은 불필요 — 쿼리 생략).
+  const classId = params.area === "writing" ? await loadActiveClassId() : null;
 
   const crumbs = [
     `HSK ${params.level}급`,
@@ -67,7 +89,7 @@ export default async function HskSessionPage({
         </div>
       </div>
 
-      <HskSessionClient params={params} chapterId={chapterId} />
+      <HskSessionClient params={params} chapterId={chapterId} classId={classId} />
     </section>
   );
 }
