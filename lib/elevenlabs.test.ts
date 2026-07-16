@@ -3,9 +3,12 @@ import {
   buildTtsRequest,
   isElevenLabsConfigured,
   synthesizeSpeech,
+  assignSpeakerVoices,
   ElevenLabsError,
   TTS_MAX_CHARS,
 } from './elevenlabs'
+
+const POOLS = { male: ['M1', 'M2', 'M3'], female: ['F1', 'F2'], narrator: 'N' }
 
 const ORIG = process.env.ELEVENLABS_API_KEY
 const ORIG_VOICE = process.env.ELEVENLABS_VOICE_ID
@@ -79,5 +82,34 @@ describe('synthesizeSpeech()', () => {
     )
     await expect(synthesizeSpeech('你好', { apiKey: 'k' })).rejects.toBeInstanceOf(ElevenLabsError)
     await expect(synthesizeSpeech('你好', { apiKey: 'k' })).rejects.toMatchObject({ status: 401 })
+  })
+})
+
+describe('assignSpeakerVoices()', () => {
+  it('같은 라벨=같은 보이스, 같은 성별 다중 화자=다른 보이스', () => {
+    const map = assignSpeakerVoices(
+      [
+        { label: '男1', speaker: 'male' },
+        { label: '女', speaker: 'female' },
+        { label: '男2', speaker: 'male' },
+        { label: '男1', speaker: 'male' },
+      ],
+      0,
+      POOLS,
+    )
+    expect(map['男1']).toBe('M1')
+    expect(map['男2']).toBe('M2') // 같은 성별 다른 화자 → 다른 보이스
+    expect(map['女']).toBe('F1')
+  })
+
+  it('seed 가 다르면 캐스팅이 로테이션', () => {
+    const one = [{ label: '男', speaker: 'male' as const }]
+    expect(assignSpeakerVoices(one, 0, POOLS)['男']).toBe('M1')
+    expect(assignSpeakerVoices(one, 1, POOLS)['男']).toBe('M2')
+    expect(assignSpeakerVoices(one, 3, POOLS)['男']).toBe('M1') // 풀 크기(3)로 순환
+  })
+
+  it('narrator 는 내레이터 보이스', () => {
+    expect(assignSpeakerVoices([{ label: 'narrator', speaker: 'narrator' }], 5, POOLS).narrator).toBe('N')
   })
 })

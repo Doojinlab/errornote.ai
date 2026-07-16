@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { extractSpokenChinese, parseDialogueTurns } from './tts'
+import { extractSpokenChinese, parseDialogueTurns, hashString } from './tts'
 
 describe('extractSpokenChinese()', () => {
   it('한글을 제거하고 중국어만 남긴다', () => {
@@ -23,28 +23,44 @@ describe('extractSpokenChinese()', () => {
 })
 
 describe('parseDialogueTurns()', () => {
-  it('男/女 표기로 화자별 발화를 나누고 표기는 제거', () => {
+  it('男/女 표기로 화자별 발화를 나누고 표기는 제거(라벨 포함)', () => {
     expect(parseDialogueTurns('男：你好。女：再见！')).toEqual([
-      { speaker: 'male', text: '你好。' },
-      { speaker: 'female', text: '再见！' },
+      { speaker: 'male', label: '男', text: '你好。' },
+      { speaker: 'female', label: '女', text: '再见！' },
+    ])
+  })
+
+  it('같은 성별 다중 화자는 男1/男2 라벨로 구분', () => {
+    expect(parseDialogueTurns('男1：喂？男2：你好！')).toEqual([
+      { speaker: 'male', label: '男1', text: '喂？' },
+      { speaker: 'male', label: '男2', text: '你好！' },
     ])
   })
 
   it('전각/반각 콜론·줄바꿈이 섞여도 처리', () => {
     expect(parseDialogueTurns('女: 你好\n男：请坐')).toEqual([
-      { speaker: 'female', text: '你好' },
-      { speaker: 'male', text: '请坐' },
+      { speaker: 'female', label: '女', text: '你好' },
+      { speaker: 'male', label: '男', text: '请坐' },
     ])
   })
 
   it('첫 화자 표기 앞 텍스트는 narrator', () => {
     expect(parseDialogueTurns('对话开始。男：喂？')).toEqual([
-      { speaker: 'narrator', text: '对话开始。' },
-      { speaker: 'male', text: '喂？' },
+      { speaker: 'narrator', label: 'narrator', text: '对话开始。' },
+      { speaker: 'male', label: '男', text: '喂？' },
     ])
   })
 
   it('화자 표기가 없으면 narrator 한 덩어리(독백·단어)', () => {
-    expect(parseDialogueTurns('city不city')).toEqual([{ speaker: 'narrator', text: 'city不city' }])
+    expect(parseDialogueTurns('city不city')).toEqual([
+      { speaker: 'narrator', label: 'narrator', text: 'city不city' },
+    ])
+  })
+})
+
+describe('hashString()', () => {
+  it('결정적이며 입력이 다르면 값이 다르다', () => {
+    expect(hashString('男：你好')).toBe(hashString('男：你好'))
+    expect(hashString('abc')).not.toBe(hashString('abd'))
   })
 })

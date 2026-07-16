@@ -16,32 +16,44 @@ export function extractSpokenChinese(text: string): string {
 
 export type DialogueSpeaker = "male" | "female" | "narrator"
 export interface DialogueTurn {
+  /** 성별(보이스 풀 선택용). */
   speaker: DialogueSpeaker
+  /** 화자 식별 라벨(男/男1/女2/narrator) — 같은 라벨은 같은 목소리로 합성. */
+  label: string
   /** 화자 표기(男：/女：)를 뺀 발화 본문. */
   text: string
 }
 
 /**
  * 대화 대본을 화자 발화 단위로 나눈다(멀티보이스 합성용).
- * "男：…" → male, "女：…" → female, 화자 표기 없는 앞부분/독백 → narrator.
- * 화자 표기 자체(男/女·콜론)는 발화 텍스트에서 제거한다(TTS 가 "남/여"를 읽지 않도록).
+ * "男：…" → male, "女：…" → female, 같은 성별 다중 화자는 "男1"/"男2" 로 라벨 구분.
+ * 화자 표기 없는 앞부분/독백 → narrator. 화자 표기 자체(男/女·콜론)는 발화에서 제거한다.
  */
 export function parseDialogueTurns(script: string): DialogueTurn[] {
   const normalized = script.replace(/\r\n/g, "\n")
-  const re = /([男女])\s*[：:]/g
+  const re = /([男女])\s*(\d*)\s*[：:]/g
   const turns: DialogueTurn[] = []
   let lastIndex = 0
   let speaker: DialogueSpeaker = "narrator"
+  let label = "narrator"
   let m: RegExpExecArray | null
   while ((m = re.exec(normalized)) !== null) {
     const before = normalized.slice(lastIndex, m.index).trim()
-    if (before) turns.push({ speaker, text: before })
+    if (before) turns.push({ speaker, label, text: before })
     speaker = m[1] === "男" ? "male" : "female"
+    label = `${m[1]}${m[2] ?? ""}` // 男 / 男1 / 女2
     lastIndex = re.lastIndex
   }
   const tail = normalized.slice(lastIndex).trim()
-  if (tail) turns.push({ speaker, text: tail })
+  if (tail) turns.push({ speaker, label, text: tail })
   return turns.filter((t) => t.text)
+}
+
+/** 문자열 → 안정적 32bit 정수 해시(스크립트별 캐스팅 seed 용). */
+export function hashString(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (Math.imul(h, 31) + s.charCodeAt(i)) >>> 0
+  return h
 }
 
 export interface SpeakOptions {
