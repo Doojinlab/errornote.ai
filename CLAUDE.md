@@ -55,6 +55,8 @@ Copy `.env.example` to `.env.local` and fill in the values below.
 | `NEXT_PUBLIC_KAKAO_REDIRECT_URI` | Kakao OAuth callback URL |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | PWA web push |
 | `WEB_PUSH_SUBJECT` | Web push sender identity |
+| `ELEVENLABS_API_KEY` | HSK 듣기 TTS 음성(`/hsk-listening`). 없으면 대본 표시로 폴백 |
+| `ELEVENLABS_VOICE_ID` / `ELEVENLABS_MODEL_ID` | ElevenLabs 보이스·모델 재정의(선택) |
 | `DEEPL_API_KEY` | DeepL translation comparison |
 | `PAPAGO_CLIENT_ID` / `PAPAGO_CLIENT_SECRET` | Papago translation comparison |
 | `OPENAI_API_KEY` / `OPENAI_TRANSLATE_MODEL` | GPT translation comparison |

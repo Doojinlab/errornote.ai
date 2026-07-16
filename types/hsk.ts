@@ -35,3 +35,27 @@ export interface HskGenerateResponse {
   /** hsk_generated_questions 로그 PK(영속화 성공 시). */
   logId?: string
 }
+
+/**
+ * HSK 듣기(听力) 문제 — AI 가 대본을 생성하고 ElevenLabs TTS 로 음성을 들려준다.
+ * 저작권상 실제 기출 음성/원문이 아니라 "기출 유형" 기반 AI 생성 대본만 다룬다.
+ */
+export interface HskListeningQuestion {
+  level: HskLevel
+  /** 들려줄 중국어 대본(简体字). TTS 로 재생하며 정답 전까지 화면에는 숨긴다. */
+  audioScript: string
+  /** 학습자에게 보여줄 한국어 지시문. */
+  instructions: string
+  /** 문제 본문(한국어). */
+  question: string
+  /** 4지선다 보기(중국어 또는 한국어). */
+  options: string[]
+  /** 정답 — options 중 하나와 정확히 일치. */
+  answer: string
+  /** 해설(한국어). */
+  explanation: string
+}
+
+export interface HskListeningGenerateResponse {
+  question: HskListeningQuestion
+}
