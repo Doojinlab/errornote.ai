@@ -163,22 +163,22 @@
   },
   "pages": {
     "student": {
-      "hskListening": {
-        "title": "HSK listening",
-        "subtitle": "We play an AI-generated script as audio. Listen and pick the right answer.",
-        "levelLabel": "Level",
-        "generate": "Generate a question",
-        "generating": "Generating…",
-        "newQuestion": "New question",
-        "play": "▶ Listen",
-        "synthesizing": "Preparing audio…",
-        "questionHeading": "Question",
-        "scriptHeading": "Script",
-        "explanationHeading": "Explanation",
-        "answerLabel": "Answer",
-        "correct": "Correct! 🎉",
-        "incorrect": "Not quite — want to listen again?",
-        "ttsUnavailable": "Audio playback isn't set up yet, so here's the script instead. (Admin: ELEVENLABS_API_KEY required)",
+      "quickAsk": {
+        "title": "Does this sound natural?",
+        "subtitle": "Get an instant, friendly take on whether your Chinese sentence sounds natural. Let's polish it together.",
+        "inputLabel": "Chinese sentence to check",
+        "placeholder": "e.g. 我今天很累了",
+        "submit": "Ask",
+        "checking": "Checking…",
+        "scoreLabel": "Naturalness {score}/100",
+        "verdict": {
+          "natural": "Sounds natural 👍",
+          "awkward": "A little awkward",
+          "incorrect": "Needs a fix"
+        },
+        "suggestionHeading": "A more natural way to say it",
+        "noteHeading": "Note",
+        "hint": "Try a short sentence. Up to 300 characters",
         "genericError": "Something went wrong. Please try again in a moment."
       },
       "quests": {
@@ -274,6 +274,24 @@
           "errors": "Errors",
           "chat": "Chat"
         }
+      },
+      "hskListening": {
+        "title": "HSK listening",
+        "subtitle": "We play an AI-generated script as audio. Listen and pick the right answer.",
+        "levelLabel": "Level",
+        "generate": "Generate a question",
+        "generating": "Generating…",
+        "newQuestion": "New question",
+        "play": "▶ Listen",
+        "synthesizing": "Preparing audio…",
+        "questionHeading": "Question",
+        "scriptHeading": "Script",
+        "explanationHeading": "Explanation",
+        "answerLabel": "Answer",
+        "correct": "Correct! 🎉",
+        "incorrect": "Not quite — want to listen again?",
+        "ttsUnavailable": "Audio playback isn't set up yet, so here's the script instead. (Admin: ELEVENLABS_API_KEY required)",
+        "genericError": "Something went wrong. Please try again in a moment."
       },
       "errors": {
         "title": "Error log",

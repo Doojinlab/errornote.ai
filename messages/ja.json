@@ -163,23 +163,23 @@
   },
   "pages": {
     "student": {
-      "hskListening": {
-        "title": "HSK リスニング",
-        "subtitle": "AIが作った台本を音声で流します。聞いて正しい答えを選びましょう。",
-        "levelLabel": "級",
-        "generate": "リスニング問題を生成",
-        "generating": "生成中…",
-        "newQuestion": "新しい問題",
-        "play": "▶ 聞く",
-        "synthesizing": "音声を準備中…",
-        "questionHeading": "問題",
-        "scriptHeading": "台本",
-        "explanationHeading": "解説",
-        "answerLabel": "正解",
-        "correct": "正解！ 🎉",
-        "incorrect": "惜しい、もう一度聞いてみましょう",
-        "ttsUnavailable": "音声再生がまだ設定されていません。代わりに台本を表示します。（管理者: ELEVENLABS_API_KEY が必要）",
-        "genericError": "問題が発生しました。しばらくして再度お試しください。"
+      "quickAsk": {
+        "title": "これ自然？",
+        "subtitle": "中国語の文が自然かどうか、ネイティブの友だちのようにすぐ答えます。一緒に整えましょう。",
+        "inputLabel": "確認したい中国語の文",
+        "placeholder": "例: 我今天很累了",
+        "submit": "きく",
+        "checking": "確認中…",
+        "scoreLabel": "自然さ {score}点",
+        "verdict": {
+          "natural": "自然です 👍",
+          "awkward": "少し不自然です",
+          "incorrect": "直すところがあります"
+        },
+        "suggestionHeading": "こう言うともっと自然です",
+        "noteHeading": "説明",
+        "hint": "短い文を1つ入れてみましょう。最大300文字",
+        "genericError": "確認に失敗しました。しばらくして再度お試しください。"
       },
       "quests": {
         "title": "今日のクエスト",
@@ -274,6 +274,24 @@
           "errors": "エラー",
           "chat": "チャット"
         }
+      },
+      "hskListening": {
+        "title": "HSK リスニング",
+        "subtitle": "AIが作った台本を音声で流します。聞いて正しい答えを選びましょう。",
+        "levelLabel": "級",
+        "generate": "リスニング問題を生成",
+        "generating": "生成中…",
+        "newQuestion": "新しい問題",
+        "play": "▶ 聞く",
+        "synthesizing": "音声を準備中…",
+        "questionHeading": "問題",
+        "scriptHeading": "台本",
+        "explanationHeading": "解説",
+        "answerLabel": "正解",
+        "correct": "正解！ 🎉",
+        "incorrect": "惜しい、もう一度聞いてみましょう",
+        "ttsUnavailable": "音声再生がまだ設定されていません。代わりに台本を表示します。（管理者: ELEVENLABS_API_KEY が必要）",
+        "genericError": "問題が発生しました。しばらくして再度お試しください。"
       },
       "errors": {
         "title": "エラー記録",
