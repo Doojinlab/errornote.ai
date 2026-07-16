@@ -735,7 +735,8 @@ Claude API로 어휘·문체 분석
 - [x] 포트폴리오 PDF 자동 생성 (/portfolio)
 - [x] 피어 리뷰 기능 (/peer-review)
 - [x] 카카오 알림 연동 (/notifications)
-- [x] 발음 연습 + 억양 오류 감지 (/pronunciation)
+- [x] 발음 연습 (/pronunciation) — en/ko 단어 정확도 + AI 텍스트 피드백(억양·강세)
+- [x] 중국어 성조(声调) 실측 분석 (/pronunciation/tone) — 단음절 녹음 F0 피치 곡선으로 1~4성 판정(lib/tone-analysis)
 - [x] 연구 데이터 내보내기 + 학습자 데이터 이식성 (/api/export/*, /data-export)
 - [x] LMS Public API + API Key 인증 + Swagger (/api/lms/*, /api/docs)
 - [x] 오프라인 모드 Service Worker (public/sw.js)
@@ -751,7 +752,8 @@ Claude API로 어휘·문체 분석
 |---|---|---|
 | 학생 | `/portfolio` | 포트폴리오 PDF 생성 |
 | 학생 | `/peer-review` | 피어 리뷰 |
-| 학생 | `/pronunciation` | 발음 연습·억양 오류 감지 |
+| 학생 | `/pronunciation` | 발음 연습(en/ko 단어 정확도 + AI 피드백) |
+| 학생 | `/pronunciation/tone` | 중국어 성조 실측 분석(단음절 F0 피치 → 1~4성) |
 | 학생 | `/notifications` | 카카오 알림 설정 |
 | 학생 | `/data-export` | 학습자 데이터 내보내기 |
 | 교수 | `/reports/export` | 연구 데이터 익스포트 |
