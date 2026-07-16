@@ -4,13 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import { Sparkles, PenLine, ArrowRight } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
 import Card from "@/components/ui/Card";
-import ListeningPlayer from "./ListeningPlayer";
+import QuizSession from "./QuizSession";
+import { isGradableItem, type QuizItem } from "@/lib/hsk-quiz";
 import type { HskSessionParams } from "@/lib/hsk";
-import type { HskSessionType } from "@/types";
 import type { HskQuestion, HskListeningQuestion } from "@/types/hsk";
 
-// A-α: 영역별 문제 1개를 생성·제시하는 MVP 세션.
-// 연습/실전 타이머·성적표·문항 네비·A-6 오디오 컨트롤은 후속(A-β/δ)에서 확장.
+const SET_SIZE = 5;
 
 export default function HskSessionClient({
   params,
@@ -21,30 +20,73 @@ export default function HskSessionClient({
 }) {
   const router = useRouter();
   const { level, area, mode } = params;
+  // 다문항 세트(듣기·독해 문제 풀이) vs 단일(개념·쓰기).
+  const isQuiz = mode === "practice" && (area === "listening" || area === "reading");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [listening, setListening] = useState<HskListeningQuestion | null>(null);
-  const [question, setQuestion] = useState<HskQuestion | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [items, setItems] = useState<QuizItem[]>([]);
+  const [single, setSingle] = useState<HskQuestion | null>(null);
+
+  const genListening = useCallback(async (): Promise<QuizItem | null> => {
+    const res = await fetch("/api/hsk/listening/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ level }),
+    });
+    if (!res.ok) return null;
+    const { question } = (await res.json()) as { question: HskListeningQuestion };
+    return {
+      kind: "listening",
+      instructions: question.instructions,
+      question: question.question,
+      options: question.options,
+      answer: question.answer,
+      explanation: question.explanation,
+      audioScript: question.audioScript,
+      scriptPinyin: question.scriptPinyin,
+      scriptTranslation: question.scriptTranslation,
+    };
+  }, [level]);
+
+  const genReading = useCallback(async (): Promise<QuizItem | null> => {
+    const res = await fetch("/api/hsk/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ level, area: "reading", mode: "practice" }),
+    });
+    if (!res.ok) return null;
+    const { question } = (await res.json()) as { question: HskQuestion };
+    return {
+      kind: "reading",
+      instructions: question.instructions,
+      question: question.prompt,
+      options: question.options ?? [],
+      answer: question.answer ?? "",
+      explanation: question.explanation ?? "",
+      passage: question.passage,
+    };
+  }, [level]);
 
   const generate = useCallback(async () => {
     setLoading(true);
     setError(null);
-    setSelected(null);
-    setListening(null);
-    setQuestion(null);
+    setItems([]);
+    setSingle(null);
     try {
-      if (area === "listening") {
-        const res = await fetch("/api/hsk/listening/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ level }),
-        });
-        const json = (await res.json()) as { question: HskListeningQuestion; error?: string };
-        if (!res.ok) throw new Error(json.error ?? "생성 실패");
-        setListening(json.question);
+      if (isQuiz) {
+        const gen = area === "listening" ? genListening : genReading;
+        const results = await Promise.all(
+          Array.from({ length: SET_SIZE }, () => gen().catch(() => null)),
+        );
+        const valid = results.filter((x): x is QuizItem => x !== null).filter(isGradableItem);
+        if (valid.length < 2) {
+          setError("문제를 충분히 만들지 못했어요. 다시 시도해 주세요.");
+          return;
+        }
+        setItems(valid);
       } else {
+        // 개념·쓰기: 단일 문항.
         const res = await fetch("/api/hsk/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -52,17 +94,17 @@ export default function HskSessionClient({
         });
         const json = (await res.json()) as { question: HskQuestion; error?: string };
         if (!res.ok) throw new Error(json.error ?? "생성 실패");
-        setQuestion(json.question);
+        setSingle(json.question);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "문제 생성에 실패했어요.");
     } finally {
       setLoading(false);
     }
-  }, [area, level, mode]);
+  }, [isQuiz, area, mode, level, genListening, genReading]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트/선택 변경 시 1회 문제 생성(로딩 상태 진입). 의도적 fetch-on-mount.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트/선택 변경 시 1회 생성(로딩 상태 진입). 의도적.
     void generate();
   }, [generate]);
 
@@ -83,23 +125,35 @@ export default function HskSessionClient({
     );
   }
 
-  // 개념 학습 — 타이머·채점 대상 아님(설명 카드).
-  if (mode === "concept" && question) {
+  // 다문항 세션(듣기·독해 문제 풀이)
+  if (isQuiz && items.length > 0) {
+    return (
+      <QuizSession
+        items={items}
+        gradingMode={params.gradingMode ?? "immediate"}
+        sessionType={params.sessionType}
+        onRetry={() => void generate()}
+      />
+    );
+  }
+
+  // 개념 학습 — 설명 카드(타이머·채점 제외)
+  if (mode === "concept" && single) {
     return (
       <div className="space-y-3">
         <Card className="space-y-2 p-4">
-          <p className="text-xs font-semibold text-blue-dark">{question.type}</p>
-          <p className="text-sm text-bodytx">{question.instructions}</p>
-          {question.passage && (
+          <p className="text-xs font-semibold text-blue-dark">{single.type}</p>
+          <p className="text-sm text-bodytx">{single.instructions}</p>
+          {single.passage && (
             <p lang="zh" className="whitespace-pre-wrap font-cn text-[15px] leading-relaxed text-ink">
-              {question.passage}
+              {single.passage}
             </p>
           )}
-          <p lang="zh" className="whitespace-pre-wrap font-cn text-sm text-ink">{question.prompt}</p>
-          {question.explanation && (
+          <p lang="zh" className="whitespace-pre-wrap font-cn text-sm text-ink">{single.prompt}</p>
+          {single.explanation && (
             <div className="rounded-md border border-hairline bg-ivory p-3">
               <p className="text-[11px] font-semibold text-muted">해설</p>
-              <p className="mt-0.5 text-sm text-bodytx">{question.explanation}</p>
+              <p className="mt-0.5 text-sm text-bodytx">{single.explanation}</p>
             </div>
           )}
         </Card>
@@ -108,21 +162,16 @@ export default function HskSessionClient({
     );
   }
 
-  // 쓰기 — 题目 제시 후 작문 워크스페이스로 연결(교정 파이프라인 재사용).
-  if (area === "writing" && question) {
-    const q = new URLSearchParams({
-      mode: "hsk",
-      level: String(level),
-      area: "writing",
-      hskMode: mode,
-    });
+  // 쓰기 — 题目 제시 후 작문 워크스페이스로 연결(교정 파이프라인 재사용)
+  if (area === "writing" && single) {
+    const q = new URLSearchParams({ mode: "hsk", level: String(level), area: "writing", hskMode: mode });
     return (
       <div className="space-y-3">
         <Card className="space-y-2 p-4">
-          <p className="text-xs font-semibold text-blue-dark">작문 题目 · {question.type}</p>
-          <p className="text-sm text-bodytx">{question.instructions}</p>
+          <p className="text-xs font-semibold text-blue-dark">작문 题目 · {single.type}</p>
+          <p className="text-sm text-bodytx">{single.instructions}</p>
           <p lang="zh" className="whitespace-pre-wrap font-cn text-[15px] font-semibold leading-relaxed text-ink">
-            {question.prompt}
+            {single.prompt}
           </p>
         </Card>
         <button
@@ -135,31 +184,6 @@ export default function HskSessionClient({
           <ArrowRight size={16} aria-hidden />
         </button>
         <NextButton onClick={() => void generate()} label="다른 题目" />
-      </div>
-    );
-  }
-
-  // 듣기 — 오디오(대본 TTS + A-6 컨트롤) + 4지선다.
-  if (area === "listening" && listening) {
-    return (
-      <div className="space-y-3">
-        <ListeningView
-          q={listening}
-          selected={selected}
-          onSelect={setSelected}
-          sessionType={params.sessionType}
-        />
-        <NextButton onClick={() => void generate()} label="다음 문제" />
-      </div>
-    );
-  }
-
-  // 독해 등 — 지문 + 4지선다.
-  if (question) {
-    return (
-      <div className="space-y-3">
-        <ReadingView q={question} selected={selected} onSelect={setSelected} />
-        <NextButton onClick={() => void generate()} label="다음 문제" />
       </div>
     );
   }
@@ -192,141 +216,5 @@ function SessionSkeleton() {
         ))}
       </div>
     </Card>
-  );
-}
-
-/** 4지선다 공통 — 선택 시 즉시 정오 표시(A-α MVP). */
-function Choices({
-  options,
-  answer,
-  selected,
-  onSelect,
-}: {
-  options: string[];
-  answer?: string;
-  selected: string | null;
-  onSelect: (v: string) => void;
-}) {
-  const revealed = selected !== null;
-  return (
-    <div className="space-y-2">
-      {options.map((opt) => {
-        const isAnswer = answer !== undefined && opt === answer;
-        const isPicked = opt === selected;
-        let cls = "border-hairline bg-white text-bodytx";
-        if (revealed && isAnswer) cls = "border-jade bg-jade-soft text-jade-dark";
-        else if (revealed && isPicked) cls = "border-terra bg-terra-soft text-terra-dark";
-        return (
-          <button
-            key={opt}
-            type="button"
-            disabled={revealed}
-            onClick={() => onSelect(opt)}
-            lang="zh"
-            className={`block w-full rounded-lg border px-3 py-2 text-left font-cn text-sm transition-colors ${cls}`}
-          >
-            {opt}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function ListeningView({
-  q,
-  selected,
-  onSelect,
-  sessionType,
-}: {
-  q: HskListeningQuestion;
-  selected: string | null;
-  onSelect: (v: string) => void;
-  sessionType?: HskSessionType;
-}) {
-  const revealed = selected !== null;
-  return (
-    <Card className="space-y-3 p-4">
-      <p className="text-sm text-bodytx">{q.instructions}</p>
-      <ListeningPlayer
-        audioScript={q.audioScript}
-        scriptPinyin={q.scriptPinyin}
-        scriptTranslation={q.scriptTranslation}
-        sessionType={sessionType}
-      />
-      <p className="text-sm font-semibold text-ink">{q.question}</p>
-      <Choices options={q.options} answer={q.answer} selected={selected} onSelect={onSelect} />
-      {revealed && (
-        <Explain answer={q.answer} explanation={q.explanation} script={q.audioScript} />
-      )}
-    </Card>
-  );
-}
-
-function ReadingView({
-  q,
-  selected,
-  onSelect,
-}: {
-  q: HskQuestion;
-  selected: string | null;
-  onSelect: (v: string) => void;
-}) {
-  const revealed = selected !== null;
-  return (
-    <Card className="space-y-3 p-4">
-      <p className="text-sm text-bodytx">{q.instructions}</p>
-      {q.passage && (
-        <p lang="zh" className="whitespace-pre-wrap font-cn text-[15px] leading-relaxed text-ink">
-          {q.passage}
-        </p>
-      )}
-      <p lang="zh" className="font-cn text-sm font-semibold text-ink">{q.prompt}</p>
-      {q.options && q.options.length > 0 ? (
-        <>
-          <Choices options={q.options} answer={q.answer} selected={selected} onSelect={onSelect} />
-          {revealed && <Explain answer={q.answer} explanation={q.explanation} />}
-        </>
-      ) : (
-        q.explanation && (
-          <div className="rounded-md border border-hairline bg-ivory p-3 text-sm text-bodytx">
-            {q.explanation}
-          </div>
-        )
-      )}
-    </Card>
-  );
-}
-
-function Explain({
-  answer,
-  explanation,
-  script,
-}: {
-  answer?: string;
-  explanation?: string;
-  script?: string;
-}) {
-  return (
-    <div className="space-y-2 rounded-md border border-hairline bg-ivory p-3">
-      {answer && (
-        <p className="text-xs text-bodytx">
-          정답:{" "}
-          <span lang="zh" className="font-cn font-semibold text-jade-dark">{answer}</span>
-        </p>
-      )}
-      {script && (
-        <div>
-          <p className="text-[11px] font-semibold text-muted">대본</p>
-          <p lang="zh" className="mt-0.5 whitespace-pre-wrap font-cn text-sm text-ink">{script}</p>
-        </div>
-      )}
-      {explanation && (
-        <div>
-          <p className="text-[11px] font-semibold text-muted">해설</p>
-          <p className="mt-0.5 text-sm text-bodytx">{explanation}</p>
-        </div>
-      )}
-    </div>
   );
 }
