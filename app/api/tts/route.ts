@@ -9,6 +9,7 @@ import {
   TTS_MAX_CHARS,
 } from '@/lib/elevenlabs'
 import { extractSpokenChinese, parseDialogueTurns, hashString } from '@/lib/tts'
+import { TTS_PCM_SAMPLE_RATE, pcmBufferToInt16, normalizePcm, pcmSegmentsToWav } from '@/lib/audio'
 import type { SpeakerAge } from '@/types/hsk'
 
 export const runtime = 'nodejs'
@@ -85,7 +86,33 @@ export async function POST(req: Request): Promise<Response> {
       const voiceByLabel = bodyCast.length
         ? { ...assignSpeakerVoices(distinct, seed), ...assignCastVoices(bodyCast, seed) }
         : assignSpeakerVoices(distinct, seed)
-      // 화자별 보이스로 각 발화를 병렬 합성 후 순서대로 이어붙인다.
+
+      const loudnessOn =
+        process.env.TTS_MULTIVOICE_LOUDNESS !== '0' && process.env.TTS_MULTIVOICE_LOUDNESS !== 'off'
+
+      if (loudnessOn) {
+        // 음량 정규화: 각 화자를 PCM 으로 받아 라우드니스를 맞춘 뒤 이어붙여 WAV 로 반환한다
+        // (성우가 바뀔 때 볼륨이 튀지 않게). PCM 미지원 tier 면 env TTS_MULTIVOICE_LOUDNESS=0 로 끈다.
+        const parts = await Promise.all(
+          turns.map((t) =>
+            synthesizeSpeech(t.spoken, {
+              voiceId: voiceByLabel[t.label],
+              outputFormat: `pcm_${TTS_PCM_SAMPLE_RATE}`,
+            }),
+          ),
+        )
+        const segments = parts.map((p) => {
+          const seg = pcmBufferToInt16(p.audio)
+          normalizePcm(seg)
+          return seg
+        })
+        return new Response(pcmSegmentsToWav(segments), {
+          status: 200,
+          headers: { 'Content-Type': 'audio/wav', 'Cache-Control': 'no-store' },
+        })
+      }
+
+      // 폴백(mp3 이어붙이기, 정규화 없음).
       const parts = await Promise.all(
         turns.map((t) => synthesizeSpeech(t.spoken, { voiceId: voiceByLabel[t.label] })),
       )
