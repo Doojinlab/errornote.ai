@@ -44,22 +44,38 @@ async function resolveEntry(sp: SearchParams): Promise<{
 
   if (mode === "hotword") {
     const id = first(sp.hotwordId);
-    if (!id) return {};
-    const hw = await getActiveHotwordById(id);
-    if (!hw) return {};
-    return {
-      entryMode: "hotword",
-      hotwordContext: {
-        term: hw.term,
-        category: hw.category,
-        pinyin: hw.pinyin ?? undefined,
-        literal: hw.literal ?? undefined,
-        meaning: hw.meaning ?? undefined,
-        example: hw.example ?? undefined,
-        origin: hw.origin ?? undefined,
-        registerTag: hw.registerTag ?? undefined,
-      },
-    };
+    if (id) {
+      const hw = await getActiveHotwordById(id);
+      if (!hw) return {};
+      return {
+        entryMode: "hotword",
+        hotwordContext: {
+          term: hw.term,
+          category: hw.category,
+          pinyin: hw.pinyin ?? undefined,
+          literal: hw.literal ?? undefined,
+          meaning: hw.meaning ?? undefined,
+          example: hw.example ?? undefined,
+          origin: hw.origin ?? undefined,
+          registerTag: hw.registerTag ?? undefined,
+        },
+      };
+    }
+    // 직접입력(custom) — 풀에 없으므로 인라인 파라미터로 컨텍스트 구성(B-1).
+    const term = first(sp.term);
+    if (term) {
+      return {
+        entryMode: "hotword",
+        hotwordContext: {
+          term,
+          category: first(sp.category) ?? "custom",
+          pinyin: first(sp.pinyin),
+          meaning: first(sp.meaning),
+          example: first(sp.example),
+        },
+      };
+    }
+    return {};
   }
 
   return {};
