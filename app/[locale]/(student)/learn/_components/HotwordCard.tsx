@@ -16,7 +16,7 @@ import type { CustomHotword } from "@/lib/hotword-custom";
 
 // 今日热词 대시보드 카드 (docs/dashboard-features.md §2 · B 개편).
 // 카테고리 선택기(B-1) + 한자·병음(성조색)·뜻(B-2) + 새로고침·스피커(B-4) +
-// 좋았어요/비추(자동 큐레이션) + 입장(문장으로 표현). card-pop hover(D) + a11y(E).
+// 좋았어요/비추(자동 큐레이션) + 입장(문장으로 표현). card-pop hover 는 내부 요소만(바깥 큰 카드는 제외 — 정신없음) + a11y(E).
 
 // UI 카테고리 → DB enum 리맵(시사=society, 문화=daily). custom 은 즉석 생성.
 const UI_CATEGORIES = [
@@ -229,7 +229,7 @@ export default function HotwordCard({
   }
 
   return (
-    <div className="card-pop flex flex-1 flex-col overflow-hidden rounded-xl2 border border-terra bg-white">
+    <div className="flex flex-1 flex-col overflow-hidden rounded-xl2 border border-terra bg-white">
       {/* 헤더 — 카테고리 칩(클릭 시 선택기 토글) */}
       <div className="flex items-center gap-2.5 px-4 py-3.5">
         <Flame size={20} className="text-terra" aria-hidden />
