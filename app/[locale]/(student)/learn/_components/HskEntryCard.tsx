@@ -19,7 +19,7 @@ import type {
 
 // 실전 HSK 입장 카드 (docs/dashboard-features.md §1 · A-1/2/3 개편)
 // 계층 선택(칩): 급수 → 영역(듣기 신규) → 모드 → (문제풀이 시) 연습/실전 → (연습 시) 채점방식.
-// 입장 시 모든 선택값을 /hsk/session 으로 전달(A-4). card-pop hover(D) + a11y(E).
+// 입장 시 모든 선택값을 /hsk/session 으로 전달(A-4). card-pop hover 는 내부 칩/버튼만(바깥 큰 카드는 제외 — 정신없음) + a11y(E).
 const chip =
   "card-pop rounded-lg py-2 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue/50 focus-visible:ring-offset-1 focus-visible:ring-offset-blue-soft";
 const chipOn = "bg-blue text-white";
@@ -77,7 +77,7 @@ export default function HskEntryCard({
   }
 
   return (
-    <div className="card-pop flex flex-col overflow-hidden rounded-xl2 border border-blue bg-white">
+    <div className="flex flex-col overflow-hidden rounded-xl2 border border-blue bg-white">
       {/* 헤더 — A-1: "AI 무한생성" 배지 제거 */}
       <div className="flex items-center gap-2.5 px-4 py-3.5">
         <Target size={20} className="text-blue" aria-hidden />
