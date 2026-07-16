@@ -15,7 +15,8 @@ const LEVEL_GUIDE: Record<HskLevel, string> = {
 }
 
 // 영역·유형별 출제 템플릿(기출 "유형"만). 모델이 이 구조를 따라 새 문제를 만든다.
-const AREA_TEMPLATES: Record<Exclude<HskArea, 'speaking'>, string> = {
+// 듣기(listening)는 lib/hsk-listening 로 별도 생성한다. 여기 템플릿은 독해·쓰기 전용.
+const AREA_TEMPLATES: Record<'reading' | 'writing', string> = {
   reading: [
     '독해 유형 중 하나를 골라 출제:',
     '· 지문이해: 3~5문장 지문(passage) + 내용 일치/주제/세부정보 4지선다(options 4개, answer 1개).',
@@ -44,7 +45,7 @@ export function buildHskGenerationSystem(
   area: HskArea,
   mode: HskMode,
 ): string {
-  const areaKey = area === 'speaking' ? 'reading' : area
+  const areaKey: 'reading' | 'writing' = area === 'writing' ? 'writing' : 'reading'
   return [
     '당신은 한국 대학생을 위한 HSK 출제 전문가입니다. 기출 "유형"만 학습해 새 문제를 만듭니다.',
     '⚠️ 실제 HSK 기출 원문을 그대로 재현하지 마세요. 저작권 대상입니다.',

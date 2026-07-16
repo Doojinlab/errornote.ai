@@ -34,6 +34,9 @@ export async function POST(req: Request) {
   if (area === 'speaking') {
     return NextResponse.json({ error: '말하기 영역은 아직 지원하지 않습니다' }, { status: 400 })
   }
+  if (area === 'listening') {
+    return NextResponse.json({ error: '듣기는 /api/hsk/listening/generate 를 사용하세요' }, { status: 400 })
+  }
 
   try {
     const question = await generateHskQuestion(level, area, mode)

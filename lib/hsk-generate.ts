@@ -94,7 +94,8 @@ export async function logHskQuestion(
     .insert({
       student_id: studentId,
       level: question.level,
-      area: question.area,
+      // 듣기·말하기는 이 경로로 생성되지 않는다(독해·쓰기 전용). DB 컬럼 유니온에 맞춰 좁힌다.
+      area: question.area as 'reading' | 'writing' | 'speaking',
       mode: question.mode,
       question: question as unknown as Json,
     })
