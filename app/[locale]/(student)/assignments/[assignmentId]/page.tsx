@@ -28,27 +28,28 @@ export default async function StudentAssignmentPage(
   const assignment = await getAssignment(params.assignmentId);
   if (!assignment) notFound();
 
-  // enrolled 된 수업인지 확인 (RLS 로도 막히지만 명시적으로)
-  const { data: enroll } = await supabase
-    .from("enrollments")
-    .select("class_id")
-    .eq("student_id", user.id)
-    .eq("class_id", assignment.class_id)
-    .maybeSingle();
-  if (!enroll) notFound();
-
-  const rubric = assignment.rubric_id ? await getRubric(assignment.rubric_id) : null;
-
-  // 본인 기존 제출(가장 최신)
-  const { data: mySessionRaw } = await supabase
-    .from("sessions")
-    .select("id, draft_text, draft_error_count, created_at")
-    .eq("assignment_id", assignment.id)
-    .eq("student_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  const mySession = (mySessionRaw as MySessionRow | null) ?? null;
+  // 성능: enrolled 확인 · 루브릭 · 본인 최신 제출은 서로 독립(모두 assignment/user 에만 의존)
+  // 이라 한 번의 Promise.all 로 묶어 순차 왕복 2회를 없앤다. (rubric_evaluations 는 mySession.id
+  // 에 의존하므로 그대로 뒤에 둔다.)
+  const [enrollRes, rubric, mySessionRes] = await Promise.all([
+    supabase
+      .from("enrollments")
+      .select("class_id")
+      .eq("student_id", user.id)
+      .eq("class_id", assignment.class_id)
+      .maybeSingle(),
+    assignment.rubric_id ? getRubric(assignment.rubric_id) : Promise.resolve(null),
+    supabase
+      .from("sessions")
+      .select("id, draft_text, draft_error_count, created_at")
+      .eq("assignment_id", assignment.id)
+      .eq("student_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+  if (!enrollRes.data) notFound(); // enrolled 수업 아님 (RLS 로도 막히지만 명시적으로)
+  const mySession = (mySessionRes.data as MySessionRow | null) ?? null;
 
   let evaluation: RubricEvaluation | null = null;
   if (mySession) {

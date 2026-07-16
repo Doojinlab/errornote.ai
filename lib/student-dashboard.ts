@@ -392,7 +392,25 @@ export async function loadLearnData(): Promise<LearnHomeData | null> {
   const supabase = createServerClient()
   const userId = ctx.userId
 
-  const [profileRes, enrollRes] = await Promise.all([
+  // 성능: 홈은 매 진입마다 렌더된다. 예전엔 (프로필+등록) 조회 → classId 확인 → 나머지 7개
+  // 조회로 **2번의 네트워크 왕복 그룹**이 발생했다. 2번째 그룹의 쿼리는 전부 userId(=ctx)만
+  // 참조하고 classId 에 의존하지 않으므로, 전부 한 번의 Promise.all 로 합쳐 왕복을 1회로 줄인다.
+  // (활성 수업이 없는 드문 경우엔 가벼운 count/select 몇 개가 낭비되지만, 다수인 활성 수업
+  //  학생의 홈 로딩에서 왕복 1회를 통째로 절약한다.)
+  const todayStartIso = `${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`
+  const monthAgoIso = new Date(Date.now() - 30 * DAY_MS).toISOString()
+
+  const [
+    profileRes,
+    enrollRes,
+    statsRes,
+    todayCountRes,
+    lastSessRes,
+    errChapRes,
+    cardnewsRes,
+    assignments,
+    reviews,
+  ] = await Promise.all([
     supabase.from('profiles').select('name').eq('id', userId).maybeSingle(),
     supabase
       .from('enrollments')
@@ -401,13 +419,44 @@ export async function loadLearnData(): Promise<LearnHomeData | null> {
       .order('enrolled_at', { ascending: false })
       .limit(1)
       .maybeSingle(),
+    supabase
+      .from('gamification_stats')
+      .select('streak_days, activity_coins')
+      .eq('student_id', userId)
+      .maybeSingle(),
+    supabase
+      .from('sessions')
+      .select('id', { count: 'exact', head: true })
+      .eq('student_id', userId)
+      .gte('created_at', todayStartIso),
+    supabase
+      .from('sessions')
+      .select('chapter_number')
+      .eq('student_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from('error_cards')
+      .select('chapter_number')
+      .eq('student_id', userId)
+      .gte('created_at', monthAgoIso),
+    supabase
+      .from('weekly_cardnews')
+      .select('card1_data, card2_data, card3_data, card4_data')
+      .eq('student_id', userId)
+      .order('week_start', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    listAssignmentsForStudent(userId).catch(() => []),
+    listAssignedReviews(userId).catch(() => []),
   ])
 
   const studentName =
     ((profileRes.data as { name: string | null } | null)?.name ?? '').trim() || '학생'
   const classId = (enrollRes.data as { class_id: string } | null)?.class_id ?? null
 
-  // 활성 수업 없음 → 빈 상태. 나머지 조회 생략.
+  // 활성 수업 없음 → 빈 상태(나머지 결과는 무시).
   if (!classId) {
     return {
       studentName,
@@ -425,44 +474,6 @@ export async function loadLearnData(): Promise<LearnHomeData | null> {
       cardNews: [],
     }
   }
-
-  const todayStartIso = `${new Date().toISOString().slice(0, 10)}T00:00:00.000Z`
-  const monthAgoIso = new Date(Date.now() - 30 * DAY_MS).toISOString()
-
-  const [statsRes, todayCountRes, lastSessRes, errChapRes, cardnewsRes, assignments, reviews] =
-    await Promise.all([
-      supabase
-        .from('gamification_stats')
-        .select('streak_days, activity_coins')
-        .eq('student_id', userId)
-        .maybeSingle(),
-      supabase
-        .from('sessions')
-        .select('id', { count: 'exact', head: true })
-        .eq('student_id', userId)
-        .gte('created_at', todayStartIso),
-      supabase
-        .from('sessions')
-        .select('chapter_number')
-        .eq('student_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      supabase
-        .from('error_cards')
-        .select('chapter_number')
-        .eq('student_id', userId)
-        .gte('created_at', monthAgoIso),
-      supabase
-        .from('weekly_cardnews')
-        .select('card1_data, card2_data, card3_data, card4_data')
-        .eq('student_id', userId)
-        .order('week_start', { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      listAssignmentsForStudent(userId).catch(() => []),
-      listAssignedReviews(userId).catch(() => []),
-    ])
 
   const stats = (statsRes.data as LearnStatsRow | null) ?? {
     streak_days: 0,

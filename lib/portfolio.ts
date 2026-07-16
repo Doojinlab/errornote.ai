@@ -8,11 +8,10 @@ import type {
 export async function assemblePortfolio(studentId: string): Promise<PortfolioData> {
   const admin = createAdminClient()
 
-  // auth.users 에서 이메일을 조회한다 (profiles 에는 email 컬럼이 없음).
-  const { data: authUser } = await admin.auth.admin.getUserById(studentId)
-  const email = authUser?.user?.email ?? null
-
+  // 성능: 이메일 조회(auth.users)는 나머지 6개 조회와 독립이라 같은 Promise.all 로 묶어
+  // 선행 왕복 1회를 없앤다. (auth.users 에서 조회 — profiles 에는 email 컬럼이 없음.)
   const [
+    { data: authUser },
     { data: profile },
     { data: stats },
     { data: rawSessions },
@@ -20,6 +19,7 @@ export async function assemblePortfolio(studentId: string): Promise<PortfolioDat
     { data: goals },
     { count: vocabCount },
   ] = await Promise.all([
+    admin.auth.admin.getUserById(studentId),
     admin
       .from('profiles')
       .select('language, created_at')
@@ -51,6 +51,8 @@ export async function assemblePortfolio(studentId: string): Promise<PortfolioDat
       .select('*', { count: 'exact', head: true })
       .eq('student_id', studentId),
   ])
+
+  const email = authUser?.user?.email ?? null
 
   const sessionIds = (rawSessions ?? []).map((s) => s.id)
 
