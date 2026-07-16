@@ -163,27 +163,23 @@
   },
   "pages": {
     "student": {
-      "tonePractice": {
-        "back": "発音練習へ",
-        "title": "中国語の声調練習",
-        "subtitle": "単音節を録音すると、実際のピッチ（音の高さ）を解析して声調が合っているか判定します。",
-        "pickTarget": "練習する声調を選んでください",
-        "recordCta": "録音 (2秒)",
-        "recording": "録音中… はっきりと！",
-        "analyzing": "解析中…",
-        "correct": "正解！ 🎉",
-        "wrong": "もう一度やってみましょう",
-        "targetLabel": "目標",
-        "detectedLabel": "検出",
-        "detectedNone": "検出できず",
-        "pitchCurve": "あなたのピッチ曲線",
-        "noPitch": "声を検出できませんでした。もう少し長くはっきり発音してください。",
-        "micDenied": "マイクの許可が必要です。",
-        "unsupported": "このブラウザは音声解析に対応していません。",
-        "tone1": "第1声 (高平)",
-        "tone2": "第2声 (上昇)",
-        "tone3": "第3声 (低降)",
-        "tone4": "第4声 (下降)"
+      "quickAsk": {
+        "title": "これ自然？",
+        "subtitle": "中国語の文が自然かどうか、ネイティブの友だちのようにすぐ答えます。一緒に整えましょう。",
+        "inputLabel": "確認したい中国語の文",
+        "placeholder": "例: 我今天很累了",
+        "submit": "きく",
+        "checking": "確認中…",
+        "scoreLabel": "自然さ {score}点",
+        "verdict": {
+          "natural": "自然です 👍",
+          "awkward": "少し不自然です",
+          "incorrect": "直すところがあります"
+        },
+        "suggestionHeading": "こう言うともっと自然です",
+        "noteHeading": "説明",
+        "hint": "短い文を1つ入れてみましょう。最大300文字",
+        "genericError": "確認に失敗しました。しばらくして再度お試しください。"
       },
       "quests": {
         "title": "今日のクエスト",
@@ -234,6 +230,28 @@
         "categoryTheme": "テーマ",
         "categoryAvatar": "アバター",
         "categorySticker": "ステッカー"
+      },
+      "tonePractice": {
+        "back": "発音練習へ",
+        "title": "中国語の声調練習",
+        "subtitle": "単音節を録音すると、実際のピッチ（音の高さ）を解析して声調が合っているか判定します。",
+        "pickTarget": "練習する声調を選んでください",
+        "recordCta": "録音 (2秒)",
+        "recording": "録音中… はっきりと！",
+        "analyzing": "解析中…",
+        "correct": "正解！ 🎉",
+        "wrong": "もう一度やってみましょう",
+        "targetLabel": "目標",
+        "detectedLabel": "検出",
+        "detectedNone": "検出できず",
+        "pitchCurve": "あなたのピッチ曲線",
+        "noPitch": "声を検出できませんでした。もう少し長くはっきり発音してください。",
+        "micDenied": "マイクの許可が必要です。",
+        "unsupported": "このブラウザは音声解析に対応していません。",
+        "tone1": "第1声 (高平)",
+        "tone2": "第2声 (上昇)",
+        "tone3": "第3声 (低降)",
+        "tone4": "第4声 (下降)"
       },
       "league": {
         "title": "週間リーグ",

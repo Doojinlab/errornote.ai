@@ -163,27 +163,23 @@
   },
   "pages": {
     "student": {
-      "tonePractice": {
-        "back": "Back to pronunciation",
-        "title": "Chinese tone practice",
-        "subtitle": "Record a single syllable and we analyze the actual pitch to check whether your tone was right.",
-        "pickTarget": "Pick a tone to practice",
-        "recordCta": "Record (2s)",
-        "recording": "Recording… speak clearly!",
-        "analyzing": "Analyzing…",
-        "correct": "Correct! 🎉",
-        "wrong": "Try again?",
-        "targetLabel": "Target",
-        "detectedLabel": "Detected",
-        "detectedNone": "not detected",
-        "pitchCurve": "Your pitch curve",
-        "noPitch": "Couldn't detect your voice. Please speak a bit longer and clearer.",
-        "micDenied": "Microphone permission is required.",
-        "unsupported": "This browser doesn't support audio analysis.",
-        "tone1": "1st (high level)",
-        "tone2": "2nd (rising)",
-        "tone3": "3rd (dipping)",
-        "tone4": "4th (falling)"
+      "quickAsk": {
+        "title": "Does this sound natural?",
+        "subtitle": "Get an instant, friendly take on whether your Chinese sentence sounds natural. Let's polish it together.",
+        "inputLabel": "Chinese sentence to check",
+        "placeholder": "e.g. 我今天很累了",
+        "submit": "Ask",
+        "checking": "Checking…",
+        "scoreLabel": "Naturalness {score}/100",
+        "verdict": {
+          "natural": "Sounds natural 👍",
+          "awkward": "A little awkward",
+          "incorrect": "Needs a fix"
+        },
+        "suggestionHeading": "A more natural way to say it",
+        "noteHeading": "Note",
+        "hint": "Try a short sentence. Up to 300 characters",
+        "genericError": "Something went wrong. Please try again in a moment."
       },
       "quests": {
         "title": "Today's Quests",
@@ -234,6 +230,28 @@
         "categoryTheme": "Theme",
         "categoryAvatar": "Avatar",
         "categorySticker": "Sticker"
+      },
+      "tonePractice": {
+        "back": "Back to pronunciation",
+        "title": "Chinese tone practice",
+        "subtitle": "Record a single syllable and we analyze the actual pitch to check whether your tone was right.",
+        "pickTarget": "Pick a tone to practice",
+        "recordCta": "Record (2s)",
+        "recording": "Recording… speak clearly!",
+        "analyzing": "Analyzing…",
+        "correct": "Correct! 🎉",
+        "wrong": "Try again?",
+        "targetLabel": "Target",
+        "detectedLabel": "Detected",
+        "detectedNone": "not detected",
+        "pitchCurve": "Your pitch curve",
+        "noPitch": "Couldn't detect your voice. Please speak a bit longer and clearer.",
+        "micDenied": "Microphone permission is required.",
+        "unsupported": "This browser doesn't support audio analysis.",
+        "tone1": "1st (high level)",
+        "tone2": "2nd (rising)",
+        "tone3": "3rd (dipping)",
+        "tone4": "4th (falling)"
       },
       "league": {
         "title": "Weekly League",

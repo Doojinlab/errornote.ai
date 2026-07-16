@@ -269,27 +269,23 @@
   },
   "pages": {
     "student": {
-      "tonePractice": {
-        "back": "발음 연습으로",
-        "title": "중국어 성조 연습",
-        "subtitle": "단음절을 녹음하면 실제 피치(음높이)를 분석해 성조가 맞았는지 알려드려요.",
-        "pickTarget": "연습할 성조를 고르세요",
-        "recordCta": "녹음 (2초)",
-        "recording": "녹음 중… 또렷하게!",
-        "analyzing": "분석 중…",
-        "correct": "정확해요! 🎉",
-        "wrong": "다시 해볼까요?",
-        "targetLabel": "목표",
-        "detectedLabel": "감지",
-        "detectedNone": "감지 안 됨",
-        "pitchCurve": "내 피치 곡선",
-        "noPitch": "목소리를 감지하지 못했어요. 조금 더 길고 또렷하게 발음해 주세요.",
-        "micDenied": "마이크 권한이 필요해요.",
-        "unsupported": "이 브라우저는 오디오 분석을 지원하지 않아요.",
-        "tone1": "1성 (고평)",
-        "tone2": "2성 (상승)",
-        "tone3": "3성 (저강하)",
-        "tone4": "4성 (하강)"
+      "quickAsk": {
+        "title": "이거 자연스러워?",
+        "subtitle": "중국어 문장이 자연스러운지 원어민 친구처럼 즉답해 드려요. 같이 다듬어 봐요.",
+        "inputLabel": "확인할 중국어 문장",
+        "placeholder": "예: 我今天很累了",
+        "submit": "물어보기",
+        "checking": "확인 중…",
+        "scoreLabel": "자연스러움 {score}점",
+        "verdict": {
+          "natural": "자연스러워요 👍",
+          "awkward": "조금 어색해요",
+          "incorrect": "고칠 부분이 있어요"
+        },
+        "suggestionHeading": "이렇게 하면 더 자연스러워요",
+        "noteHeading": "설명",
+        "hint": "짧은 문장 하나를 넣어보세요. 최대 300자",
+        "genericError": "확인에 실패했어요. 잠시 후 다시 시도해 주세요."
       },
       "quests": {
         "title": "오늘의 퀘스트",
@@ -340,6 +336,28 @@
         "categoryTheme": "테마",
         "categoryAvatar": "아바타",
         "categorySticker": "스티커"
+      },
+      "tonePractice": {
+        "back": "발음 연습으로",
+        "title": "중국어 성조 연습",
+        "subtitle": "단음절을 녹음하면 실제 피치(음높이)를 분석해 성조가 맞았는지 알려드려요.",
+        "pickTarget": "연습할 성조를 고르세요",
+        "recordCta": "녹음 (2초)",
+        "recording": "녹음 중… 또렷하게!",
+        "analyzing": "분석 중…",
+        "correct": "정확해요! 🎉",
+        "wrong": "다시 해볼까요?",
+        "targetLabel": "목표",
+        "detectedLabel": "감지",
+        "detectedNone": "감지 안 됨",
+        "pitchCurve": "내 피치 곡선",
+        "noPitch": "목소리를 감지하지 못했어요. 조금 더 길고 또렷하게 발음해 주세요.",
+        "micDenied": "마이크 권한이 필요해요.",
+        "unsupported": "이 브라우저는 오디오 분석을 지원하지 않아요.",
+        "tone1": "1성 (고평)",
+        "tone2": "2성 (상승)",
+        "tone3": "3성 (저강하)",
+        "tone4": "4성 (하강)"
       },
       "league": {
         "title": "주간 리그",
