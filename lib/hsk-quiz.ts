@@ -59,3 +59,17 @@ export function formatElapsed(ms: number): string {
   const s = total % 60
   return m > 0 ? `${m}분 ${s}초` : `${s}초`
 }
+
+/**
+ * 대화 대본을 화자 발화 단위로 줄바꿈한다("男：… 女：…" 가 한 줄에 붙어 있어도 화자마다 분리).
+ * 모델이 이미 줄바꿈을 넣었든 안 넣었든 동일한 결과를 내도록 정규화한다.
+ * 화자 표기가 없는 독백/단일 문장은 그대로(트림만) 반환한다.
+ */
+export function formatDialogueScript(script: string): string {
+  return script
+    .replace(/\r\n/g, '\n')
+    // 화자 표기(男/女/독백 화자) 앞에 줄바꿈을 강제. 전각/반각 콜론 모두 대응.
+    .replace(/\s*([男女])\s*[：:]\s*/g, '\n$1：')
+    .replace(/\n{2,}/g, '\n')
+    .trim()
+}

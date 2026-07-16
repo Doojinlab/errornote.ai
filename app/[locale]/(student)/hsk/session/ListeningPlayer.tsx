@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Play, Pause, Repeat, Gauge, ScrollText } from "lucide-react";
 import { pinyinToneParts, toneTextClass } from "@/lib/pinyin-tone";
+import { formatDialogueScript } from "@/lib/hsk-quiz";
 import type { HskSessionType } from "@/types";
 
 // A-6 듣기 재생 컨트롤 — 속도(0.75/1/1.25)·반복(1/2/무제한)·재생/일시정지·스크립트 토글.
@@ -171,7 +172,7 @@ export default function ListeningPlayer({
           <p className="text-[11px] font-semibold text-gold-dark">
             음성이 아직 설정되지 않았어요(관리자: ELEVENLABS_API_KEY). 대본으로 대신 볼게요.
           </p>
-          <p lang="zh" className="mt-1 whitespace-pre-wrap font-cn text-sm text-ink">{audioScript}</p>
+          <p lang="zh" className="mt-1 whitespace-pre-wrap font-cn text-sm leading-relaxed text-ink">{formatDialogueScript(audioScript)}</p>
         </div>
       )}
 
@@ -190,7 +191,7 @@ export default function ListeningPlayer({
           </button>
           {scriptOpen && (
             <div className="mt-2 space-y-1.5 rounded-md border border-hairline bg-ivory p-3">
-              <p lang="zh" className="whitespace-pre-wrap font-cn text-sm text-ink">{audioScript}</p>
+              <p lang="zh" className="whitespace-pre-wrap font-cn text-sm leading-relaxed text-ink">{formatDialogueScript(audioScript)}</p>
               {scriptPinyin && (
                 <p lang="zh" className="font-cn text-xs">
                   {pinyinToneParts(scriptPinyin).map((p, i) => (

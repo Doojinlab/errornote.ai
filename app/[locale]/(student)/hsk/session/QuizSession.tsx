@@ -1,13 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Flag, ChevronLeft, ChevronRight, RotateCcw, Clock, AlertTriangle } from "lucide-react";
+import { Flag, ChevronLeft, ChevronRight, RotateCcw, Clock, AlertTriangle, Lightbulb, MessageCircle, Lock } from "lucide-react";
 import Card from "@/components/ui/Card";
+import TutorChat from "@/components/learn/TutorChat";
 import ListeningPlayer from "./ListeningPlayer";
 import {
   gradeQuiz,
   isComplete,
   formatElapsed,
+  formatDialogueScript,
   type QuizItem,
 } from "@/lib/hsk-quiz";
 import type { HskGradingMode, HskSessionType } from "@/types";
@@ -159,146 +161,153 @@ export default function QuizSession({
 
   const item = items[index];
   const answered = answers[index] !== undefined;
-  const revealed = immediate && answered;
+  // 실전은 채점 전 정답/해설을 절대 노출하지 않는다(시험 무결성). 연습·즉시채점 + 응답 시에만 공개.
+  const revealed = !isExam && immediate && answered;
 
   return (
-    <div className="space-y-3">
-      {/* 실전: 타이머 + 이탈 경고 */}
-      {isExam && (
-        <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs">
-            <span className="inline-flex items-center gap-1 font-semibold text-muted">
-              <AlertTriangle size={12} className="text-terra" aria-hidden />
-              실전 — 나가면 무효(결과 미기록)
-            </span>
-            <span
-              className={`inline-flex items-center gap-1 font-bold tabular-nums ${
-                timeLeft <= WARN_SECONDS ? "text-terra" : "text-blue-dark"
-              }`}
-              aria-live="polite"
-            >
-              <Clock size={13} aria-hidden />
-              {formatClock(timeLeft)}
-            </span>
-          </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-hairline" aria-hidden>
-            <div
-              className={`h-full transition-[width] duration-1000 ${timeLeft <= WARN_SECONDS ? "bg-terra" : "bg-blue"}`}
-              style={{ width: `${budget > 0 ? (timeLeft / budget) * 100 : 0}%` }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* 진행 + 플래그 */}
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-muted">
-          {index + 1} / {items.length}
-        </span>
-        <button
-          type="button"
-          onClick={toggleFlag}
-          aria-pressed={flagged.has(index)}
-          aria-label={flagged.has(index) ? "표시 해제" : "나중에 다시 볼 문항으로 표시"}
-          className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 ${
-            flagged.has(index) ? "bg-gold-soft text-gold-dark" : "border border-hairline bg-white text-muted hover:bg-ivory"
-          }`}
-        >
-          <Flag size={13} aria-hidden />
-          표시
-        </button>
-      </div>
-
-      <Card className="space-y-3 p-4">
-        <p className="text-sm text-bodytx">{item.instructions}</p>
-        {item.kind === "listening" && item.audioScript && (
-          <ListeningPlayer
-            audioScript={item.audioScript}
-            scriptPinyin={item.scriptPinyin}
-            scriptTranslation={item.scriptTranslation}
-            sessionType={sessionType}
-          />
-        )}
-        {item.passage && (
-          <p lang="zh" className="whitespace-pre-wrap font-cn text-[15px] leading-relaxed text-ink">
-            {item.passage}
-          </p>
-        )}
-        <p className="text-sm font-semibold text-ink">{item.question}</p>
-        <Choices
-          options={item.options}
-          answer={item.answer}
-          selected={answers[index] ?? null}
-          onSelect={select}
-          reveal={revealed}
-          locked={revealed}
-        />
-        {revealed && <Explain answer={item.answer} explanation={item.explanation} script={item.audioScript} />}
-      </Card>
-
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => setIndex((i) => Math.max(0, i - 1))}
-          disabled={index === 0}
-          aria-label="이전 문항"
-          className="inline-flex items-center gap-1 rounded-md border border-hairline bg-white px-3 py-1.5 text-xs font-semibold text-bodytx disabled:opacity-40"
-        >
-          <ChevronLeft size={14} aria-hidden /> 이전
-        </button>
-        <button
-          type="button"
-          onClick={() => setIndex((i) => Math.min(items.length - 1, i + 1))}
-          disabled={index === items.length - 1}
-          aria-label="다음 문항"
-          className="inline-flex items-center gap-1 rounded-md border border-hairline bg-white px-3 py-1.5 text-xs font-semibold text-bodytx disabled:opacity-40"
-        >
-          다음 <ChevronRight size={14} aria-hidden />
-        </button>
-      </div>
-
-      {/* 문항 네비 그리드(A-10) */}
-      <div>
-        <p className="mb-1.5 text-[11px] font-semibold text-muted">
-          문항 이동 · 안 푼 문항 {items.length - answeredCount}개
-        </p>
-        <div className="flex flex-wrap gap-1.5" role="group" aria-label="문항 이동">
-          {items.map((_, i) => {
-            const isCur = i === index;
-            const isAns = answers[i] !== undefined;
-            const isFlag = flagged.has(i);
-            let cls = "border-hairline bg-white text-muted";
-            if (isAns) cls = "border-jade bg-jade-soft text-jade-dark";
-            if (isFlag) cls = "border-gold bg-gold-soft text-gold-dark";
-            return (
-              <button
-                key={i}
-                type="button"
-                onClick={() => setIndex(i)}
-                aria-label={`${i + 1}번 문항${isAns ? " (완료)" : ""}${isFlag ? " (표시됨)" : ""}`}
-                aria-current={isCur ? "true" : undefined}
-                className={`relative h-8 w-8 rounded-md border text-xs font-bold transition-colors ${cls} ${isCur ? "ring-2 ring-blue ring-offset-1" : ""}`}
+    // 좌: 문제 풀이 / 우: 해설·AI 과외(errornote 공통 — 모든 콘텐츠 우측에 해설·AI). 모바일은 아래로 스택.
+    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-4">
+      <div className="space-y-3">
+        {/* 실전: 타이머 + 이탈 경고 */}
+        {isExam && (
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-xs">
+              <span className="inline-flex items-center gap-1 font-semibold text-muted">
+                <AlertTriangle size={12} className="text-terra" aria-hidden />
+                실전 — 나가면 무효(결과 미기록)
+              </span>
+              <span
+                className={`inline-flex items-center gap-1 font-bold tabular-nums ${
+                  timeLeft <= WARN_SECONDS ? "text-terra" : "text-blue-dark"
+                }`}
+                aria-live="polite"
               >
-                {i + 1}
-                {isFlag && <Flag size={9} className="absolute -right-0.5 -top-0.5 text-gold-dark" aria-hidden />}
-              </button>
-            );
-          })}
+                <Clock size={13} aria-hidden />
+                {formatClock(timeLeft)}
+              </span>
+            </div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-hairline" aria-hidden>
+              <div
+                className={`h-full transition-[width] duration-1000 ${timeLeft <= WARN_SECONDS ? "bg-terra" : "bg-blue"}`}
+                style={{ width: `${budget > 0 ? (timeLeft / budget) * 100 : 0}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* 진행 + 플래그 */}
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold text-muted">
+            {index + 1} / {items.length}
+          </span>
+          <button
+            type="button"
+            onClick={toggleFlag}
+            aria-pressed={flagged.has(index)}
+            aria-label={flagged.has(index) ? "표시 해제" : "나중에 다시 볼 문항으로 표시"}
+            className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 ${
+              flagged.has(index) ? "bg-gold-soft text-gold-dark" : "border border-hairline bg-white text-muted hover:bg-ivory"
+            }`}
+          >
+            <Flag size={13} aria-hidden />
+            표시
+          </button>
         </div>
+
+        <Card className="space-y-3 p-4">
+          <p className="text-sm text-bodytx">{item.instructions}</p>
+          {item.kind === "listening" && item.audioScript && (
+            <ListeningPlayer
+              audioScript={item.audioScript}
+              scriptPinyin={item.scriptPinyin}
+              scriptTranslation={item.scriptTranslation}
+              sessionType={sessionType}
+            />
+          )}
+          {item.passage && (
+            <p lang="zh" className="whitespace-pre-wrap font-cn text-[15px] leading-relaxed text-ink">
+              {formatDialogueScript(item.passage)}
+            </p>
+          )}
+          {/* 질문·보기는 실제 HSK 처럼 중국어 */}
+          <p lang="zh" className="font-cn text-base font-semibold leading-relaxed text-ink">{item.question}</p>
+          <Choices
+            options={item.options}
+            answer={item.answer}
+            selected={answers[index] ?? null}
+            onSelect={select}
+            reveal={revealed}
+            locked={revealed}
+          />
+        </Card>
+
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => setIndex((i) => Math.max(0, i - 1))}
+            disabled={index === 0}
+            aria-label="이전 문항"
+            className="inline-flex items-center gap-1 rounded-md border border-hairline bg-white px-3 py-1.5 text-xs font-semibold text-bodytx disabled:opacity-40"
+          >
+            <ChevronLeft size={14} aria-hidden /> 이전
+          </button>
+          <button
+            type="button"
+            onClick={() => setIndex((i) => Math.min(items.length - 1, i + 1))}
+            disabled={index === items.length - 1}
+            aria-label="다음 문항"
+            className="inline-flex items-center gap-1 rounded-md border border-hairline bg-white px-3 py-1.5 text-xs font-semibold text-bodytx disabled:opacity-40"
+          >
+            다음 <ChevronRight size={14} aria-hidden />
+          </button>
+        </div>
+
+        {/* 문항 네비 그리드(A-10) */}
+        <div>
+          <p className="mb-1.5 text-[11px] font-semibold text-muted">
+            문항 이동 · 안 푼 문항 {items.length - answeredCount}개
+          </p>
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="문항 이동">
+            {items.map((_, i) => {
+              const isCur = i === index;
+              const isAns = answers[i] !== undefined;
+              const isFlag = flagged.has(i);
+              let cls = "border-hairline bg-white text-muted";
+              if (isAns) cls = "border-jade bg-jade-soft text-jade-dark";
+              if (isFlag) cls = "border-gold bg-gold-soft text-gold-dark";
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setIndex(i)}
+                  aria-label={`${i + 1}번 문항${isAns ? " (완료)" : ""}${isFlag ? " (표시됨)" : ""}`}
+                  aria-current={isCur ? "true" : undefined}
+                  className={`relative h-8 w-8 rounded-md border text-xs font-bold transition-colors ${cls} ${isCur ? "ring-2 ring-blue ring-offset-1" : ""}`}
+                >
+                  {i + 1}
+                  {isFlag && <Flag size={9} className="absolute -right-0.5 -top-0.5 text-gold-dark" aria-hidden />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 채점 */}
+        {immediate ? (
+          complete && (
+            <button type="button" onClick={submit} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue text-sm font-bold text-white">
+              성적표 보기
+            </button>
+          )
+        ) : (
+          <button type="button" onClick={submit} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue text-sm font-bold text-white">
+            제출하고 채점 {!complete && `(안 푼 ${items.length - answeredCount}개는 오답 처리)`}
+          </button>
+        )}
       </div>
 
-      {/* 채점 */}
-      {immediate ? (
-        complete && (
-          <button type="button" onClick={submit} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue text-sm font-bold text-white">
-            성적표 보기
-          </button>
-        )
-      ) : (
-        <button type="button" onClick={submit} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue text-sm font-bold text-white">
-          제출하고 채점 {!complete && `(안 푼 ${items.length - answeredCount}개는 오답 처리)`}
-        </button>
-      )}
+      {/* 우: 해설 + AI 과외 (상시 노출). 실전은 잠금. */}
+      <SidePanel item={item} revealed={revealed} isExam={isExam} immediate={immediate} />
     </div>
   );
 }
@@ -419,32 +428,99 @@ function Choices({
   );
 }
 
-function Explain({
-  answer,
-  explanation,
-  script,
+// 우측 상시 패널 — [해설 | AI 과외]. 실전(exam)은 채점 전 잠금(시험 무결성).
+// errornote 공통 규칙: 모든 콘텐츠 우측에 해설창 + AI 질문창이 존재.
+function SidePanel({
+  item,
+  revealed,
+  isExam,
+  immediate,
 }: {
-  answer: string;
-  explanation: string;
-  script?: string;
+  item: QuizItem;
+  revealed: boolean;
+  isExam: boolean;
+  immediate: boolean;
 }) {
+  const [tab, setTab] = useState<"explain" | "chat">("explain");
+  const tabBtn = (on: boolean) =>
+    `flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold transition-colors ${
+      on ? "bg-blue-soft text-blue-dark" : "text-bodytx hover:bg-ivory"
+    }`;
+
   return (
-    <div className="space-y-2 rounded-md border border-hairline bg-ivory p-3">
+    <div className="mt-3 flex h-[300px] flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[560px]">
+      <div className="grid grid-cols-2 border-b border-hairline" role="tablist" aria-label="해설·AI 과외">
+        <button type="button" role="tab" aria-selected={tab === "explain"} onClick={() => setTab("explain")} className={tabBtn(tab === "explain")}>
+          <Lightbulb size={15} aria-hidden /> 해설
+        </button>
+        <button type="button" role="tab" aria-selected={tab === "chat"} onClick={() => setTab("chat")} className={tabBtn(tab === "chat")}>
+          <MessageCircle size={15} aria-hidden /> AI 과외
+        </button>
+      </div>
+      <div className="min-h-0 flex-1 overflow-auto">
+        {tab === "explain" ? (
+          <ExplainBody item={item} revealed={revealed} isExam={isExam} immediate={immediate} />
+        ) : isExam ? (
+          <LockedNote text="실전 중에는 AI 과외를 쓸 수 없어요. 채점이 끝나면 물어볼 수 있어요." />
+        ) : (
+          <TutorChat focusedError={null} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ExplainBody({
+  item,
+  revealed,
+  isExam,
+  immediate,
+}: {
+  item: QuizItem;
+  revealed: boolean;
+  isExam: boolean;
+  immediate: boolean;
+}) {
+  if (!revealed) {
+    const msg = isExam
+      ? "실전 채점 후 성적표에서 해설을 확인할 수 있어요."
+      : immediate
+        ? "답을 고르면 여기에 정답·해설이 나와요."
+        : "모아서 채점을 제출하면 성적표에서 해설이 나와요.";
+    return (
+      <div className="flex h-full items-center justify-center p-5 text-center">
+        <p className="text-sm text-muted">{msg}</p>
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-3 p-4">
       <p className="text-xs text-bodytx">
-        정답: <span lang="zh" className="font-cn font-semibold text-jade-dark">{answer}</span>
+        정답: <span lang="zh" className="font-cn font-semibold text-jade-dark">{item.answer}</span>
       </p>
-      {script && (
+      {item.audioScript && (
         <div>
           <p className="text-[11px] font-semibold text-muted">대본</p>
-          <p lang="zh" className="mt-0.5 whitespace-pre-wrap font-cn text-sm text-ink">{script}</p>
+          <p lang="zh" className="mt-0.5 whitespace-pre-wrap font-cn text-sm leading-relaxed text-ink">
+            {formatDialogueScript(item.audioScript)}
+          </p>
         </div>
       )}
-      {explanation && (
+      {item.explanation && (
         <div>
           <p className="text-[11px] font-semibold text-muted">해설</p>
-          <p className="mt-0.5 text-sm text-bodytx">{explanation}</p>
+          <p className="mt-0.5 whitespace-pre-wrap text-sm text-bodytx">{item.explanation}</p>
         </div>
       )}
+    </div>
+  );
+}
+
+function LockedNote({ text }: { text: string }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-2 p-5 text-center">
+      <Lock size={18} className="text-muted" aria-hidden />
+      <p className="text-sm text-muted">{text}</p>
     </div>
   );
 }
