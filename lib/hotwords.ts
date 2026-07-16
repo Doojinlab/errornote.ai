@@ -138,6 +138,37 @@ export async function getTodayHotword(studentId: string): Promise<Hotword | null
   return mapHotword(pick)
 }
 
+/**
+ * 특정 카테고리의 단어 1개 조회(B-1 카테고리 선택 / B-4 새로고침).
+ * 학생이 비추한 카드 + excludeIds(방금 본 단어)는 제외, 신선도 순.
+ */
+export async function getHotwordByCategory(
+  studentId: string,
+  category: HotwordCategory,
+  excludeIds: string[] = [],
+): Promise<Hotword | null> {
+  const supabase = createServerClient()
+  const [{ data: rows }, votesRes] = await Promise.all([
+    supabase
+      .from('hotwords')
+      .select(HOTWORD_COLS)
+      .eq('status', 'active')
+      .eq('category', category)
+      .order('first_seen', { ascending: false })
+      .limit(30),
+    supabase
+      .from('hotword_feedback')
+      .select('hotword_id')
+      .eq('student_id', studentId)
+      .eq('vote', 'dislike'),
+  ])
+  const list = rows ?? []
+  if (list.length === 0) return null
+  const skip = new Set<string>([...(votesRes.data ?? []).map((v) => v.hotword_id), ...excludeIds])
+  const pick = list.find((r) => !skip.has(r.id)) ?? list.find((r) => !excludeIds.includes(r.id)) ?? list[0]
+  return mapHotword(pick)
+}
+
 /** 입장 컨텍스트 구성용 — active 단건 조회(RLS: active 만 노출). */
 export async function getActiveHotwordById(id: string): Promise<Hotword | null> {
   const supabase = createServerClient()
