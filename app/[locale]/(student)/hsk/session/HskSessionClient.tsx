@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Sparkles, PenLine, ArrowRight } from "lucide-react";
-import { useRouter } from "@/i18n/routing";
+import { Sparkles } from "lucide-react";
 import Card from "@/components/ui/Card";
 import QuizSession from "./QuizSession";
+import WritingWorkspace from "./WritingWorkspace";
 import { isGradableItem, type QuizItem } from "@/lib/hsk-quiz";
 import { hskAreaLabel } from "@/lib/hsk";
 import type { HskSessionParams } from "@/lib/hsk";
@@ -24,11 +24,13 @@ const SET_SIZE = 5;
 export default function HskSessionClient({
   params,
   chapterId,
+  classId,
 }: {
   params: HskSessionParams;
   chapterId: string;
+  /** 쓰기 AI 분석용 활성 수업 id(쓰기 영역에서만 필요). */
+  classId: string | null;
 }) {
-  const router = useRouter();
   const { level, area, mode } = params;
   // 다문항 세트(듣기·독해 문제 풀이) vs 단일(개념·쓰기).
   const isQuiz = mode === "practice" && (area === "listening" || area === "reading");
@@ -209,27 +211,11 @@ export default function HskSessionClient({
     );
   }
 
-  // 쓰기 — 题目 제시 후 작문 워크스페이스로 연결(교정 파이프라인 재사용)
+  // 쓰기 — 题目 + 작문 워크스페이스 임베드(에디터 + 오류카드/AI 과외 토글). 바로 작성.
   if (area === "writing" && single) {
-    const q = new URLSearchParams({ mode: "hsk", level: String(level), area: "writing", hskMode: mode });
     return (
       <div className="space-y-3">
-        <Card className="space-y-2 p-4">
-          <p className="text-xs font-semibold text-blue-dark">작문 题目 · {single.type}</p>
-          <p className="text-sm text-bodytx">{single.instructions}</p>
-          <p lang="zh" className="whitespace-pre-wrap font-cn text-[15px] font-semibold leading-relaxed text-ink">
-            {single.prompt}
-          </p>
-        </Card>
-        <button
-          type="button"
-          onClick={() => router.push(`/learn/${chapterId}?${q.toString()}`)}
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border border-blue bg-gradient-to-b from-white to-blue-soft text-sm font-semibold text-blue transition-transform hover:-translate-y-0.5 hover:shadow-lg"
-        >
-          <PenLine size={16} aria-hidden />
-          작문하러 가기
-          <ArrowRight size={16} aria-hidden />
-        </button>
+        <WritingWorkspace question={single} classId={classId} chapterId={chapterId} />
         <NextButton onClick={() => void generate()} label="다른 题目" />
       </div>
     );
