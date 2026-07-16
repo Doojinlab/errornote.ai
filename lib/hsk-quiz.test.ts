@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { gradeQuiz, isComplete, isGradableItem, formatElapsed, type QuizItem } from './hsk-quiz'
+import {
+  gradeQuiz,
+  isComplete,
+  isGradableItem,
+  formatElapsed,
+  formatDialogueScript,
+  type QuizItem,
+} from './hsk-quiz'
 
 function item(answer: string, options = ['a', 'b', 'c', 'd']): QuizItem {
   return { kind: 'reading', instructions: '', question: 'q', options, answer, explanation: '' }
@@ -46,5 +53,21 @@ describe('formatElapsed()', () => {
     expect(formatElapsed(5000)).toBe('5초')
     expect(formatElapsed(65000)).toBe('1분 5초')
     expect(formatElapsed(0)).toBe('0초')
+  })
+})
+
+describe('formatDialogueScript()', () => {
+  it('한 줄에 붙은 男/女 발화를 화자마다 줄바꿈', () => {
+    const out = formatDialogueScript('男：你好？女：很好，谢谢。男：再见。')
+    expect(out).toBe('男：你好？\n女：很好，谢谢。\n男：再见。')
+  })
+
+  it('이미 줄바꿈·전각/반각 콜론이 섞여 있어도 정규화', () => {
+    const out = formatDialogueScript('男: 你好\n\n女：你好，请坐')
+    expect(out).toBe('男：你好\n女：你好，请坐')
+  })
+
+  it('화자 표기가 없는 독백은 트림만(줄바꿈 삽입 없음)', () => {
+    expect(formatDialogueScript('  今天天气很好。 ')).toBe('今天天气很好。')
   })
 })
