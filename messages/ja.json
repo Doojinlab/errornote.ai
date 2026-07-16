@@ -163,20 +163,23 @@
   },
   "pages": {
     "student": {
-      "handwriting": {
-        "title": "漢字の筆順",
-        "subtitle": "筆順アニメーションを見て、指やマウスでなぞって覚えましょう。",
-        "pickChar": "文字を選んでください",
-        "showStroke": "筆順を見る",
-        "practice": "なぞる",
-        "reset": "リセット",
-        "loading": "読み込み中…",
-        "loadError": "筆順データを読み込めませんでした。",
-        "quizStart": "枠の中に順番どおりなぞってみましょう。",
-        "correctStroke": "いいですね！続けましょう。",
-        "mistake": "この画をもう一度書いてみましょう。",
-        "complete": "完成！よくできました 🎉（ミス {mistakes} 回）",
-        "progress": "{done}/{total} 画 · ミス {mistakes} 回"
+      "quickAsk": {
+        "title": "これ自然？",
+        "subtitle": "中国語の文が自然かどうか、ネイティブの友だちのようにすぐ答えます。一緒に整えましょう。",
+        "inputLabel": "確認したい中国語の文",
+        "placeholder": "例: 我今天很累了",
+        "submit": "きく",
+        "checking": "確認中…",
+        "scoreLabel": "自然さ {score}点",
+        "verdict": {
+          "natural": "自然です 👍",
+          "awkward": "少し不自然です",
+          "incorrect": "直すところがあります"
+        },
+        "suggestionHeading": "こう言うともっと自然です",
+        "noteHeading": "説明",
+        "hint": "短い文を1つ入れてみましょう。最大300文字",
+        "genericError": "確認に失敗しました。しばらくして再度お試しください。"
       },
       "quests": {
         "title": "今日のクエスト",
@@ -317,6 +320,21 @@
           "xiaohongshu": "小紅書",
           "other": "一般"
         }
+      },
+      "handwriting": {
+        "title": "漢字の筆順",
+        "subtitle": "筆順アニメーションを見て、指やマウスでなぞって覚えましょう。",
+        "pickChar": "文字を選んでください",
+        "showStroke": "筆順を見る",
+        "practice": "なぞる",
+        "reset": "リセット",
+        "loading": "読み込み中…",
+        "loadError": "筆順データを読み込めませんでした。",
+        "quizStart": "枠の中に順番どおりなぞってみましょう。",
+        "correctStroke": "いいですね！続けましょう。",
+        "mistake": "この画をもう一度書いてみましょう。",
+        "complete": "完成！よくできました 🎉（ミス {mistakes} 回）",
+        "progress": "{done}/{total} 画 · ミス {mistakes} 回"
       },
       "cardnews": {
         "title": "週間カードニュース",
