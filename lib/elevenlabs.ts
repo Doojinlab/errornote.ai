@@ -171,6 +171,8 @@ export interface TtsOptions {
   voiceId?: string
   modelId?: string
   apiKey?: string
+  /** ElevenLabs output_format(예: 'mp3_44100_128', 'pcm_24000'). 기본 mp3. */
+  outputFormat?: string
 }
 
 export interface TtsRequest {
@@ -184,12 +186,14 @@ export function buildTtsRequest(text: string, opts: TtsOptions = {}): TtsRequest
   const voiceId = opts.voiceId ?? process.env.ELEVENLABS_VOICE_ID ?? DEFAULT_VOICE_ID
   const modelId = opts.modelId ?? process.env.ELEVENLABS_MODEL_ID ?? DEFAULT_MODEL_ID
   const apiKey = opts.apiKey ?? process.env.ELEVENLABS_API_KEY ?? ''
+  const outputFormat = opts.outputFormat ?? 'mp3_44100_128'
+  const isPcm = outputFormat.startsWith('pcm_')
   return {
-    url: `${TTS_ENDPOINT}/${encodeURIComponent(voiceId)}?output_format=mp3_44100_128`,
+    url: `${TTS_ENDPOINT}/${encodeURIComponent(voiceId)}?output_format=${encodeURIComponent(outputFormat)}`,
     headers: {
       'xi-api-key': apiKey,
       'Content-Type': 'application/json',
-      Accept: 'audio/mpeg',
+      Accept: isPcm ? 'audio/pcm' : 'audio/mpeg',
     },
     body: JSON.stringify({
       text,
