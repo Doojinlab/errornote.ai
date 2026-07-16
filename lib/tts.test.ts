@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { extractSpokenChinese } from './tts'
+import { extractSpokenChinese, parseDialogueTurns } from './tts'
 
 describe('extractSpokenChinese()', () => {
   it('한글을 제거하고 중국어만 남긴다', () => {
@@ -7,16 +7,44 @@ describe('extractSpokenChinese()', () => {
     expect(extractSpokenChinese('情绪价值 정서가치')).toBe('情绪价值')
   })
 
-  it('라틴 문자 제거', () => {
-    expect(extractSpokenChinese('city不city')).toBe('不')
+  it('라틴 문자는 보존한다(영·중 혼용 신조어 발화용)', () => {
+    expect(extractSpokenChinese('city不city')).toBe('city不city')
+    expect(extractSpokenChinese('太city了')).toBe('太city了')
   })
 
   it('중국어 대화 표기·문장부호는 보존', () => {
     expect(extractSpokenChinese('男：你好。女：再见！')).toBe('男：你好。女：再见！')
   })
 
-  it('중국어가 없으면 빈 문자열', () => {
+  it('한글만 있으면 빈 문자열(라틴은 남는다)', () => {
     expect(extractSpokenChinese('안녕하세요')).toBe('')
-    expect(extractSpokenChinese('hello world')).toBe('')
+    expect(extractSpokenChinese('hello world')).toBe('hello world')
+  })
+})
+
+describe('parseDialogueTurns()', () => {
+  it('男/女 표기로 화자별 발화를 나누고 표기는 제거', () => {
+    expect(parseDialogueTurns('男：你好。女：再见！')).toEqual([
+      { speaker: 'male', text: '你好。' },
+      { speaker: 'female', text: '再见！' },
+    ])
+  })
+
+  it('전각/반각 콜론·줄바꿈이 섞여도 처리', () => {
+    expect(parseDialogueTurns('女: 你好\n男：请坐')).toEqual([
+      { speaker: 'female', text: '你好' },
+      { speaker: 'male', text: '请坐' },
+    ])
+  })
+
+  it('첫 화자 표기 앞 텍스트는 narrator', () => {
+    expect(parseDialogueTurns('对话开始。男：喂？')).toEqual([
+      { speaker: 'narrator', text: '对话开始。' },
+      { speaker: 'male', text: '喂？' },
+    ])
+  })
+
+  it('화자 표기가 없으면 narrator 한 덩어리(독백·단어)', () => {
+    expect(parseDialogueTurns('city不city')).toEqual([{ speaker: 'narrator', text: 'city不city' }])
   })
 })

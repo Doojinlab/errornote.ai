@@ -2,15 +2,46 @@
 // 여기에는 순수 헬퍼(extractSpokenChinese)와 폴백용 브라우저 합성만 둔다.
 
 /**
- * TTS로 읽을 중국어만 남긴다(한글·라틴 문자 제거 → 한국어/영문 오발음 방지).
- * 예: "정서가치(情绪价值)" → "(情绪价值)", "男：你好" → 그대로. CJK·숫자·문장부호는 보존.
+ * TTS로 읽을 텍스트에서 한글만 제거한다(한국어 뜻 오발음 방지).
+ * 라틴 문자는 보존한다 — "city不city" 같은 영·중 혼용 신조어를 제대로 읽어야 하기 때문.
+ * (멀티링구얼 모델이 영어+중국어 코드스위칭을 자연스럽게 발화.)
+ * 예: "정서가치(情绪价值)" → "(情绪价值)", "city不city" → 그대로, "男：你好" → 그대로.
  */
 export function extractSpokenChinese(text: string): string {
   return text
     .replace(/[가-힣ᄀ-ᇿ㄰-㆏]/g, "") // 한글
-    .replace(/[A-Za-z]/g, "") // 라틴 문자
     .replace(/[ \t ]{2,}/g, " ")
     .trim()
+}
+
+export type DialogueSpeaker = "male" | "female" | "narrator"
+export interface DialogueTurn {
+  speaker: DialogueSpeaker
+  /** 화자 표기(男：/女：)를 뺀 발화 본문. */
+  text: string
+}
+
+/**
+ * 대화 대본을 화자 발화 단위로 나눈다(멀티보이스 합성용).
+ * "男：…" → male, "女：…" → female, 화자 표기 없는 앞부분/독백 → narrator.
+ * 화자 표기 자체(男/女·콜론)는 발화 텍스트에서 제거한다(TTS 가 "남/여"를 읽지 않도록).
+ */
+export function parseDialogueTurns(script: string): DialogueTurn[] {
+  const normalized = script.replace(/\r\n/g, "\n")
+  const re = /([男女])\s*[：:]/g
+  const turns: DialogueTurn[] = []
+  let lastIndex = 0
+  let speaker: DialogueSpeaker = "narrator"
+  let m: RegExpExecArray | null
+  while ((m = re.exec(normalized)) !== null) {
+    const before = normalized.slice(lastIndex, m.index).trim()
+    if (before) turns.push({ speaker, text: before })
+    speaker = m[1] === "男" ? "male" : "female"
+    lastIndex = re.lastIndex
+  }
+  const tail = normalized.slice(lastIndex).trim()
+  if (tail) turns.push({ speaker, text: tail })
+  return turns.filter((t) => t.text)
 }
 
 export interface SpeakOptions {
