@@ -217,21 +217,21 @@ export async function getReviewDetail(
     .maybeSingle()
   if (!request) throw new Error('리뷰 요청을 찾을 수 없습니다')
 
-  const { data: assignment } = await d
-    .from('assignments')
-    .select('title, prompt_text')
-    .eq('id', request.assignment_id)
-    .maybeSingle()
-
-  // draft_text만 가져오고 requester 신원은 절대 반환 금지
-  const { data: session } = await d
-    .from('sessions')
-    .select('draft_text')
-    .eq('assignment_id', request.assignment_id)
-    .eq('student_id', request.requester_id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
+  // 성능: assignment 와 session(draft) 은 둘 다 request 에만 의존하고 서로 독립 →
+  // 한 번의 Promise.all 로 묶어 왕복 1회를 없앤다. (draft_text만 가져오고 requester 신원은 절대 반환 금지)
+  const [assignmentRes, sessionRes] = await Promise.all([
+    d.from('assignments').select('title, prompt_text').eq('id', request.assignment_id).maybeSingle(),
+    d
+      .from('sessions')
+      .select('draft_text')
+      .eq('assignment_id', request.assignment_id)
+      .eq('student_id', request.requester_id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ])
+  const assignment = assignmentRes.data
+  const session = sessionRes.data
 
   return {
     review_id: review.id,

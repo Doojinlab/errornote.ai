@@ -385,7 +385,7 @@ describe('loadLearnData', () => {
     expect(await loadLearnData()).toBeNull()
   })
 
-  it('returns empty-state shape (no extra queries) when there is no active class', async () => {
+  it('returns empty-state shape when there is no active class', async () => {
     handleQuery = (q) => {
       if (q.table === 'profiles') return { data: { name: '두진' }, error: null }
       if (q.table === 'enrollments') return { data: null, error: null }
@@ -396,7 +396,9 @@ describe('loadLearnData', () => {
     expect(d!.hasActiveClass).toBe(false)
     expect(d!.studentName).toBe('두진')
     expect(d!.cardNews).toEqual([])
-    expect(listAssignmentsForStudent).not.toHaveBeenCalled()
+    // 성능 최적화(단일 왕복): userId 기반 조회는 classId 를 몰라도 낙관적으로 함께 실행하고,
+    // 활성 수업이 없으면 결과를 무시한다. 다수인 활성 수업 학생의 홈 로딩에서 왕복 1회를 절약한다.
+    expect(listAssignmentsForStudent).toHaveBeenCalled()
   })
 
   it('assembles goal/streak/gems/tasks/today/cardNews for an active class', async () => {
