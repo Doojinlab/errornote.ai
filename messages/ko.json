@@ -483,6 +483,21 @@
           "other": "일반"
         }
       },
+      "handwriting": {
+        "title": "한자 획순 쓰기",
+        "subtitle": "획순 애니메이션을 보고, 손가락·마우스로 따라 써보며 익혀요.",
+        "pickChar": "글자를 고르세요",
+        "showStroke": "획순 보기",
+        "practice": "따라 쓰기",
+        "reset": "다시",
+        "loading": "불러오는 중…",
+        "loadError": "획순 데이터를 불러오지 못했어요.",
+        "quizStart": "칸에 순서대로 따라 써보세요.",
+        "correctStroke": "좋아요! 계속 이어서 써요.",
+        "mistake": "이 획을 다시 그어볼까요?",
+        "complete": "완성! 잘했어요 🎉 (실수 {mistakes}회)",
+        "progress": "{done}/{total} 획 · 실수 {mistakes}회"
+      },
       "cardnews": {
         "title": "주간 카드뉴스",
         "subtitle": "한 주의 학습을 4장 카드로 요약해 드려요",

@@ -28,6 +28,7 @@
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.1",
     "cheerio": "^1.2.0",
+    "hanzi-writer": "^3.7.3",
     "howler": "^2.2.4",
     "lucide-react": "^1.21.0",
     "mammoth": "^1.8.0",

@@ -377,6 +377,21 @@
           "other": "General"
         }
       },
+      "handwriting": {
+        "title": "Hanzi stroke order",
+        "subtitle": "Watch the stroke-order animation, then trace it with your finger or mouse.",
+        "pickChar": "Pick a character",
+        "showStroke": "Show strokes",
+        "practice": "Trace it",
+        "reset": "Reset",
+        "loading": "Loading…",
+        "loadError": "Couldn't load the stroke data.",
+        "quizStart": "Trace the strokes in order inside the box.",
+        "correctStroke": "Nice! Keep going.",
+        "mistake": "Try that stroke again?",
+        "complete": "Done! Great job 🎉 ({mistakes} mistakes)",
+        "progress": "{done}/{total} strokes · {mistakes} mistakes"
+      },
       "cardnews": {
         "title": "Weekly Card News",
         "subtitle": "Your weekly learning summary in 4 cards",

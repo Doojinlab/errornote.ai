@@ -1,4 +1,4 @@
-import { ArrowRight, BookA, BookOpen, Bookmark, Target, Sparkles } from "lucide-react";
+import { ArrowRight, BookA, BookOpen, Bookmark, Target, Sparkles, PenLine } from "lucide-react";
 import { HeroCard, HubGrid, LipButton, type HubLink } from "@/components/student-ui";
 import { loadLearnData } from "@/lib/student-dashboard";
 import { getCurrentUser } from "@/lib/auth";
@@ -20,6 +20,7 @@ const STUDY_LINKS: HubLink[] = [
   { href: "/goals", icon: Target, title: "목표", desc: "학습 목표 관리", tone: "jade" },
   { href: "/graded-reading", icon: BookOpen, title: "맞춤 리딩", desc: "내 약점 문법 지문", tone: "jade" },
   { href: "/weekly-suggestions", icon: Sparkles, title: "주간 추천", desc: "이번 주 맞춤 학습", tone: "gold" },
+  { href: "/handwriting", icon: PenLine, title: "한자 쓰기", desc: "획순 따라쓰기 연습", tone: "jade" },
 ];
 
 export default async function LearnHomePage() {
