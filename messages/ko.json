@@ -419,24 +419,6 @@
           "chat": "채팅"
         }
       },
-      "hskListening": {
-        "title": "실전 HSK 듣기",
-        "subtitle": "AI가 만든 대본을 음성으로 들려드려요. 듣고 알맞은 답을 골라보세요.",
-        "levelLabel": "급수",
-        "generate": "듣기 문제 생성",
-        "generating": "생성 중…",
-        "newQuestion": "새 문제",
-        "play": "▶ 듣기",
-        "synthesizing": "음성 준비 중…",
-        "questionHeading": "문제",
-        "scriptHeading": "대본",
-        "explanationHeading": "해설",
-        "answerLabel": "정답",
-        "correct": "정답이에요! 🎉",
-        "incorrect": "아쉬워요, 다시 들어볼까요?",
-        "ttsUnavailable": "음성 재생이 아직 설정되지 않았어요. 대본으로 대신 보여드릴게요. (관리자: ELEVENLABS_API_KEY 필요)",
-        "genericError": "문제가 발생했어요. 잠시 후 다시 시도해 주세요."
-      },
       "errors": {
         "title": "오류 기록",
         "countLabel": "{count}건",
