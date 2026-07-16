@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Flag, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Flag, ChevronLeft, ChevronRight, RotateCcw, Clock, AlertTriangle } from "lucide-react";
 import Card from "@/components/ui/Card";
 import ListeningPlayer from "./ListeningPlayer";
 import {
@@ -12,42 +12,134 @@ import {
 } from "@/lib/hsk-quiz";
 import type { HskGradingMode, HskSessionType } from "@/types";
 
-// A-γ 다문항 세션 — 문항 네비/플래그(A-10) + 채점 타이밍(A-7) + 성적표(A-8).
-// 실전 타이머·자동제출·오류 적립·이탈 정책은 A-δ.
+// A-γ 다문항 세션 + A-δ 실전 모드.
+// A-10 문항 네비/플래그 · A-7 채점 타이밍 · A-8 성적표+오답 적립 ·
+// A-5 실전 타이머·자동제출 · A-9 이탈 정책(실전 경고 / 연습 이어풀기).
+
+const SECONDS_PER_ITEM: Record<QuizItem["kind"], number> = {
+  listening: 45,
+  reading: 40,
+};
+const WARN_SECONDS = 15;
+
+interface Persisted {
+  items: QuizItem[];
+  answers: Record<number, string>;
+  index: number;
+  flagged: number[];
+}
 
 export default function QuizSession({
   items,
   gradingMode,
   sessionType,
+  topic,
+  storageKey,
+  initialState,
   onRetry,
 }: {
   items: QuizItem[];
   gradingMode: HskGradingMode;
   sessionType?: HskSessionType;
+  /** 오답 적립 topic (예: "HSK 4급 듣기"). */
+  topic: string;
+  /** 연습(drill) 이어풀기 저장 키. 실전/미제공이면 null. */
+  storageKey?: string | null;
+  initialState?: { answers: Record<number, string>; index: number; flagged: number[] };
   onRetry: () => void;
 }) {
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [flagged, setFlagged] = useState<Set<number>>(new Set());
+  const isExam = sessionType === "exam";
+
+  const [index, setIndex] = useState(initialState?.index ?? 0);
+  const [answers, setAnswers] = useState<Record<number, string>>(initialState?.answers ?? {});
+  const [flagged, setFlagged] = useState<Set<number>>(new Set(initialState?.flagged ?? []));
   const [submitted, setSubmitted] = useState(false);
   const [startedAt] = useState(() => Date.now());
   const [elapsed, setElapsed] = useState(0);
 
+  const budget = useMemo(
+    () => items.reduce((s, it) => s + SECONDS_PER_ITEM[it.kind], 0),
+    [items],
+  );
+  const [timeLeft, setTimeLeft] = useState(budget);
+
   const immediate = gradingMode === "immediate";
   const complete = isComplete(items, answers);
   const answeredCount = Object.keys(answers).length;
-
   const result = useMemo(
     () => (submitted ? gradeQuiz(items, answers) : null),
     [submitted, items, answers],
   );
 
+  // 오답 적립(A-8) — 응답했는데 틀린 문항을 /api/quiz-mistakes 로 스냅샷 저장(비치명적).
+  const accrue = useCallback(() => {
+    for (const [k, chosen] of Object.entries(answers)) {
+      const i = Number(k);
+      const it = items[i];
+      if (!it || chosen === it.answer) continue;
+      const chosenIndex = it.options.indexOf(chosen);
+      const answerIndex = it.options.indexOf(it.answer);
+      if (chosenIndex < 0 || answerIndex < 0) continue;
+      void fetch("/api/quiz-mistakes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic,
+          prompt: it.question,
+          options: it.options,
+          chosenIndex,
+          answerIndex,
+          explanation: it.explanation || null,
+        }),
+      }).catch(() => {});
+    }
+  }, [answers, items, topic]);
+
+  const submit = useCallback(() => {
+    setElapsed(Date.now() - startedAt);
+    setSubmitted(true);
+    accrue();
+    if (storageKey && typeof window !== "undefined") window.localStorage.removeItem(storageKey);
+  }, [accrue, startedAt, storageKey]);
+
+  // 실전 타이머(A-5) — 0 이면 자동 제출.
+  useEffect(() => {
+    if (!isExam || submitted) return;
+    if (timeLeft <= 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 제한시간 초과 시 자동 제출(A-5). 의도적 종료 동작.
+      submit();
+      return;
+    }
+    const t = window.setTimeout(() => setTimeLeft((s) => s - 1), 1000);
+    return () => window.clearTimeout(t);
+  }, [isExam, submitted, timeLeft, submit]);
+
+  // 연습 이어풀기(A-9) — 진행 상태 저장. 실전은 저장 안 함(중단=무효).
+  useEffect(() => {
+    if (!storageKey || submitted || typeof window === "undefined") return;
+    const blob: Persisted = { items, answers, index, flagged: [...flagged] };
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(blob));
+    } catch {
+      /* 저장 실패는 무시 */
+    }
+  }, [storageKey, submitted, items, answers, index, flagged]);
+
+  // 실전 이탈 경고(A-9) — 새로고침/닫기 시 확인.
+  useEffect(() => {
+    if (!isExam || submitted) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isExam, submitted]);
+
   function select(opt: string) {
-    // 즉시 채점: 한 번 답하면 그 문항은 고정. 모아서: 제출 전까지 변경 가능.
     if (immediate && answers[index] !== undefined) return;
     setAnswers((a) => ({ ...a, [index]: opt }));
   }
-
   function toggleFlag() {
     setFlagged((f) => {
       const n = new Set(f);
@@ -56,22 +148,13 @@ export default function QuizSession({
       return n;
     });
   }
-
-  function submit() {
-    setElapsed(Date.now() - startedAt);
-    setSubmitted(true);
+  function retry() {
+    if (storageKey && typeof window !== "undefined") window.localStorage.removeItem(storageKey);
+    onRetry();
   }
 
   if (submitted && result) {
-    return (
-      <ResultsView
-        items={items}
-        answers={answers}
-        result={result}
-        elapsed={elapsed}
-        onRetry={onRetry}
-      />
-    );
+    return <ResultsView items={items} answers={answers} result={result} elapsed={elapsed} onRetry={retry} />;
   }
 
   const item = items[index];
@@ -80,6 +163,33 @@ export default function QuizSession({
 
   return (
     <div className="space-y-3">
+      {/* 실전: 타이머 + 이탈 경고 */}
+      {isExam && (
+        <div className="space-y-1">
+          <div className="flex items-center justify-between text-xs">
+            <span className="inline-flex items-center gap-1 font-semibold text-muted">
+              <AlertTriangle size={12} className="text-terra" aria-hidden />
+              실전 — 나가면 무효(결과 미기록)
+            </span>
+            <span
+              className={`inline-flex items-center gap-1 font-bold tabular-nums ${
+                timeLeft <= WARN_SECONDS ? "text-terra" : "text-blue-dark"
+              }`}
+              aria-live="polite"
+            >
+              <Clock size={13} aria-hidden />
+              {formatClock(timeLeft)}
+            </span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-hairline" aria-hidden>
+            <div
+              className={`h-full transition-[width] duration-1000 ${timeLeft <= WARN_SECONDS ? "bg-terra" : "bg-blue"}`}
+              style={{ width: `${budget > 0 ? (timeLeft / budget) * 100 : 0}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* 진행 + 플래그 */}
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold text-muted">
@@ -91,9 +201,7 @@ export default function QuizSession({
           aria-pressed={flagged.has(index)}
           aria-label={flagged.has(index) ? "표시 해제" : "나중에 다시 볼 문항으로 표시"}
           className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 ${
-            flagged.has(index)
-              ? "bg-gold-soft text-gold-dark"
-              : "border border-hairline bg-white text-muted hover:bg-ivory"
+            flagged.has(index) ? "bg-gold-soft text-gold-dark" : "border border-hairline bg-white text-muted hover:bg-ivory"
           }`}
         >
           <Flag size={13} aria-hidden />
@@ -125,12 +233,9 @@ export default function QuizSession({
           reveal={revealed}
           locked={revealed}
         />
-        {revealed && (
-          <Explain answer={item.answer} explanation={item.explanation} script={item.audioScript} />
-        )}
+        {revealed && <Explain answer={item.answer} explanation={item.explanation} script={item.audioScript} />}
       </Card>
 
-      {/* 이전/다음 */}
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -172,9 +277,7 @@ export default function QuizSession({
                 onClick={() => setIndex(i)}
                 aria-label={`${i + 1}번 문항${isAns ? " (완료)" : ""}${isFlag ? " (표시됨)" : ""}`}
                 aria-current={isCur ? "true" : undefined}
-                className={`relative h-8 w-8 rounded-md border text-xs font-bold transition-colors ${cls} ${
-                  isCur ? "ring-2 ring-blue ring-offset-1" : ""
-                }`}
+                className={`relative h-8 w-8 rounded-md border text-xs font-bold transition-colors ${cls} ${isCur ? "ring-2 ring-blue ring-offset-1" : ""}`}
               >
                 {i + 1}
                 {isFlag && <Flag size={9} className="absolute -right-0.5 -top-0.5 text-gold-dark" aria-hidden />}
@@ -184,28 +287,27 @@ export default function QuizSession({
         </div>
       </div>
 
-      {/* 채점 — 즉시: 다 풀면 성적표 / 모아서: 제출 버튼 */}
+      {/* 채점 */}
       {immediate ? (
         complete && (
-          <button
-            type="button"
-            onClick={submit}
-            className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue text-sm font-bold text-white"
-          >
+          <button type="button" onClick={submit} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue text-sm font-bold text-white">
             성적표 보기
           </button>
         )
       ) : (
-        <button
-          type="button"
-          onClick={submit}
-          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue text-sm font-bold text-white"
-        >
+        <button type="button" onClick={submit} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue text-sm font-bold text-white">
           제출하고 채점 {!complete && `(안 푼 ${items.length - answeredCount}개는 오답 처리)`}
         </button>
       )}
     </div>
   );
+}
+
+function formatClock(sec: number): string {
+  const s = Math.max(0, sec);
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m}:${String(r).padStart(2, "0")}`;
 }
 
 function ResultsView({
@@ -241,7 +343,10 @@ function ResultsView({
 
       {result.wrongIndexes.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-sm font-bold text-ink">틀린 문항 리뷰 ({result.wrongIndexes.length})</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-ink">틀린 문항 리뷰 ({result.wrongIndexes.length})</h3>
+            <span className="text-[11px] text-muted">오답은 「오답 노트」에 자동 저장됨</span>
+          </div>
           {result.wrongIndexes.map((i) => {
             const it = items[i];
             return (
