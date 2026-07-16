@@ -44,6 +44,10 @@ export interface HskListeningQuestion {
   level: HskLevel
   /** 들려줄 중국어 대본(简体字). TTS 로 재생하며 정답 전까지 화면에는 숨긴다. */
   audioScript: string
+  /** 대본 병음(성조부호). 연습 모드 스크립트 토글용(A-6). 없을 수 있음. */
+  scriptPinyin?: string
+  /** 대본 한국어 번역. 연습 모드 스크립트 토글용(A-6). 없을 수 있음. */
+  scriptTranslation?: string
   /** 학습자에게 보여줄 한국어 지시문. */
   instructions: string
   /** 문제 본문(한국어). */
