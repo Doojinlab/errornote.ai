@@ -1,6 +1,17 @@
-// 발음 재생 추상화 — playPronunciation(text).
-// MVP: 브라우저 SpeechSynthesis(zh-CN). 이후 클라우드 TTS(예: ElevenLabs)로 교체 가능하도록
-// 호출부는 이 함수만 알게 한다. 지문 길이 오디오(HSK 듣기)는 서버 TTS를 별도로 쓴다.
+// 발음 재생 유틸. TTS 합성은 ElevenLabs(서버, /api/tts)로 통일한다.
+// 여기에는 순수 헬퍼(extractSpokenChinese)와 폴백용 브라우저 합성만 둔다.
+
+/**
+ * TTS로 읽을 중국어만 남긴다(한글·라틴 문자 제거 → 한국어/영문 오발음 방지).
+ * 예: "정서가치(情绪价值)" → "(情绪价值)", "男：你好" → 그대로. CJK·숫자·문장부호는 보존.
+ */
+export function extractSpokenChinese(text: string): string {
+  return text
+    .replace(/[가-힣ᄀ-ᇿ㄰-㆏]/g, "") // 한글
+    .replace(/[A-Za-z]/g, "") // 라틴 문자
+    .replace(/[ \t ]{2,}/g, " ")
+    .trim()
+}
 
 export interface SpeakOptions {
   /** 기본 zh-CN(중국어). */

@@ -10,7 +10,6 @@ import {
   Volume2,
 } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
-import { playPronunciation } from "@/lib/tts";
 import { pinyinToneParts, toneTextClass } from "@/lib/pinyin-tone";
 import type { Hotword, HotwordVote } from "@/types/hotwords";
 import type { CustomHotword } from "@/lib/hotword-custom";
@@ -82,8 +81,39 @@ export default function HotwordCard({
   const [error, setError] = useState<string | null>(null);
   const [voted, setVoted] = useState<HotwordVote | null>(null);
   const [busy, setBusy] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
   const seenIds = useRef<string[]>(hotword ? [hotword.id] : []);
   const impressed = useRef<Set<string>>(new Set());
+  const speakUrlRef = useRef<string | null>(null);
+
+  // 발음 재생 — ElevenLabs(서버 /api/tts). 한글은 서버에서 걸러 중국어만 읽는다.
+  async function speak(text: string) {
+    if (speaking) return;
+    setSpeaking(true);
+    try {
+      const res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) return; // 미설정(503) 등은 조용히 무시
+      const blob = await res.blob();
+      if (speakUrlRef.current) URL.revokeObjectURL(speakUrlRef.current);
+      const url = URL.createObjectURL(blob);
+      speakUrlRef.current = url;
+      await new Audio(url).play();
+    } catch {
+      /* 재생 실패는 학습 흐름을 막지 않는다 */
+    } finally {
+      setSpeaking(false);
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (speakUrlRef.current) URL.revokeObjectURL(speakUrlRef.current);
+    };
+  }, []);
 
   // 고유 노출 집계 — 풀 단어가 바뀔 때마다 1회(멱등).
   useEffect(() => {
@@ -283,10 +313,11 @@ export default function HotwordCard({
                 </span>
                 <button
                   type="button"
-                  onClick={() => playPronunciation(word.term)}
+                  onClick={() => speak(word.term)}
+                  disabled={speaking}
                   aria-label={`${word.term} 발음 듣기`}
                   title="발음 듣기"
-                  className={iconBtn}
+                  className={`${iconBtn} disabled:opacity-50`}
                 >
                   <Volume2 size={15} aria-hidden />
                 </button>

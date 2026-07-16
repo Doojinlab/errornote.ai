@@ -1,13 +1,13 @@
-// ElevenLabs TTS 클라이언트 — HSK 듣기 대본을 음성으로 합성한다.
-// 서버 전용(app/api/hsk/tts). ELEVENLABS_API_KEY 없으면 비활성(호출처에서 503 폴백).
+// ElevenLabs TTS 클라이언트 — 중국어 텍스트(듣기 대본·热词 등)를 음성으로 합성한다.
+// 서버 전용(app/api/tts). ELEVENLABS_API_KEY 없으면 비활성(호출처에서 503 폴백).
 //
 // 요청 구성(buildTtsRequest)은 순수 함수로 분리해 단위검증한다.
 
 const TTS_ENDPOINT = 'https://api.elevenlabs.io/v1/text-to-speech'
 // 기본 보이스(멀티링구얼 모델에서 중국어 지원). ELEVENLABS_VOICE_ID 로 재정의 가능.
 const DEFAULT_VOICE_ID = '21m00Tcm4TlvDq8ikWAM'
-// 중국어를 지원하는 멀티링구얼 모델.
-const DEFAULT_MODEL_ID = 'eleven_multilingual_v2'
+// 중국어 지원 모델. 기본 v3(고품질). ELEVENLABS_MODEL_ID 로 재정의 가능.
+const DEFAULT_MODEL_ID = 'eleven_v3'
 /** 대본 최대 길이(과금·남용 방지). */
 export const TTS_MAX_CHARS = 800
 
