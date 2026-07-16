@@ -62,13 +62,21 @@ export interface ChatMessage {
 export type WorkspaceEntryMode = 'hsk' | 'hotword'
 
 export type HskLevel = 3 | 4 | 5 | 6
-export type HskArea = 'reading' | 'writing' | 'speaking'
+export type HskArea = 'listening' | 'reading' | 'writing' | 'speaking'
 export type HskMode = 'practice' | 'concept'
+/** 문제 풀이 세부(A-3): 연습(drill, 제한시간 없음) / 실전(exam, 제한시간·자동제출). */
+export type HskSessionType = 'drill' | 'exam'
+/** 연습 채점 타이밍(A-3/A-7): 즉시 / 모아서. 실전은 항상 batch(A-5). */
+export type HskGradingMode = 'immediate' | 'batch'
 
 export interface HskEntryContext {
   level: HskLevel
   area: HskArea
   mode: HskMode
+  /** mode='practice'(문제 풀이) 일 때만. */
+  sessionType?: HskSessionType
+  /** sessionType='drill'(연습) 일 때만. 실전은 batch 로 강제된다. */
+  gradingMode?: HskGradingMode
 }
 
 export interface HotwordEntryContext {
