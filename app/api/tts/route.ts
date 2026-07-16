@@ -3,11 +3,11 @@ import { requireAuth, AuthError } from '@/lib/auth'
 import {
   isElevenLabsConfigured,
   synthesizeSpeech,
-  resolveSpeakerVoiceId,
+  assignSpeakerVoices,
   ElevenLabsError,
   TTS_MAX_CHARS,
 } from '@/lib/elevenlabs'
-import { extractSpokenChinese, parseDialogueTurns } from '@/lib/tts'
+import { extractSpokenChinese, parseDialogueTurns, hashString } from '@/lib/tts'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
@@ -32,9 +32,9 @@ export async function POST(req: Request): Promise<Response> {
 
   const raw = typeof (body as { text?: unknown })?.text === 'string' ? (body as { text: string }).text : ''
 
-  // 화자 표기 기준으로 분할(男/女). 표기 없으면 narrator 한 덩어리 → 단일 보이스.
+  // 화자 표기 기준으로 분할(男/女/男1…). 표기 없으면 narrator 한 덩어리 → 단일 보이스.
   const turns = parseDialogueTurns(raw)
-    .map((t) => ({ speaker: t.speaker, spoken: extractSpokenChinese(t.text) }))
+    .map((t) => ({ speaker: t.speaker, label: t.label, spoken: extractSpokenChinese(t.text) }))
     .filter((t) => t.spoken)
 
   const totalChars = turns.reduce((s, t) => s + t.spoken.length, 0)
@@ -56,9 +56,12 @@ export async function POST(req: Request): Promise<Response> {
 
   try {
     if (multiVoice) {
+      // 스크립트별 캐스팅 — 등장 순 화자에게 성별 풀에서 보이스를 배정(스크립트마다 조합 로테이션).
+      const distinct = turns.map((t) => ({ label: t.label, speaker: t.speaker }))
+      const voiceByLabel = assignSpeakerVoices(distinct, hashString(raw))
       // 화자별 보이스로 각 발화를 병렬 합성 후 순서대로 이어붙인다.
       const parts = await Promise.all(
-        turns.map((t) => synthesizeSpeech(t.spoken, { voiceId: resolveSpeakerVoiceId(t.speaker) })),
+        turns.map((t) => synthesizeSpeech(t.spoken, { voiceId: voiceByLabel[t.label] })),
       )
       const combined = Buffer.concat(parts.map((p) => Buffer.from(p.audio)))
       return new Response(combined, {
