@@ -6,8 +6,18 @@ import { useRouter } from "@/i18n/routing";
 import Card from "@/components/ui/Card";
 import QuizSession from "./QuizSession";
 import { isGradableItem, type QuizItem } from "@/lib/hsk-quiz";
+import { hskAreaLabel } from "@/lib/hsk";
 import type { HskSessionParams } from "@/lib/hsk";
 import type { HskQuestion, HskListeningQuestion } from "@/types/hsk";
+
+interface DrillState {
+  answers: Record<number, string>;
+  index: number;
+  flagged: number[];
+}
+interface PersistedDrill extends DrillState {
+  items: QuizItem[];
+}
 
 const SET_SIZE = 5;
 
@@ -22,11 +32,18 @@ export default function HskSessionClient({
   const { level, area, mode } = params;
   // 다문항 세트(듣기·독해 문제 풀이) vs 단일(개념·쓰기).
   const isQuiz = mode === "practice" && (area === "listening" || area === "reading");
+  // 오답 적립 topic + 연습(drill) 이어풀기 저장 키(실전은 저장 안 함, A-9).
+  const topic = `HSK ${level}급 ${hskAreaLabel(area)}`;
+  const storageKey =
+    isQuiz && params.sessionType === "drill"
+      ? `hsk-drill:${level}:${area}:${params.gradingMode ?? "immediate"}`
+      : null;
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<QuizItem[]>([]);
   const [single, setSingle] = useState<HskQuestion | null>(null);
+  const [restored, setRestored] = useState<DrillState | null>(null);
 
   const genListening = useCallback(async (): Promise<QuizItem | null> => {
     const res = await fetch("/api/hsk/listening/generate", {
@@ -73,6 +90,7 @@ export default function HskSessionClient({
     setError(null);
     setItems([]);
     setSingle(null);
+    setRestored(null);
     try {
       if (isQuiz) {
         const gen = area === "listening" ? genListening : genReading;
@@ -103,10 +121,36 @@ export default function HskSessionClient({
     }
   }, [isQuiz, area, mode, level, genListening, genReading]);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트/선택 변경 시 1회 생성(로딩 상태 진입). 의도적.
+  // 마운트 시: 연습(drill) 저장 세션이 있으면 이어풀기 복원, 없으면 생성(A-9).
+  const bootstrap = useCallback(() => {
+    if (storageKey && typeof window !== "undefined") {
+      try {
+        const raw = window.localStorage.getItem(storageKey);
+        if (raw) {
+          const saved = JSON.parse(raw) as PersistedDrill;
+          if (Array.isArray(saved?.items) && saved.items.length >= 2) {
+            setItems(saved.items);
+            setRestored({
+              answers: saved.answers ?? {},
+              index: saved.index ?? 0,
+              flagged: saved.flagged ?? [],
+            });
+            setError(null);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch {
+        /* 손상된 저장값은 무시하고 새로 생성 */
+      }
+    }
     void generate();
-  }, [generate]);
+  }, [storageKey, generate]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트 시 이어풀기 복원 또는 생성. 의도적.
+    bootstrap();
+  }, [bootstrap]);
 
   if (loading) return <SessionSkeleton />;
 
@@ -132,6 +176,9 @@ export default function HskSessionClient({
         items={items}
         gradingMode={params.gradingMode ?? "immediate"}
         sessionType={params.sessionType}
+        topic={topic}
+        storageKey={storageKey}
+        initialState={restored ?? undefined}
         onRetry={() => void generate()}
       />
     );
