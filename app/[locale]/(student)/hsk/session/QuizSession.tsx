@@ -165,8 +165,9 @@ export default function QuizSession({
   const revealed = !isExam && immediate && answered;
 
   return (
-    // 좌: 문제 풀이 / 우: 해설·AI 과외(errornote 공통 — 모든 콘텐츠 우측에 해설·AI). 모바일은 아래로 스택.
-    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-4">
+    // 3단(데스크톱): 좌=문제 / 가운데=해설 / 우=AI 과외. 탭 없이 각 열로 세로로 길게(화면 폭 활용).
+    // 모바일은 아래로 스택. errornote 공통 — 모든 콘텐츠에 해설·AI 상시 노출.
+    <div className="lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-4">
       <div className="space-y-3">
         {/* 실전: 타이머 + 이탈 경고 */}
         {isExam && (
@@ -306,8 +307,11 @@ export default function QuizSession({
         )}
       </div>
 
-      {/* 우: 해설 + AI 과외 (상시 노출). 실전은 잠금. */}
-      <SidePanel item={item} revealed={revealed} isExam={isExam} immediate={immediate} />
+      {/* 가운데: 해설 (실전은 채점 후) */}
+      <ExplainColumn item={item} revealed={revealed} isExam={isExam} immediate={immediate} />
+
+      {/* 우: AI 과외 (실전은 잠금) */}
+      <ChatColumn isExam={isExam} />
     </div>
   );
 }
@@ -428,9 +432,9 @@ function Choices({
   );
 }
 
-// 우측 상시 패널 — [해설 | AI 과외]. 실전(exam)은 채점 전 잠금(시험 무결성).
-// errornote 공통 규칙: 모든 콘텐츠 우측에 해설창 + AI 질문창이 존재.
-function SidePanel({
+// 가운데 열 — 해설(정답·대본·번역·해설). 실전은 채점 전 잠금. 세로로 길게(데스크톱).
+// errornote 공통 규칙: 모든 콘텐츠에 해설창 + AI 질문창 상시 노출.
+function ExplainColumn({
   item,
   revealed,
   isExam,
@@ -441,31 +445,34 @@ function SidePanel({
   isExam: boolean;
   immediate: boolean;
 }) {
-  const [tab, setTab] = useState<"explain" | "chat">("explain");
-  const tabBtn = (on: boolean) =>
-    `flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold transition-colors ${
-      on ? "bg-blue-soft text-blue-dark" : "text-bodytx hover:bg-ivory"
-    }`;
-
   return (
-    <div className="mt-3 flex h-[300px] flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[560px]">
-      <div className="grid grid-cols-2 border-b border-hairline" role="tablist" aria-label="해설·AI 과외">
-        <button type="button" role="tab" aria-selected={tab === "explain"} onClick={() => setTab("explain")} className={tabBtn(tab === "explain")}>
-          <Lightbulb size={15} aria-hidden /> 해설
-        </button>
-        <button type="button" role="tab" aria-selected={tab === "chat"} onClick={() => setTab("chat")} className={tabBtn(tab === "chat")}>
-          <MessageCircle size={15} aria-hidden /> AI 과외
-        </button>
+    <div className="mt-3 flex flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[calc(100dvh-7rem)]">
+      <div className="flex items-center gap-1.5 border-b border-hairline px-4 py-3 text-sm font-bold text-ink">
+        <Lightbulb size={15} className="text-gold" aria-hidden /> 해설
       </div>
       <div className="min-h-0 flex-1 overflow-auto">
-        {tab === "explain" ? (
-          <ExplainBody item={item} revealed={revealed} isExam={isExam} immediate={immediate} />
-        ) : isExam ? (
-          <LockedNote text="실전 중에는 AI 과외를 쓸 수 없어요. 채점이 끝나면 물어볼 수 있어요." />
-        ) : (
-          <TutorChat focusedError={null} />
-        )}
+        <ExplainBody item={item} revealed={revealed} isExam={isExam} immediate={immediate} />
       </div>
+    </div>
+  );
+}
+
+// 우측 열 — AI 과외 채팅(TutorChat 자체 헤더 사용). 실전은 잠금.
+function ChatColumn({ isExam }: { isExam: boolean }) {
+  return (
+    <div className="mt-3 flex h-[440px] flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[calc(100dvh-7rem)]">
+      {isExam ? (
+        <>
+          <div className="flex items-center gap-1.5 border-b border-hairline px-4 py-3 text-sm font-bold text-ink">
+            <MessageCircle size={15} className="text-blue" aria-hidden /> AI 과외
+          </div>
+          <div className="min-h-0 flex-1">
+            <LockedNote text="실전 중에는 AI 과외를 쓸 수 없어요. 채점이 끝나면 물어볼 수 있어요." />
+          </div>
+        </>
+      ) : (
+        <TutorChat focusedError={null} />
+      )}
     </div>
   );
 }
@@ -485,7 +492,7 @@ function ExplainBody({
     const msg = isExam
       ? "실전 채점 후 성적표에서 해설을 확인할 수 있어요."
       : immediate
-        ? "답을 고르면 여기에 정답·해설이 나와요."
+        ? "답을 고르면 여기에 정답·대본·해석·해설이 나와요."
         : "모아서 채점을 제출하면 성적표에서 해설이 나와요.";
     return (
       <div className="flex h-full items-center justify-center p-5 text-center">
@@ -504,6 +511,13 @@ function ExplainBody({
           <p lang="zh" className="mt-0.5 whitespace-pre-wrap font-cn text-sm leading-relaxed text-ink">
             {formatDialogueScript(item.audioScript)}
           </p>
+        </div>
+      )}
+      {/* 중국어 지문과 함께 한국어 해석 제공(사용자 요청) */}
+      {item.scriptTranslation && (
+        <div>
+          <p className="text-[11px] font-semibold text-muted">해석</p>
+          <p className="mt-0.5 whitespace-pre-wrap text-sm text-bodytx">{item.scriptTranslation}</p>
         </div>
       )}
       {item.explanation && (

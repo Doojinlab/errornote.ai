@@ -5,11 +5,21 @@
 
 const TTS_ENDPOINT = 'https://api.elevenlabs.io/v1/text-to-speech'
 // 기본 보이스(멀티링구얼 모델에서 중국어 지원). ELEVENLABS_VOICE_ID 로 재정의 가능.
-const DEFAULT_VOICE_ID = '21m00Tcm4TlvDq8ikWAM'
-// 중국어 지원 모델. 기본 v3(고품질). ELEVENLABS_MODEL_ID 로 재정의 가능.
-const DEFAULT_MODEL_ID = 'eleven_v3'
+const DEFAULT_VOICE_ID = '21m00Tcm4TlvDq8ikWAM' // Rachel(여성) — 내레이션·단일 발화 기본
+// 대화 멀티보이스용 화자별 기본 보이스(프리메이드, 멀티링구얼에서 중국어 발화).
+const DEFAULT_VOICE_ID_FEMALE = '21m00Tcm4TlvDq8ikWAM' // Rachel(여성)
+const DEFAULT_VOICE_ID_MALE = 'pNInz6obpgDQGcFmaJgB' // Adam(남성)
+// 중국어 지원 모델. 기본 eleven_multilingual_v2(API 안정). ELEVENLABS_MODEL_ID 로 재정의 가능.
+const DEFAULT_MODEL_ID = 'eleven_multilingual_v2'
 /** 대본 최대 길이(과금·남용 방지). */
 export const TTS_MAX_CHARS = 800
+
+/** 화자(male/female/narrator) → 보이스 id. 환경변수로 재정의 가능. */
+export function resolveSpeakerVoiceId(speaker: 'male' | 'female' | 'narrator'): string {
+  if (speaker === 'male') return process.env.ELEVENLABS_VOICE_ID_MALE ?? DEFAULT_VOICE_ID_MALE
+  if (speaker === 'female') return process.env.ELEVENLABS_VOICE_ID_FEMALE ?? DEFAULT_VOICE_ID_FEMALE
+  return process.env.ELEVENLABS_VOICE_ID ?? DEFAULT_VOICE_ID
+}
 
 export class ElevenLabsError extends Error {
   status: number
