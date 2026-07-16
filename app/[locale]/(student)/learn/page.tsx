@@ -71,7 +71,7 @@ export default async function LearnHomePage() {
               </LipButton>
             </HeroCard>
 
-            <MiniGrid tasks={data.tasks} />
+            <MiniGrid tasks={data.tasks} chapterId={data.today.chapterId} />
 
             <HubGrid title="바로가기" links={STUDY_LINKS} />
 
