@@ -24,9 +24,12 @@ export function buildHskListeningSystem(level: HskLevel): string {
     '- options: 4개 보기. 중국어 보기가 자연스러우면 중국어로, 아니면 한국어로.',
     '- answer: 반드시 options 중 하나와 글자까지 정확히 일치.',
     '- explanation: 왜 그 답인지 한국어로 간단히. 핵심 표현을 짚어준다.',
+    '- script_pinyin: audio_script 의 병음(성조부호, 예: nǐ hǎo). 화자표기(男/女)는 그대로 둔다.',
+    '- script_translation: audio_script 의 자연스러운 한국어 번역.',
     '',
     '출력은 아래 JSON 객체 하나만. 마크다운·설명 금지:',
-    '{"audio_script":"...","instructions":"...","question":"...",',
+    '{"audio_script":"...","script_pinyin":"...","script_translation":"...",',
+    '"instructions":"...","question":"...",',
     '"options":["...","...","...","..."],"answer":"...","explanation":"..."}',
   ].join('\n')
 }

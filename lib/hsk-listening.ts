@@ -15,6 +15,8 @@ import type { HskListeningQuestion } from '@/types/hsk'
 
 interface RawListening {
   audio_script?: unknown
+  script_pinyin?: unknown
+  script_translation?: unknown
   instructions?: unknown
   question?: unknown
   options?: unknown
@@ -49,6 +51,8 @@ export function parseHskListening(raw: string, level: HskLevel): HskListeningQue
   return {
     level,
     audioScript,
+    scriptPinyin: str(obj.script_pinyin),
+    scriptTranslation: str(obj.script_translation),
     instructions: instructions ?? '녹음을 듣고 알맞은 답을 고르세요.',
     question,
     options,

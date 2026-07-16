@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Volume2, Sparkles, PenLine, ArrowRight } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Sparkles, PenLine, ArrowRight } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
 import Card from "@/components/ui/Card";
+import ListeningPlayer from "./ListeningPlayer";
 import type { HskSessionParams } from "@/lib/hsk";
+import type { HskSessionType } from "@/types";
 import type { HskQuestion, HskListeningQuestion } from "@/types/hsk";
 
 // A-α: 영역별 문제 1개를 생성·제시하는 MVP 세션.
@@ -137,11 +139,16 @@ export default function HskSessionClient({
     );
   }
 
-  // 듣기 — 오디오(대본 TTS) + 4지선다.
+  // 듣기 — 오디오(대본 TTS + A-6 컨트롤) + 4지선다.
   if (area === "listening" && listening) {
     return (
       <div className="space-y-3">
-        <ListeningView q={listening} selected={selected} onSelect={setSelected} />
+        <ListeningView
+          q={listening}
+          selected={selected}
+          onSelect={setSelected}
+          sessionType={params.sessionType}
+        />
         <NextButton onClick={() => void generate()} label="다음 문제" />
       </div>
     );
@@ -230,74 +237,23 @@ function ListeningView({
   q,
   selected,
   onSelect,
+  sessionType,
 }: {
   q: HskListeningQuestion;
   selected: string | null;
   onSelect: (v: string) => void;
+  sessionType?: HskSessionType;
 }) {
-  const [synth, setSynth] = useState(false);
-  const [ttsDown, setTtsDown] = useState(false);
-  const urlRef = useRef<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    return () => {
-      audioRef.current?.pause();
-      if (urlRef.current) URL.revokeObjectURL(urlRef.current);
-    };
-  }, []);
-
-  async function play() {
-    if (urlRef.current && audioRef.current) {
-      void audioRef.current.play();
-      return;
-    }
-    setSynth(true);
-    try {
-      const res = await fetch("/api/hsk/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: q.audioScript }),
-      });
-      if (!res.ok) {
-        setTtsDown(true);
-        return;
-      }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      urlRef.current = url;
-      const audio = new Audio(url);
-      audioRef.current = audio;
-      void audio.play();
-    } catch {
-      setTtsDown(true);
-    } finally {
-      setSynth(false);
-    }
-  }
-
   const revealed = selected !== null;
   return (
     <Card className="space-y-3 p-4">
       <p className="text-sm text-bodytx">{q.instructions}</p>
-      <button
-        type="button"
-        onClick={play}
-        disabled={synth}
-        aria-label="녹음 듣기"
-        className="inline-flex items-center gap-1.5 rounded-full bg-blue-soft px-4 py-2 text-sm font-bold text-blue-dark disabled:opacity-60"
-      >
-        <Volume2 size={16} aria-hidden />
-        {synth ? "음성 준비 중…" : "▶ 듣기"}
-      </button>
-      {ttsDown && (
-        <div className="rounded-md border border-gold-soft bg-gold-soft px-3 py-2">
-          <p className="text-[11px] font-semibold text-gold-dark">
-            음성이 아직 설정되지 않았어요. 대본으로 대신 볼게요.
-          </p>
-          <p lang="zh" className="mt-1 whitespace-pre-wrap font-cn text-sm text-ink">{q.audioScript}</p>
-        </div>
-      )}
+      <ListeningPlayer
+        audioScript={q.audioScript}
+        scriptPinyin={q.scriptPinyin}
+        scriptTranslation={q.scriptTranslation}
+        sessionType={sessionType}
+      />
       <p className="text-sm font-semibold text-ink">{q.question}</p>
       <Choices options={q.options} answer={q.answer} selected={selected} onSelect={onSelect} />
       {revealed && (
