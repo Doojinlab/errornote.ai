@@ -164,8 +164,15 @@ export async function getHotwordByCategory(
   ])
   const list = rows ?? []
   if (list.length === 0) return null
-  const skip = new Set<string>([...(votesRes.data ?? []).map((v) => v.hotword_id), ...excludeIds])
-  const pick = list.find((r) => !skip.has(r.id)) ?? list.find((r) => !excludeIds.includes(r.id)) ?? list[0]
+  const disliked = new Set((votesRes.data ?? []).map((v) => v.hotword_id))
+  // 비추 제외. 전부 비추면 어쩔 수 없이 전체에서.
+  const base = list.filter((r) => !disliked.has(r.id))
+  const pool = base.length > 0 ? base : list
+  // 최근 본 것(excludeIds) 빼고 그중 랜덤으로 → 새로고침 다양성(B-4). 다 봤으면 풀 전체에서 랜덤(리셋).
+  const excludeSet = new Set(excludeIds)
+  const fresh = pool.filter((r) => !excludeSet.has(r.id))
+  const candidates = fresh.length > 0 ? fresh : pool
+  const pick = candidates[Math.floor(Math.random() * candidates.length)]
   return mapHotword(pick)
 }
 
