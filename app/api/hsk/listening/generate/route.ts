@@ -9,7 +9,7 @@ export const runtime = 'nodejs'
 export const maxDuration = 60
 
 // 실전 HSK 듣기 문제 생성 — 기출 유형 기반 AI 대본 1개.
-// 대본(audioScript)은 클라이언트가 /api/hsk/tts 로 음성 합성해 재생한다.
+// 대본(audioScript)은 클라이언트가 /api/tts 로 음성 합성해 재생한다.
 export async function POST(req: Request) {
   let auth
   try {

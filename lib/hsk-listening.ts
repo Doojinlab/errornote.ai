@@ -1,6 +1,6 @@
 // 실전 HSK 듣기(听力) — AI 대본 생성 (docs/dashboard-features.md §1 확장).
 // generateHskListening : 기출 유형 기반 듣기 문제 1개 생성(dispatchJSON).
-// 대본(audioScript)은 ElevenLabs TTS 로 재생한다(app/api/hsk/tts).
+// 대본(audioScript)은 ElevenLabs TTS 로 재생한다(app/api/tts).
 //
 // ⚠️ 저작권: 실제 기출 원문 저장 금지 — "유형" 기반 생성 문제만 다룬다.
 

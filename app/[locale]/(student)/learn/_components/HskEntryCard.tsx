@@ -43,13 +43,15 @@ export default function HskEntryCard({
   const [requesting, setRequesting] = useState(false);
 
   function enter() {
+    // 듣기는 개념 미지원 → 방어적으로 문제풀이로 강제(UI 가드가 이미 막지만 이중 안전).
+    const effectiveMode: HskMode = area === "listening" && mode === "concept" ? "practice" : mode;
     const q = new URLSearchParams({
       level: String(level),
       area,
-      hskMode: mode,
+      hskMode: effectiveMode,
       chapter: String(chapterId),
     });
-    if (mode === "practice") {
+    if (effectiveMode === "practice") {
       q.set("sessionType", sessionType);
       if (sessionType === "drill") q.set("gradingMode", gradingMode);
     }
@@ -134,7 +136,11 @@ export default function HskEntryCard({
                 <button
                   key={a.value}
                   type="button"
-                  onClick={() => setArea(a.value)}
+                  onClick={() => {
+                    setArea(a.value);
+                    // 듣기는 개념 학습 미지원(전용 오디오 생성 라우트만 존재) → 문제풀이로 되돌림.
+                    if (a.value === "listening" && mode === "concept") setMode("practice");
+                  }}
                   aria-pressed={area === a.value}
                   className={`${chip} ${area === a.value ? chipOn : chipOff}`}
                 >
@@ -150,23 +156,32 @@ export default function HskEntryCard({
           </div>
         </div>
 
-        {/* 모드 — 문제 풀이 / 개념 학습 */}
+        {/* 모드 — 문제 풀이 / 개념 학습 (듣기는 개념 미지원) */}
         <div>
           <div className={groupLabel}>모드</div>
           <div className="grid grid-cols-2 gap-2" role="group" aria-label="모드 선택">
-            {HSK_MODES.map((m) => (
-              <button
-                key={m.value}
-                type="button"
-                onClick={() => setMode(m.value)}
-                aria-pressed={mode === m.value}
-                title={m.desc}
-                className={`${chip} ${mode === m.value ? chipOn : chipOff}`}
-              >
-                {m.label}
-              </button>
-            ))}
+            {HSK_MODES.map((m) => {
+              const disabled = m.value === "concept" && area === "listening";
+              return (
+                <button
+                  key={m.value}
+                  type="button"
+                  onClick={() => setMode(m.value)}
+                  disabled={disabled}
+                  aria-pressed={mode === m.value}
+                  title={disabled ? "듣기는 문제풀이만 지원해요" : m.desc}
+                  className={`${chip} ${mode === m.value ? chipOn : chipOff} ${
+                    disabled ? "cursor-not-allowed opacity-40 hover:bg-white" : ""
+                  }`}
+                >
+                  {m.label}
+                </button>
+              );
+            })}
           </div>
+          {area === "listening" && (
+            <div className="mt-1.5 text-[11px] text-blue/70">듣기는 문제풀이만 제공돼요</div>
+          )}
         </div>
 
         {/* 문제 풀이 → 연습/실전 */}
