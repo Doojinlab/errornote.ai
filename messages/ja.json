@@ -192,6 +192,22 @@
         "allDone": "今日のミッションをすべて終えました！🎉",
         "failed": "処理に失敗しました。もう一度お試しください。"
       },
+      "gradedReading": {
+        "title": "カスタムリーディング",
+        "subtitle": "よく間違える文法を自然に織り込んだ短い文章を作ります。",
+        "emptyHint": "ボタンを押すと、あなたの誤りプロフィールに合わせた文章が作られます。",
+        "regenerateHint": "別の文章がほしいときは、新しく作ってみましょう。",
+        "generate": "文章を生成",
+        "regenerate": "新しい文章",
+        "generating": "生成中…",
+        "hskLevelLabel": "HSK {level}級レベル",
+        "targetedGrammar": "この文章が狙った弱点",
+        "noWeakness": "特定の弱点がないため、基礎文型を中心に作りました。",
+        "glossaryHeading": "語句の説明",
+        "questionsHeading": "内容確認",
+        "showAnswer": "答えを見る",
+        "genericError": "生成に失敗しました。しばらくして再度お試しください。"
+      },
       "errorDex": {
         "title": "誤り図鑑",
         "subtitle": "間違えた類型は「误モンスター」との遭遇です。しばらく間違えなければ、なつかせて図鑑に登録できます。",

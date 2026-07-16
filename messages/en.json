@@ -192,6 +192,22 @@
         "allDone": "You finished all of today's missions! 🎉",
         "failed": "Something went wrong. Please try again."
       },
+      "gradedReading": {
+        "title": "Targeted reading",
+        "subtitle": "We build a short passage that naturally weaves in the grammar you tend to get wrong.",
+        "emptyHint": "Tap the button to generate a passage tailored to your error profile.",
+        "regenerateHint": "Want a different passage? Generate a new one.",
+        "generate": "Generate passage",
+        "regenerate": "New passage",
+        "generating": "Generating…",
+        "hskLevelLabel": "HSK {level} level",
+        "targetedGrammar": "Weak points this passage targets",
+        "noWeakness": "No specific weak points yet, so we focused on basic patterns.",
+        "glossaryHeading": "Glossary",
+        "questionsHeading": "Comprehension",
+        "showAnswer": "Show answer",
+        "genericError": "Generation failed. Please try again in a moment."
+      },
       "errorDex": {
         "title": "Error Dex",
         "subtitle": "Each mistake type is an encounter with a ‘误 monster.’ Stop making it for a while and you tame it into your Dex.",
