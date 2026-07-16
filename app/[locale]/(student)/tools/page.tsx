@@ -1,4 +1,4 @@
-import { ScanText, Mic, Link2, Languages, FolderOpen, Download, Radio } from "lucide-react";
+import { ScanText, Sparkles, Mic, Link2, Languages, FolderOpen, Download, Radio } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { createServerClient } from "@/lib/supabase";
 import { HubGrid, type HubLink } from "@/components/student-ui";
@@ -57,6 +57,13 @@ export default async function ToolsPage() {
       desc: "작성한 중국어 문장을 붙여넣으면 오류를 찾아 교정해 드려요.",
       cta: "검사 시작",
       meta: usage.errors > 0 ? `지금까지 ${usage.errors}건 교정` : undefined,
+    },
+    {
+      href: "/quick-ask",
+      icon: Sparkles,
+      title: "이거 자연스러워?",
+      desc: "중국어 문장이 자연스러운지 원어민 친구처럼 즉답해 드려요.",
+      cta: "물어보기",
     },
     {
       href: "/pronunciation",

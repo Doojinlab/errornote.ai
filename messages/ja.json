@@ -192,6 +192,22 @@
         "allDone": "今日のミッションをすべて終えました！🎉",
         "failed": "処理に失敗しました。もう一度お試しください。"
       },
+      "gradedReading": {
+        "title": "カスタムリーディング",
+        "subtitle": "よく間違える文法を自然に織り込んだ短い文章を作ります。",
+        "emptyHint": "ボタンを押すと、あなたの誤りプロフィールに合わせた文章が作られます。",
+        "regenerateHint": "別の文章がほしいときは、新しく作ってみましょう。",
+        "generate": "文章を生成",
+        "regenerate": "新しい文章",
+        "generating": "生成中…",
+        "hskLevelLabel": "HSK {level}級レベル",
+        "targetedGrammar": "この文章が狙った弱点",
+        "noWeakness": "特定の弱点がないため、基礎文型を中心に作りました。",
+        "glossaryHeading": "語句の説明",
+        "questionsHeading": "内容確認",
+        "showAnswer": "答えを見る",
+        "genericError": "生成に失敗しました。しばらくして再度お試しください。"
+      },
       "errorDex": {
         "title": "誤り図鑑",
         "subtitle": "間違えた類型は「误モンスター」との遭遇です。しばらく間違えなければ、なつかせて図鑑に登録できます。",
@@ -230,6 +246,28 @@
         "categoryTheme": "テーマ",
         "categoryAvatar": "アバター",
         "categorySticker": "ステッカー"
+      },
+      "tonePractice": {
+        "back": "発音練習へ",
+        "title": "中国語の声調練習",
+        "subtitle": "単音節を録音すると、実際のピッチ（音の高さ）を解析して声調が合っているか判定します。",
+        "pickTarget": "練習する声調を選んでください",
+        "recordCta": "録音 (2秒)",
+        "recording": "録音中… はっきりと！",
+        "analyzing": "解析中…",
+        "correct": "正解！ 🎉",
+        "wrong": "もう一度やってみましょう",
+        "targetLabel": "目標",
+        "detectedLabel": "検出",
+        "detectedNone": "検出できず",
+        "pitchCurve": "あなたのピッチ曲線",
+        "noPitch": "声を検出できませんでした。もう少し長くはっきり発音してください。",
+        "micDenied": "マイクの許可が必要です。",
+        "unsupported": "このブラウザは音声解析に対応していません。",
+        "tone1": "第1声 (高平)",
+        "tone2": "第2声 (上昇)",
+        "tone3": "第3声 (低降)",
+        "tone4": "第4声 (下降)"
       },
       "league": {
         "title": "週間リーグ",
@@ -274,6 +312,24 @@
           "errors": "エラー",
           "chat": "チャット"
         }
+      },
+      "hskListening": {
+        "title": "HSK リスニング",
+        "subtitle": "AIが作った台本を音声で流します。聞いて正しい答えを選びましょう。",
+        "levelLabel": "級",
+        "generate": "リスニング問題を生成",
+        "generating": "生成中…",
+        "newQuestion": "新しい問題",
+        "play": "▶ 聞く",
+        "synthesizing": "音声を準備中…",
+        "questionHeading": "問題",
+        "scriptHeading": "台本",
+        "explanationHeading": "解説",
+        "answerLabel": "正解",
+        "correct": "正解！ 🎉",
+        "incorrect": "惜しい、もう一度聞いてみましょう",
+        "ttsUnavailable": "音声再生がまだ設定されていません。代わりに台本を表示します。（管理者: ELEVENLABS_API_KEY が必要）",
+        "genericError": "問題が発生しました。しばらくして再度お試しください。"
       },
       "errors": {
         "title": "エラー記録",
@@ -628,6 +684,7 @@
         "title": "発音練習",
         "subtitle": "声に出して読み、AIフィードバックを受けましょう",
         "historyLink": "履歴を見る →",
+        "toneDrillLink": "声調練習 (中国語)",
         "sampleTextsTitle": "サンプルテキスト",
         "textInputLabel": "読むテキスト",
         "textInputPlaceholder": "サンプルを選択するか、テキストを入力してください...",
