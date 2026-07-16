@@ -3,6 +3,8 @@
 //
 // 요청 구성(buildTtsRequest)은 순수 함수로 분리해 단위검증한다.
 
+import type { SpeakerAge } from '@/types/hsk'
+
 const TTS_ENDPOINT = 'https://api.elevenlabs.io/v1/text-to-speech'
 // 기본 보이스(멀티링구얼 모델에서 중국어 지원). ELEVENLABS_VOICE_ID 로 재정의 가능.
 const DEFAULT_VOICE_ID = '21m00Tcm4TlvDq8ikWAM' // Rachel(여성) — 내레이션·단일 발화 기본
@@ -71,6 +73,66 @@ export function assignSpeakerVoices(
     } else {
       map[s.label] = pools.narrator
     }
+  }
+  return map
+}
+
+// ── 방식 B: 연령·성별 특성 카탈로그(지문 맞춤 캐스팅) ─────────────────────────
+// 화자의 (성별 × 연령)에 맞는 보이스 풀. 프리메이드 기본값 — 실제 중국 성우 ID 가 있으면
+// 버킷별 env(ELEVENLABS_VOICES_MALE_SENIOR 등, 쉼표 목록)로 교체하면 품질이 올라간다.
+export type VoiceCatalog = Record<'male' | 'female', Record<SpeakerAge, string[]>>
+
+const DEFAULT_VOICE_CATALOG: VoiceCatalog = {
+  male: {
+    senior: ['VR6AewLTigWG4xSOukaG'], // Arnold
+    adult: ['pNInz6obpgDQGcFmaJgB', 'ErXwobaYiN019PkySvjV'], // Adam, Antoni
+    young: ['TxGEqnHWrfWFTfGW9XjX', 'yoZ06aMxZJJ28mfd3POQ'], // Josh, Sam
+    child: ['TxGEqnHWrfWFTfGW9XjX', 'yoZ06aMxZJJ28mfd3POQ'], // young 폴백
+  },
+  female: {
+    senior: ['AZnzlk1XvdvUeBnXmlld'], // Domi
+    adult: ['21m00Tcm4TlvDq8ikWAM', 'EXAVITQu4vr4xnSDxMaL'], // Rachel, Bella
+    young: ['MF3mGyEYCl7XYWbV9V6O'], // Elli
+    child: ['MF3mGyEYCl7XYWbV9V6O'], // young 폴백
+  },
+}
+
+const AGE_BUCKETS: readonly SpeakerAge[] = ['child', 'young', 'adult', 'senior']
+
+/** (성별 × 연령) 보이스 카탈로그. 버킷별 env(쉼표 목록)로 재정의 가능. */
+export function getVoiceCatalog(): VoiceCatalog {
+  const build = (gender: 'male' | 'female'): Record<SpeakerAge, string[]> => {
+    const g = DEFAULT_VOICE_CATALOG[gender]
+    const out = {} as Record<SpeakerAge, string[]>
+    for (const age of AGE_BUCKETS) {
+      out[age] = envVoiceList(`ELEVENLABS_VOICES_${gender.toUpperCase()}_${age.toUpperCase()}`) ?? g[age]
+    }
+    return out
+  }
+  return { male: build('male'), female: build('female') }
+}
+
+/**
+ * 화자 캐스팅(방식 B) → 라벨별 보이스 id. 각 화자의 (성별×연령) 버킷 풀에서 배정한다.
+ * 같은 라벨=같은 보이스, 같은 버킷의 다른 화자는 서로 다른 보이스, 스크립트마다 조합 로테이션(seed).
+ * 버킷 풀이 비면 같은 성별 adult → 최후엔 남성 adult 로 폴백.
+ */
+export function assignCastVoices(
+  cast: { label: string; gender: 'male' | 'female'; age: SpeakerAge }[],
+  seed: number,
+  catalog: VoiceCatalog = getVoiceCatalog(),
+): Record<string, string> {
+  const map: Record<string, string> = {}
+  const counters: Record<string, number> = {}
+  for (const s of cast) {
+    if (map[s.label]) continue
+    const byAge = catalog[s.gender]
+    const pool =
+      byAge[s.age]?.length ? byAge[s.age] : byAge.adult?.length ? byAge.adult : catalog.male.adult
+    const key = `${s.gender}:${s.age}`
+    const idx = counters[key] ?? 0
+    counters[key] = idx + 1
+    map[s.label] = pool[(seed + idx) % pool.length]
   }
   return map
 }

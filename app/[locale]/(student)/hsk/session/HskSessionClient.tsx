@@ -65,6 +65,7 @@ export default function HskSessionClient({
       audioScript: question.audioScript,
       scriptPinyin: question.scriptPinyin,
       scriptTranslation: question.scriptTranslation,
+      cast: question.cast,
     };
   }, [level]);
 

@@ -11,7 +11,7 @@ import {
   buildHskListeningUserPrompt,
 } from '@/lib/prompts/hsk-listening'
 import type { HskLevel } from '@/types'
-import type { HskListeningQuestion } from '@/types/hsk'
+import type { HskListeningQuestion, HskSpeaker, SpeakerAge } from '@/types/hsk'
 
 interface RawListening {
   audio_script?: unknown
@@ -22,10 +22,30 @@ interface RawListening {
   options?: unknown
   answer?: unknown
   explanation?: unknown
+  speakers?: unknown
 }
 
 function str(v: unknown): string | undefined {
   return typeof v === 'string' && v.trim() ? v.trim() : undefined
+}
+
+const AGES: readonly SpeakerAge[] = ['child', 'young', 'adult', 'senior']
+
+/** 모델이 준 화자 캐스팅(speakers)을 검증·정규화. 유효 항목이 없으면 undefined(성별 풀 폴백). */
+function parseCast(v: unknown): HskSpeaker[] | undefined {
+  if (!Array.isArray(v)) return undefined
+  const cast: HskSpeaker[] = []
+  for (const s of v) {
+    if (!s || typeof s !== 'object') continue
+    const o = s as Record<string, unknown>
+    const label = str(o.label)
+    const gender = o.gender === 'male' || o.gender === 'female' ? o.gender : undefined
+    if (!label || !gender) continue
+    const age = AGES.includes(o.age as SpeakerAge) ? (o.age as SpeakerAge) : 'adult'
+    const role = str(o.role)
+    cast.push({ label, gender, age, ...(role ? { role } : {}) })
+  }
+  return cast.length > 0 ? cast : undefined
 }
 
 export function parseHskListening(raw: string, level: HskLevel): HskListeningQuestion {
@@ -51,6 +71,7 @@ export function parseHskListening(raw: string, level: HskLevel): HskListeningQue
   return {
     level,
     audioScript,
+    cast: parseCast(obj.speakers),
     scriptPinyin: str(obj.script_pinyin),
     scriptTranslation: str(obj.script_translation),
     instructions: instructions ?? '녹음을 듣고 알맞은 답을 고르세요.',

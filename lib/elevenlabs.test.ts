@@ -4,11 +4,18 @@ import {
   isElevenLabsConfigured,
   synthesizeSpeech,
   assignSpeakerVoices,
+  assignCastVoices,
+  type VoiceCatalog,
   ElevenLabsError,
   TTS_MAX_CHARS,
 } from './elevenlabs'
 
 const POOLS = { male: ['M1', 'M2', 'M3'], female: ['F1', 'F2'], narrator: 'N' }
+
+const CATALOG: VoiceCatalog = {
+  male: { child: ['MC'], young: ['MY1', 'MY2'], adult: ['MA1', 'MA2'], senior: ['MS'] },
+  female: { child: ['FC'], young: ['FY'], adult: ['FA1', 'FA2'], senior: ['FS'] },
+}
 
 const ORIG = process.env.ELEVENLABS_API_KEY
 const ORIG_VOICE = process.env.ELEVENLABS_VOICE_ID
@@ -111,5 +118,42 @@ describe('assignSpeakerVoices()', () => {
 
   it('narrator 는 내레이터 보이스', () => {
     expect(assignSpeakerVoices([{ label: 'narrator', speaker: 'narrator' }], 5, POOLS).narrator).toBe('N')
+  })
+})
+
+describe('assignCastVoices()', () => {
+  it('성별×연령 버킷에서 배정 — 노인/성인 등 특성별로 다른 보이스', () => {
+    const map = assignCastVoices(
+      [
+        { label: '男', gender: 'male', age: 'senior' },
+        { label: '女', gender: 'female', age: 'adult' },
+      ],
+      0,
+      CATALOG,
+    )
+    expect(map['男']).toBe('MS') // 남성 노인
+    expect(map['女']).toBe('FA1') // 여성 성인
+  })
+
+  it('같은 버킷 다중 화자는 서로 다른 보이스', () => {
+    const map = assignCastVoices(
+      [
+        { label: '男1', gender: 'male', age: 'adult' },
+        { label: '男2', gender: 'male', age: 'adult' },
+      ],
+      0,
+      CATALOG,
+    )
+    expect(map['男1']).toBe('MA1')
+    expect(map['男2']).toBe('MA2')
+  })
+
+  it('버킷 풀이 비면 같은 성별 adult 로 폴백', () => {
+    const sparse: VoiceCatalog = {
+      male: { child: [], young: [], adult: ['MA1'], senior: [] },
+      female: { child: [], young: [], adult: ['FA1'], senior: [] },
+    }
+    const map = assignCastVoices([{ label: '男', gender: 'male', age: 'child' }], 0, sparse)
+    expect(map['男']).toBe('MA1')
   })
 })

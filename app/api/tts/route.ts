@@ -4,13 +4,34 @@ import {
   isElevenLabsConfigured,
   synthesizeSpeech,
   assignSpeakerVoices,
+  assignCastVoices,
   ElevenLabsError,
   TTS_MAX_CHARS,
 } from '@/lib/elevenlabs'
 import { extractSpokenChinese, parseDialogueTurns, hashString } from '@/lib/tts'
+import type { SpeakerAge } from '@/types/hsk'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
+
+const AGES: readonly SpeakerAge[] = ['child', 'young', 'adult', 'senior']
+
+/** body.cast(방식 B 캐스팅)를 검증·정규화. 없거나 잘못되면 빈 배열(성별 풀 폴백). */
+function parseBodyCast(body: unknown): { label: string; gender: 'male' | 'female'; age: SpeakerAge }[] {
+  const arr = (body as { cast?: unknown })?.cast
+  if (!Array.isArray(arr)) return []
+  const out: { label: string; gender: 'male' | 'female'; age: SpeakerAge }[] = []
+  for (const s of arr) {
+    if (!s || typeof s !== 'object') continue
+    const o = s as Record<string, unknown>
+    const label = typeof o.label === 'string' ? o.label.trim() : ''
+    const gender = o.gender === 'male' || o.gender === 'female' ? o.gender : null
+    if (!label || !gender) continue
+    const age = AGES.includes(o.age as SpeakerAge) ? (o.age as SpeakerAge) : 'adult'
+    out.push({ label, gender, age })
+  }
+  return out
+}
 
 // 공용 TTS — 중국어 텍스트를 음성(mp3)으로 합성(ElevenLabs). 듣기 지문·热词 발음 공용.
 // 한글·라틴은 제거해 중국어만 읽는다(오발음 방지). 키 미설정 시 503(code: tts_unconfigured).
@@ -56,9 +77,14 @@ export async function POST(req: Request): Promise<Response> {
 
   try {
     if (multiVoice) {
-      // 스크립트별 캐스팅 — 등장 순 화자에게 성별 풀에서 보이스를 배정(스크립트마다 조합 로테이션).
+      // 스크립트별 캐스팅. cast(방식 B, 성별×연령)가 오면 특성 카탈로그로 배정하고,
+      // cast 없거나 누락된 화자는 성별 풀로 폴백(스크립트마다 조합 로테이션).
+      const seed = hashString(raw)
       const distinct = turns.map((t) => ({ label: t.label, speaker: t.speaker }))
-      const voiceByLabel = assignSpeakerVoices(distinct, hashString(raw))
+      const bodyCast = parseBodyCast(body)
+      const voiceByLabel = bodyCast.length
+        ? { ...assignSpeakerVoices(distinct, seed), ...assignCastVoices(bodyCast, seed) }
+        : assignSpeakerVoices(distinct, seed)
       // 화자별 보이스로 각 발화를 병렬 합성 후 순서대로 이어붙인다.
       const parts = await Promise.all(
         turns.map((t) => synthesizeSpeech(t.spoken, { voiceId: voiceByLabel[t.label] })),

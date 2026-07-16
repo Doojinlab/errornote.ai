@@ -1,6 +1,8 @@
 // 실전 HSK 다문항 세션 — 채점·완료 판정 순수 로직 (A-γ, A-7/A-8).
 // UI(QuizSession)와 분리해 단위검증한다.
 
+import type { HskSpeaker } from '@/types/hsk'
+
 export interface QuizItem {
   kind: 'listening' | 'reading'
   instructions: string
@@ -12,6 +14,8 @@ export interface QuizItem {
   audioScript?: string
   scriptPinyin?: string
   scriptTranslation?: string
+  /** 대본 화자 캐스팅(방식 B) — TTS 성우 배정용. */
+  cast?: HskSpeaker[]
   // 독해 전용
   passage?: string
 }
