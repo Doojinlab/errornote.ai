@@ -220,6 +220,7 @@ export default function QuizSession({
           {item.kind === "listening" && item.audioScript && (
             <ListeningPlayer
               audioScript={item.audioScript}
+              cast={item.cast}
               scriptPinyin={item.scriptPinyin}
               scriptTranslation={item.scriptTranslation}
               sessionType={sessionType}

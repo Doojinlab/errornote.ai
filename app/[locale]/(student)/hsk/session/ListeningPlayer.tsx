@@ -5,6 +5,7 @@ import { Play, Pause, Repeat, Gauge, ScrollText } from "lucide-react";
 import { pinyinToneParts, toneTextClass } from "@/lib/pinyin-tone";
 import { formatDialogueScript } from "@/lib/hsk-quiz";
 import type { HskSessionType } from "@/types";
+import type { HskSpeaker } from "@/types/hsk";
 
 // A-6 듣기 재생 컨트롤 — 속도(0.75/1/1.25)·반복(1/2/무제한)·재생/일시정지·스크립트 토글.
 // 음성은 ElevenLabs(서버 /api/tts, 기본 v3)로 통일. 마운트 시 사전 생성·캐싱.
@@ -20,11 +21,13 @@ const REPEATS: { value: RepeatCount; label: string }[] = [
 
 export default function ListeningPlayer({
   audioScript,
+  cast,
   scriptPinyin,
   scriptTranslation,
   sessionType,
 }: {
   audioScript: string;
+  cast?: HskSpeaker[];
   scriptPinyin?: string;
   scriptTranslation?: string;
   sessionType?: HskSessionType;
@@ -50,7 +53,7 @@ export default function ListeningPlayer({
       const res = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: audioScript }),
+        body: JSON.stringify({ text: audioScript, cast }),
       });
       if (!res.ok) {
         setTtsDown(true);
@@ -77,7 +80,7 @@ export default function ListeningPlayer({
     } finally {
       setSynth(false);
     }
-  }, [audioScript]);
+  }, [audioScript, cast]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트 시 오디오 사전 생성(로딩 상태). 의도적.

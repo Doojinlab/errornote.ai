@@ -75,6 +75,29 @@ describe('parseHskListening()', () => {
     })
     expect(parseHskListening(raw, 3).instructions).toContain('녹음')
   })
+
+  it('speakers(캐스팅)를 파싱·검증(잘못된 항목은 제외, age 기본 adult)', () => {
+    const raw = JSON.stringify({
+      audio_script: '男：你好。女：你好。',
+      question: 'q',
+      options: ['a', 'b'],
+      answer: 'a',
+      speakers: [
+        { label: '男', gender: 'male', age: 'senior', role: '할아버지' },
+        { label: '女', gender: 'female' }, // age 누락 → adult
+        { gender: 'male' }, // label 없음 → 제외
+      ],
+    })
+    const q = parseHskListening(raw, 4)
+    expect(q.cast).toEqual([
+      { label: '男', gender: 'male', age: 'senior', role: '할아버지' },
+      { label: '女', gender: 'female', age: 'adult' },
+    ])
+  })
+
+  it('speakers 없으면 cast 는 undefined', () => {
+    expect(parseHskListening(VALID, 4).cast).toBeUndefined()
+  })
 })
 
 describe('generateHskListening()', () => {
