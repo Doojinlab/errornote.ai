@@ -6,21 +6,35 @@
 import type { SpeakerAge } from '@/types/hsk'
 
 const TTS_ENDPOINT = 'https://api.elevenlabs.io/v1/text-to-speech'
-// 기본 보이스(멀티링구얼 모델에서 중국어 지원). ELEVENLABS_VOICE_ID 로 재정의 가능.
-const DEFAULT_VOICE_ID = '21m00Tcm4TlvDq8ikWAM' // Rachel(여성) — 내레이션·단일 발화 기본
+// 기본 보이스(내레이션·단일 발화, 예: 热词 발음). 네이티브 중국 성우. ELEVENLABS_VOICE_ID 로 재정의.
+const DEFAULT_VOICE_ID = 'JZLpE3AGwpKYZI2X65hN' // 중국 여성
 
-// 대화 멀티보이스 — 성별별 프리메이드 보이스 풀(멀티링구얼에서 중국어 발화).
+// 대화 멀티보이스 — 성별별 네이티브 중국 성우 풀(cast 없는 대본용 폴백).
 // 스크립트마다 풀에서 다른 조합을 골라 "다양한 성우"를 자동 배정한다.
-// 더 나은(네이티브) 중국어 보이스가 있으면 아래 env 로 교체(쉼표로 여러 개 = 풀).
+// env(쉼표 목록)로 교체 가능.
 const DEFAULT_MALE_VOICE_POOL = [
-  'pNInz6obpgDQGcFmaJgB', // Adam
-  'ErXwobaYiN019PkySvjV', // Antoni
-  'TxGEqnHWrfWFTfGW9XjX', // Josh
+  'cwzmKSYMCC9Aym1ymCnt',
+  'agczkAUlHLowaNnL72Cc',
+  'nss5M23ZSzhG3Tn0b7wN',
+  'hFamrilbAE6WDMtWgKvu',
+  'vZZLclMx4wouUtKBRfZn',
+  'DowyQ68vDpgFYdWVGjc3',
+  'fYmV8EanqZP9BI4WvpB7',
+  'BWN0mOtkGHghA3CYFzFK',
+  'bZtjnyJAFD0Cp3lfNG5g',
+  'W8lBaQb9YIoddhxfQNLP',
+  'xh2OInDk4GEYuYRtHx4M',
 ]
 const DEFAULT_FEMALE_VOICE_POOL = [
-  '21m00Tcm4TlvDq8ikWAM', // Rachel
-  'EXAVITQu4vr4xnSDxMaL', // Bella
-  'MF3mGyEYCl7XYWbV9V6O', // Elli
+  'JZLpE3AGwpKYZI2X65hN',
+  '9lHjugDhwqoxA5MhX0az',
+  'kAIqZ7fZv234ClKXwzDx',
+  'YxbjaPemDJV2xlfvkiIG',
+  'ByhETIclHirOlWnWKhHc',
+  'BqljjWyTnrioXPCNkCd4',
+  'bhJUNIXWQQ94l8eI2VUf',
+  'm7QGIiNrWASyI5oJn4I8',
+  'ggacvEjbmpoSuEinfFWs',
 ]
 // 중국어 지원 모델. 기본 eleven_multilingual_v2(API 안정). ELEVENLABS_MODEL_ID 로 재정의 가능.
 const DEFAULT_MODEL_ID = 'eleven_multilingual_v2'
@@ -82,18 +96,20 @@ export function assignSpeakerVoices(
 // 버킷별 env(ELEVENLABS_VOICES_MALE_SENIOR 등, 쉼표 목록)로 교체하면 품질이 올라간다.
 export type VoiceCatalog = Record<'male' | 'female', Record<SpeakerAge, string[]>>
 
+// 네이티브 중국 성우를 (성별×연령) 버킷에 분배. ⚠️ 제공된 ID 에 나이 정보가 없어 분배는
+// 임의(근사)다 — 실제 나이대를 알려주면 정확히 재배치. 버킷별 env(쉼표목록)로 재정의 가능.
 const DEFAULT_VOICE_CATALOG: VoiceCatalog = {
   male: {
-    senior: ['VR6AewLTigWG4xSOukaG'], // Arnold
-    adult: ['pNInz6obpgDQGcFmaJgB', 'ErXwobaYiN019PkySvjV'], // Adam, Antoni
-    young: ['TxGEqnHWrfWFTfGW9XjX', 'yoZ06aMxZJJ28mfd3POQ'], // Josh, Sam
-    child: ['TxGEqnHWrfWFTfGW9XjX', 'yoZ06aMxZJJ28mfd3POQ'], // young 폴백
+    child: ['cwzmKSYMCC9Aym1ymCnt', 'agczkAUlHLowaNnL72Cc'],
+    young: ['nss5M23ZSzhG3Tn0b7wN', 'hFamrilbAE6WDMtWgKvu', 'vZZLclMx4wouUtKBRfZn'],
+    adult: ['DowyQ68vDpgFYdWVGjc3', 'fYmV8EanqZP9BI4WvpB7', 'BWN0mOtkGHghA3CYFzFK'],
+    senior: ['bZtjnyJAFD0Cp3lfNG5g', 'W8lBaQb9YIoddhxfQNLP', 'xh2OInDk4GEYuYRtHx4M'],
   },
   female: {
-    senior: ['AZnzlk1XvdvUeBnXmlld'], // Domi
-    adult: ['21m00Tcm4TlvDq8ikWAM', 'EXAVITQu4vr4xnSDxMaL'], // Rachel, Bella
-    young: ['MF3mGyEYCl7XYWbV9V6O'], // Elli
-    child: ['MF3mGyEYCl7XYWbV9V6O'], // young 폴백
+    child: ['JZLpE3AGwpKYZI2X65hN', '9lHjugDhwqoxA5MhX0az'],
+    young: ['kAIqZ7fZv234ClKXwzDx', 'YxbjaPemDJV2xlfvkiIG'],
+    adult: ['ByhETIclHirOlWnWKhHc', 'BqljjWyTnrioXPCNkCd4', 'bhJUNIXWQQ94l8eI2VUf'],
+    senior: ['m7QGIiNrWASyI5oJn4I8', 'ggacvEjbmpoSuEinfFWs'],
   },
 }
 
