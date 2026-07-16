@@ -6,12 +6,13 @@ import {
   ElevenLabsError,
   TTS_MAX_CHARS,
 } from '@/lib/elevenlabs'
+import { extractSpokenChinese } from '@/lib/tts'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
 
-// HSK 듣기 대본 → 음성(mp3) 합성 (ElevenLabs).
-// ELEVENLABS_API_KEY 미설정 시 503(code: tts_unconfigured) — 클라이언트가 대본 표시로 폴백.
+// 공용 TTS — 중국어 텍스트를 음성(mp3)으로 합성(ElevenLabs). 듣기 지문·热词 발음 공용.
+// 한글·라틴은 제거해 중국어만 읽는다(오발음 방지). 키 미설정 시 503(code: tts_unconfigured).
 export async function POST(req: Request): Promise<Response> {
   try {
     await requireAuth('student')
@@ -27,11 +28,10 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json({ error: '잘못된 JSON' }, { status: 400 })
   }
 
-  const text = typeof (body as { text?: unknown })?.text === 'string'
-    ? (body as { text: string }).text.trim()
-    : ''
+  const raw = typeof (body as { text?: unknown })?.text === 'string' ? (body as { text: string }).text : ''
+  const text = extractSpokenChinese(raw)
   if (!text) {
-    return NextResponse.json({ error: 'text 는 필수입니다' }, { status: 400 })
+    return NextResponse.json({ error: '읽을 중국어 텍스트가 없습니다' }, { status: 400 })
   }
   if (text.length > TTS_MAX_CHARS) {
     return NextResponse.json({ error: `text 는 최대 ${TTS_MAX_CHARS}자까지 지원합니다` }, { status: 400 })
@@ -51,7 +51,7 @@ export async function POST(req: Request): Promise<Response> {
       headers: { 'Content-Type': contentType, 'Cache-Control': 'no-store' },
     })
   } catch (err) {
-    console.error('[api/hsk/tts]', err)
+    console.error('[api/tts]', err)
     if (err instanceof ElevenLabsError) {
       const code = err.status === 503 ? 'tts_unconfigured' : undefined
       return NextResponse.json({ error: err.message, code }, { status: err.status })
