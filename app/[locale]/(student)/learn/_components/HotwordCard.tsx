@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
 import { pinyinToneParts, toneTextClass } from "@/lib/pinyin-tone";
+import { playNormalized } from "@/lib/normalize-audio";
 import type { Hotword, HotwordVote } from "@/types/hotwords";
 import type { CustomHotword } from "@/lib/hotword-custom";
 
@@ -84,11 +85,11 @@ export default function HotwordCard({
   const [speaking, setSpeaking] = useState(false);
   const seenIds = useRef<string[]>(hotword ? [hotword.id] : []);
   const impressed = useRef<Set<string>>(new Set());
-  const speakUrlRef = useRef<string | null>(null);
 
   // 발음 재생 — ElevenLabs(서버 /api/tts). 한글은 서버에서 걸러 중국어만 읽는다.
   // voice:'bright' → 서버가 밝은 하이톤 풀에서 랜덤으로 골라 합성한다.
-  // 새로고침(단어 로드)·재생 때마다 다양한 밝은 음성이 나온다(고정 X).
+  // 성우마다 볼륨이 제각각이라, 재생은 playNormalized 로 라우드니스 정규화 + 부스트해서
+  // 항상 같은 높낮이로, 크게 들리게 한다.
   async function speak(text: string) {
     if (speaking) return;
     setSpeaking(true);
@@ -99,23 +100,13 @@ export default function HotwordCard({
         body: JSON.stringify({ text, voice: "bright" }),
       });
       if (!res.ok) return; // 미설정(503) 등은 조용히 무시
-      const blob = await res.blob();
-      if (speakUrlRef.current) URL.revokeObjectURL(speakUrlRef.current);
-      const url = URL.createObjectURL(blob);
-      speakUrlRef.current = url;
-      await new Audio(url).play();
+      await playNormalized(await res.blob());
     } catch {
       /* 재생 실패는 학습 흐름을 막지 않는다 */
     } finally {
       setSpeaking(false);
     }
   }
-
-  useEffect(() => {
-    return () => {
-      if (speakUrlRef.current) URL.revokeObjectURL(speakUrlRef.current);
-    };
-  }, []);
 
   // 고유 노출 집계 — 풀 단어가 바뀔 때마다 1회(멱등).
   useEffect(() => {
