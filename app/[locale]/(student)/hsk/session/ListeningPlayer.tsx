@@ -33,7 +33,7 @@ export default function ListeningPlayer({
 }) {
   const locked = sessionType === "exam";
 
-  const [synth, setSynth] = useState(false);
+  const [synth, setSynth] = useState(true);
   const [ttsDown, setTtsDown] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<number>(1);
@@ -80,16 +80,18 @@ export default function ListeningPlayer({
     }
   }, [audioScript, speechText, cast]);
 
-  // 미리 생성하지 않는다(비용 절감) — "듣기"를 눌렀을 때만 합성한다. 언마운트 시 오디오 정리.
-  // (문항 전환은 QuizSession 에서 key 로 리마운트 → 상태·오디오가 항상 새로 시작.)
+  // 마운트 시 미리 생성·캐싱해 "듣기"를 누르면 즉시 재생되게 한다. 멀티보이스는 합성이 2~4초 걸려
+  // 클릭 후 생성하면 대기가 길어 이탈 위험 → 미리 생성. 실사용은 문항마다 재생하므로 추가 비용도 미미.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트 시 오디오 사전 생성(로딩 상태). 의도적.
+    void ensureAudio();
     return () => {
       audioRef.current?.pause();
       if (urlRef.current) URL.revokeObjectURL(urlRef.current);
       audioRef.current = null;
       urlRef.current = null;
     };
-  }, []);
+  }, [ensureAudio]);
 
   async function togglePlay() {
     const audio = await ensureAudio();
