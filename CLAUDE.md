@@ -57,6 +57,7 @@ Copy `.env.example` to `.env.local` and fill in the values below.
 | `WEB_PUSH_SUBJECT` | Web push sender identity |
 | `ELEVENLABS_API_KEY` | HSK 듣기 TTS 음성(`/hsk/session` 영역=듣기). 없으면 대본 표시로 폴백 |
 | `ELEVENLABS_VOICE_ID` / `ELEVENLABS_MODEL_ID` | ElevenLabs 보이스·모델 재정의(선택) |
+| `ELEVENLABS_VOICE_ID_BRIGHT` | 今日热词 발음용 "밝은 하이톤" 보이스 풀(쉼표 목록). 미설정 시 여성 풀에서 랜덤 |
 | `DEEPL_API_KEY` | DeepL translation comparison |
 | `PAPAGO_CLIENT_ID` / `PAPAGO_CLIENT_SECRET` | Papago translation comparison |
 | `OPENAI_API_KEY` / `OPENAI_TRANSLATE_MODEL` | GPT translation comparison |

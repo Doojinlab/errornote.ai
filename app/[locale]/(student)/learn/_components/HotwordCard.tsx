@@ -87,6 +87,8 @@ export default function HotwordCard({
   const speakUrlRef = useRef<string | null>(null);
 
   // 발음 재생 — ElevenLabs(서버 /api/tts). 한글은 서버에서 걸러 중국어만 읽는다.
+  // voice:'bright' → 서버가 밝은 하이톤 풀에서 랜덤으로 골라 합성한다.
+  // 새로고침(단어 로드)·재생 때마다 다양한 밝은 음성이 나온다(고정 X).
   async function speak(text: string) {
     if (speaking) return;
     setSpeaking(true);
@@ -94,7 +96,7 @@ export default function HotwordCard({
       const res = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, voice: "bright" }),
       });
       if (!res.ok) return; // 미설정(503) 등은 조용히 무시
       const blob = await res.blob();

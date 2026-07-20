@@ -5,6 +5,8 @@ import {
   synthesizeSpeech,
   assignSpeakerVoices,
   assignCastVoices,
+  pickBrightVoice,
+  BRIGHT_VOICE_SETTINGS,
   ElevenLabsError,
   TTS_MAX_CHARS,
 } from '@/lib/elevenlabs'
@@ -123,7 +125,19 @@ export async function POST(req: Request): Promise<Response> {
       })
     }
 
-    const { audio, contentType } = await synthesizeSpeech(turns.map((t) => t.spoken).join(' '))
+    // 단일 발화(热词 발음 등). voice:'bright' 면 밝은 하이톤 풀에서 랜덤으로 골라 다양한 음성으로 낸다.
+    // seed 를 주면 그 값으로 고정, 없으면 매 요청 랜덤 → 새로고침·재생마다 다른 밝은 성우.
+    const b = body as { voice?: unknown; seed?: unknown }
+    const brightOpts =
+      b.voice === 'bright'
+        ? {
+            voiceId: pickBrightVoice(
+              typeof b.seed === 'number' ? b.seed : Math.floor(Math.random() * 1e9),
+            ),
+            voiceSettings: { ...BRIGHT_VOICE_SETTINGS },
+          }
+        : {}
+    const { audio, contentType } = await synthesizeSpeech(turns.map((t) => t.spoken).join(' '), brightOpts)
     return new Response(audio, {
       status: 200,
       headers: { 'Content-Type': contentType, 'Cache-Control': 'no-store' },
