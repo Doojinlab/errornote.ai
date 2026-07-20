@@ -24,6 +24,16 @@ const SECONDS_PER_ITEM: Record<QuizItem["kind"], number> = {
 };
 const WARN_SECONDS = 15;
 
+// 듣기 음성 텍스트 — 대화(대본)에 이어 질문·보기까지 읽어준다(실제 HSK 처럼). 화면에서 문제 텍스트를
+// 숨겨도 음성만으로 무엇을 묻는지·보기가 무엇인지 알 수 있게. (한글·라틴은 서버 TTS 가 걸러 중국어만 읽음)
+function buildListeningSpeech(it: QuizItem): string {
+  const parts: string[] = [];
+  if (it.audioScript) parts.push(it.audioScript);
+  if (it.question) parts.push(it.question);
+  if (it.options.length) parts.push(it.options.join("。"));
+  return parts.join("\n");
+}
+
 interface Persisted {
   items: QuizItem[];
   answers: Record<number, string>;
@@ -261,6 +271,7 @@ export default function QuizSession({
           {item.kind === "listening" && item.audioScript && (
             <ListeningPlayer
               audioScript={item.audioScript}
+              speechText={buildListeningSpeech(item)}
               cast={item.cast}
               scriptPinyin={item.scriptPinyin}
               scriptTranslation={item.scriptTranslation}
@@ -276,25 +287,26 @@ export default function QuizSession({
               {formatDialogueScript(item.passage)}
             </p>
           )}
-          {/* 듣기 연습: 문제·보기는 기본 숨김 — 「대본 보기」/「정답표시」로만 노출(듣기 우선). */}
+          {/* 듣기 연습: 문제(질문) 텍스트·대본 원문만 「대본 보기」 전까지 숨긴다(듣기 우선).
+              음성이 질문·보기까지 읽어주고, 보기(선택지)는 항상 노출·선택 가능해 정답을 고를 수 있다. */}
           {gateListening && !contentOpen ? (
             <p className="rounded-md border border-hairline bg-ivory px-3 py-2.5 text-xs leading-relaxed text-muted">
-              먼저 음성을 들어 보세요. 끝까지 들으면 「대본 보기」로 문제·보기를, 「정답표시」로 정답을 확인할 수 있어요.
+              음성을 듣고 아래 보기에서 정답을 골라 보세요. 문제·대본 원문은 음성을 끝까지 들으면 「대본 보기」로,
+              정답은 「정답표시」로 확인할 수 있어요.
             </p>
           ) : (
-            <>
-              {/* 질문·보기는 실제 HSK 처럼 중국어 */}
-              <p lang="zh" className="font-cn text-base font-semibold leading-relaxed text-ink">{item.question}</p>
-              <Choices
-                options={item.options}
-                answer={item.answer}
-                selected={answers[index] ?? null}
-                onSelect={select}
-                reveal={revealed}
-                locked={revealed}
-              />
-            </>
+            /* 질문은 실제 HSK 처럼 중국어 */
+            <p lang="zh" className="font-cn text-base font-semibold leading-relaxed text-ink">{item.question}</p>
           )}
+          {/* 보기(선택지)는 듣기여도 항상 노출·선택 가능 — 정답을 고를 수 있어야 한다. */}
+          <Choices
+            options={item.options}
+            answer={item.answer}
+            selected={answers[index] ?? null}
+            onSelect={select}
+            reveal={revealed}
+            locked={revealed}
+          />
         </Card>
 
         <div className="flex items-center justify-between">
