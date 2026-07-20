@@ -19,6 +19,39 @@ export const maxDuration = 30
 
 const AGES: readonly SpeakerAge[] = ['child', 'young', 'adult', 'senior']
 
+// 멀티보이스 화자별 합성의 동시 호출 수(ElevenLabs tier 동시요청 한도 회피 — 예: Creator≈5).
+// 기본 3(안전 마진). env TTS_CONCURRENCY 로 조정.
+const TTS_CONCURRENCY = (() => {
+  const v = Number(process.env.TTS_CONCURRENCY)
+  return Number.isFinite(v) && v >= 1 ? Math.floor(v) : 3
+})()
+
+/** 동시 실행 수를 limit 로 제한해 순서 보존 매핑. 한 건이라도 실패하면 남은 작업을 멈추고 throw. */
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length)
+  let next = 0
+  let aborted = false
+  const worker = async () => {
+    while (!aborted) {
+      const i = next++
+      if (i >= items.length) return
+      try {
+        results[i] = await fn(items[i], i)
+      } catch (err) {
+        aborted = true
+        throw err
+      }
+    }
+  }
+  const n = Math.max(1, Math.min(limit, items.length || 1))
+  await Promise.all(Array.from({ length: n }, worker))
+  return results
+}
+
 /** body.cast(방식 B 캐스팅)를 검증·정규화. 없거나 잘못되면 빈 배열(성별 풀 폴백). */
 function parseBodyCast(body: unknown): { label: string; gender: 'male' | 'female'; age: SpeakerAge }[] {
   const arr = (body as { cast?: unknown })?.cast
@@ -92,37 +125,47 @@ export async function POST(req: Request): Promise<Response> {
       const loudnessOn =
         process.env.TTS_MULTIVOICE_LOUDNESS !== '0' && process.env.TTS_MULTIVOICE_LOUDNESS !== 'off'
 
+      // 화자별 합성은 동시 호출 수를 제한한다(ElevenLabs tier 동시요청 한도 → 429 회피).
+      // 실패(PCM 미지원 tier·동시호출·순간 오류 등) 시 PCM → mp3 → 단일 보이스 순으로 단계적 폴백:
+      // 대본을 통째로 노출하는 대신 음성이 계속 나오게 한다.
+
+      // 1) 음량 정규화(PCM) 경로 — 성우가 바뀔 때 볼륨이 튀지 않게. PCM 미지원 tier 면 mp3 로 폴백.
       if (loudnessOn) {
-        // 음량 정규화: 각 화자를 PCM 으로 받아 라우드니스를 맞춘 뒤 이어붙여 WAV 로 반환한다
-        // (성우가 바뀔 때 볼륨이 튀지 않게). PCM 미지원 tier 면 env TTS_MULTIVOICE_LOUDNESS=0 로 끈다.
-        const parts = await Promise.all(
-          turns.map((t) =>
+        try {
+          const parts = await mapWithConcurrency(turns, TTS_CONCURRENCY, (t) =>
             synthesizeSpeech(t.spoken, {
               voiceId: voiceByLabel[t.label],
               outputFormat: `pcm_${TTS_PCM_SAMPLE_RATE}`,
             }),
-          ),
-        )
-        const segments = parts.map((p) => {
-          const seg = pcmBufferToInt16(p.audio)
-          normalizePcm(seg)
-          return seg
-        })
-        return new Response(pcmSegmentsToWav(segments), {
-          status: 200,
-          headers: { 'Content-Type': 'audio/wav', 'Cache-Control': 'no-store' },
-        })
+          )
+          const segments = parts.map((p) => {
+            const seg = pcmBufferToInt16(p.audio)
+            normalizePcm(seg)
+            return seg
+          })
+          return new Response(pcmSegmentsToWav(segments), {
+            status: 200,
+            headers: { 'Content-Type': 'audio/wav', 'Cache-Control': 'no-store' },
+          })
+        } catch (err) {
+          console.error('[api/tts] 멀티보이스 PCM 실패 → mp3 폴백', err)
+        }
       }
 
-      // 폴백(mp3 이어붙이기, 정규화 없음).
-      const parts = await Promise.all(
-        turns.map((t) => synthesizeSpeech(t.spoken, { voiceId: voiceByLabel[t.label] })),
-      )
-      const combined = Buffer.concat(parts.map((p) => Buffer.from(p.audio)))
-      return new Response(combined, {
-        status: 200,
-        headers: { 'Content-Type': 'audio/mpeg', 'Cache-Control': 'no-store' },
-      })
+      // 2) mp3 이어붙이기(정규화 없음).
+      try {
+        const parts = await mapWithConcurrency(turns, TTS_CONCURRENCY, (t) =>
+          synthesizeSpeech(t.spoken, { voiceId: voiceByLabel[t.label] }),
+        )
+        const combined = Buffer.concat(parts.map((p) => Buffer.from(p.audio)))
+        return new Response(combined, {
+          status: 200,
+          headers: { 'Content-Type': 'audio/mpeg', 'Cache-Control': 'no-store' },
+        })
+      } catch (err) {
+        // 3) 최후: 아래 단일 발화(전체를 단일 보이스 mp3)로 낙하 — 热词처럼 확실히 되는 경로.
+        console.error('[api/tts] 멀티보이스 mp3 실패 → 단일 보이스 폴백', err)
+      }
     }
 
     // 단일 발화(热词 발음 등). voice:'bright' 면 밝은 하이톤 풀에서 랜덤으로 골라 다양한 음성으로 낸다.
