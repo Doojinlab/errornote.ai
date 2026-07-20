@@ -149,8 +149,11 @@ export async function getTodayHotword(studentId: string): Promise<Hotword | null
   const rows = inInterest.length > 0 ? inInterest : allRows
   if (rows.length === 0) return null
 
+  // 비추 제외 후 랜덤 선택 — 새로고침(페이지 재요청)마다 다양한 단어가 나오게(고정 X).
   const disliked = new Set((votesRes.data ?? []).map((v) => v.hotword_id))
-  const pick = rows.find((r) => !disliked.has(r.id)) ?? rows[0]
+  const candidates = rows.filter((r) => !disliked.has(r.id))
+  const pool = candidates.length > 0 ? candidates : rows
+  const pick = pool[Math.floor(Math.random() * pool.length)]
   return mapHotword(pick)
 }
 

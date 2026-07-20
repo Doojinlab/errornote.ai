@@ -5,8 +5,8 @@
 
 // 정규화 목표(정규화 범위 -1~1 기준). RMS 를 목표로 맞추되 피크가 상한을 넘지 않게 gain 을 제한한다.
 // (조용한 클립은 키우고, 큰 클립은 낮춰 균일화 + 전체적으로 크게.)
-const DEFAULT_TARGET_RMS = 0.17; // 서버 정규화(~-17dBFS)보다 살짝 크게 — "크게" 요청 반영
-const DEFAULT_TARGET_PEAK = 0.985; // 클리핑 방지 상한
+const DEFAULT_TARGET_RMS = 0.2; // 균일화 + 크게(요청: 살짝 더 크게). 더 키우려면 이 값을 올린다.
+const DEFAULT_TARGET_PEAK = 0.99; // 클리핑 방지 상한
 
 let sharedCtx: AudioContext | null = null;
 

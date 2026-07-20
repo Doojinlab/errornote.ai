@@ -83,6 +83,8 @@ export default function HotwordCard({
   const [voted, setVoted] = useState<HotwordVote | null>(null);
   const [busy, setBusy] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  // 발음 성우 성별 — 이용자 선택(기본 여성). speak() 가 서버에 전달해 해당 성별 풀에서 랜덤.
+  const [voiceGender, setVoiceGender] = useState<"female" | "male">("female");
   const seenIds = useRef<string[]>(hotword ? [hotword.id] : []);
   const impressed = useRef<Set<string>>(new Set());
 
@@ -97,7 +99,7 @@ export default function HotwordCard({
       const res = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, voice: "bright" }),
+        body: JSON.stringify({ text, voice: "bright", gender: voiceGender }),
       });
       if (!res.ok) return; // 미설정(503) 등은 조용히 무시
       await playNormalized(await res.blob());
@@ -351,6 +353,30 @@ export default function HotwordCard({
                   </button>
                 </div>
               )}
+              {/* 성우 성별 선택 — 여/남. 선택한 성별 풀에서 재생 시 랜덤으로 고른다. */}
+              <div className="mt-1 flex items-center gap-1.5" role="group" aria-label="성우 성별">
+                <span className="text-[11px] text-muted">성우</span>
+                {(
+                  [
+                    ["female", "여"],
+                    ["male", "남"],
+                  ] as const
+                ).map(([g, label]) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => setVoiceGender(g)}
+                    aria-pressed={voiceGender === g}
+                    className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-terra/50 ${
+                      voiceGender === g
+                        ? "bg-terra text-white"
+                        : "border border-hairline bg-white text-bodytx hover:bg-terra-soft"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             <p className="text-center text-sm text-muted">
