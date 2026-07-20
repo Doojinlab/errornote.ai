@@ -5,6 +5,8 @@ import {
   synthesizeSpeech,
   assignSpeakerVoices,
   assignCastVoices,
+  pickBrightVoice,
+  BRIGHT_VOICE_SETTINGS,
   type VoiceCatalog,
   ElevenLabsError,
   TTS_MAX_CHARS,
@@ -42,6 +44,40 @@ describe('buildTtsRequest()', () => {
     process.env.ELEVENLABS_VOICE_ID = 'envVoice'
     const req = buildTtsRequest('x', { apiKey: 'k' })
     expect(req.url).toContain('/text-to-speech/envVoice')
+  })
+
+  it('voiceSettings 재정의(밝은 톤) 를 본문에 반영', () => {
+    const req = buildTtsRequest('你好', { apiKey: 'k', voiceSettings: { ...BRIGHT_VOICE_SETTINGS } })
+    const body = JSON.parse(req.body)
+    expect(body.voice_settings).toMatchObject(BRIGHT_VOICE_SETTINGS)
+  })
+
+  it('voiceSettings 미지정 시 기본값', () => {
+    const req = buildTtsRequest('你好', { apiKey: 'k' })
+    const body = JSON.parse(req.body)
+    expect(body.voice_settings).toEqual({ stability: 0.5, similarity_boost: 0.75 })
+  })
+})
+
+describe('pickBrightVoice()', () => {
+  const POOL = ['B1', 'B2', 'B3']
+
+  it('seed 로 풀에서 순환 선택 — 다른 seed=다른 음성', () => {
+    expect(pickBrightVoice(0, POOL)).toBe('B1')
+    expect(pickBrightVoice(1, POOL)).toBe('B2')
+    expect(pickBrightVoice(2, POOL)).toBe('B3')
+    expect(pickBrightVoice(3, POOL)).toBe('B1') // 풀 크기로 순환
+  })
+
+  it('음수·실수 seed 도 안전하게 처리', () => {
+    expect(pickBrightVoice(-1, POOL)).toBe('B3')
+    expect(pickBrightVoice(1.9, POOL)).toBe('B2')
+    expect(pickBrightVoice(NaN, POOL)).toBe('B1')
+  })
+
+  it('빈 풀이면 내레이터 보이스로 폴백', () => {
+    process.env.ELEVENLABS_VOICE_ID = 'NARR'
+    expect(pickBrightVoice(0, [])).toBe('NARR')
   })
 })
 

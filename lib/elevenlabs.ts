@@ -36,6 +36,19 @@ const DEFAULT_FEMALE_VOICE_POOL = [
   'm7QGIiNrWASyI5oJn4I8',
   'ggacvEjbmpoSuEinfFWs',
 ]
+// 热词 발음용 "밝은 하이톤" 보이스 풀 — 새로고침(단어 로드)마다 이 풀에서 랜덤으로 골라
+// 다양한 밝은 음성이 나오게 한다(고정 방지). 기본값은 여성 풀(상대적으로 하이톤·밝은 톤).
+// 실제 밝은 성우 ID 가 있으면 env(ELEVENLABS_VOICE_ID_BRIGHT, 쉼표 목록)로 교체하면 품질이 올라간다.
+const DEFAULT_BRIGHT_VOICE_POOL = DEFAULT_FEMALE_VOICE_POOL
+
+// 밝은 톤 발화용 voice_settings — 낮은 stability(더 생동감/밝은 표현) + style 강조.
+export const BRIGHT_VOICE_SETTINGS = {
+  stability: 0.35,
+  similarity_boost: 0.8,
+  style: 0.45,
+  use_speaker_boost: true,
+} as const
+
 // 중국어 지원 모델. 기본 eleven_multilingual_v2(API 안정). ELEVENLABS_MODEL_ID 로 재정의 가능.
 const DEFAULT_MODEL_ID = 'eleven_multilingual_v2'
 /** 대본 최대 길이(과금·남용 방지). */
@@ -61,6 +74,21 @@ export function getVoicePools(): VoicePools {
     female: envVoiceList('ELEVENLABS_VOICE_ID_FEMALE') ?? DEFAULT_FEMALE_VOICE_POOL,
     narrator: process.env.ELEVENLABS_VOICE_ID ?? DEFAULT_VOICE_ID,
   }
+}
+
+/** 热词 발음용 밝은 하이톤 보이스 풀. env(ELEVENLABS_VOICE_ID_BRIGHT, 쉼표 목록)로 재정의 가능. */
+export function getBrightVoicePool(): string[] {
+  return envVoiceList('ELEVENLABS_VOICE_ID_BRIGHT') ?? DEFAULT_BRIGHT_VOICE_POOL
+}
+
+/**
+ * 밝은 보이스 풀에서 seed 로 하나 고른다(단어 로드마다 새 seed → 새로고침 시 다양한 랜덤 음성).
+ * seed 음수/실수도 안전하게 처리. 풀이 비면 내레이터 보이스로 폴백.
+ */
+export function pickBrightVoice(seed: number, pool: string[] = getBrightVoicePool()): string {
+  if (pool.length === 0) return getVoicePools().narrator
+  const n = Number.isFinite(seed) ? Math.floor(seed) : 0
+  return pool[((n % pool.length) + pool.length) % pool.length]
 }
 
 /**
@@ -173,6 +201,8 @@ export interface TtsOptions {
   apiKey?: string
   /** ElevenLabs output_format(예: 'mp3_44100_128', 'pcm_24000'). 기본 mp3. */
   outputFormat?: string
+  /** voice_settings 재정의(예: 밝은 톤 BRIGHT_VOICE_SETTINGS). 기본 stability/similarity. */
+  voiceSettings?: Record<string, unknown>
 }
 
 export interface TtsRequest {
@@ -198,7 +228,7 @@ export function buildTtsRequest(text: string, opts: TtsOptions = {}): TtsRequest
     body: JSON.stringify({
       text,
       model_id: modelId,
-      voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+      voice_settings: opts.voiceSettings ?? { stability: 0.5, similarity_boost: 0.75 },
     }),
   }
 }
