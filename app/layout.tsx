@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 // 한글 전역 Pretendard (스펙 §1.1). 중국어 예문만 Noto Serif SC(아래 <link>).
-import "pretendard/dist/web/variable/pretendardvariable.css";
+// dynamic-subset: 단일 2MB woff2 대신 unicode-range 별 청크(~30KB×92)로 분할 —
+// 브라우저가 실제 렌더하는 글자 범위만 내려받아 첫 로드 대역폭을 크게 줄인다.
+import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import "./globals.css";
 
 export const viewport: Viewport = {
