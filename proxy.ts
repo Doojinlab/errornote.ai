@@ -79,6 +79,18 @@ export async function proxy(request: NextRequest) {
   // 2. 인증·역할 가드 — 로케일 prefix 를 제거한 경로로 매칭
   let response = intlResponse
 
+  const { locale, rest } = stripLocale(request.nextUrl.pathname)
+  const isStudentRoute = hasPrefix(rest, STUDENT_PREFIXES)
+  const isProfessorRoute = hasPrefix(rest, PROFESSOR_PREFIXES)
+  const isAuthPage = AUTH_PAGES.includes(rest)
+
+  // 공개 경로(보호/인증 페이지 아님)는 인증 확인이 불필요 → getClaims(네트워크 JWKS 검증) 자체를
+  // 건너뛰어 모든 공개 요청의 미들웨어 지연을 없앤다. 세션 토큰 갱신은 보호 라우트/인증 페이지
+  // 진입 시 수행되므로 UX 영향 없음.
+  if (!isStudentRoute && !isProfessorRoute && !isAuthPage) {
+    return response
+  }
+
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -107,11 +119,6 @@ export async function proxy(request: NextRequest) {
   const { data: claimsData } = await supabase.auth.getClaims()
   const userId =
     typeof claimsData?.claims?.sub === 'string' ? claimsData.claims.sub : null
-
-  const { locale, rest } = stripLocale(request.nextUrl.pathname)
-  const isStudentRoute = hasPrefix(rest, STUDENT_PREFIXES)
-  const isProfessorRoute = hasPrefix(rest, PROFESSOR_PREFIXES)
-  const isAuthPage = AUTH_PAGES.includes(rest)
 
   if (!userId && (isStudentRoute || isProfessorRoute)) {
     const url = request.nextUrl.clone()
