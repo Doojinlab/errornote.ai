@@ -19,7 +19,7 @@ import type {
   Card3TodoNowData,
   Card4NextWeekData,
 } from '@/types/cardnews'
-import { getAuthContext } from './auth'
+import { getCurrentUser } from './auth'
 import { listAssignmentsForStudent } from './assignments'
 import { listAssignedReviews } from './peer-review'
 import { getLeagueStandings } from './league'
@@ -74,12 +74,12 @@ vi.mock('./supabase', () => ({
   createServerClient: () => mockSupabase,
   createAdminClient: () => mockSupabase,
 }))
-vi.mock('./auth', () => ({ getAuthContext: vi.fn() }))
+vi.mock('./auth', () => ({ getCurrentUser: vi.fn() }))
 vi.mock('./assignments', () => ({ listAssignmentsForStudent: vi.fn() }))
 vi.mock('./peer-review', () => ({ listAssignedReviews: vi.fn() }))
 vi.mock('./league', () => ({ getLeagueStandings: vi.fn() }))
 
-const STUDENT = { userId: 'u1', role: 'student', email: null }
+const STUDENT = { id: 'u1', email: null }
 const futureIso = (days: number) => new Date(Date.now() + days * 86_400_000).toISOString()
 
 function errorRow(over: Partial<ErrorCardRow> = {}): ErrorCardRow {
@@ -305,7 +305,7 @@ describe('mapCardnewsTeasers', () => {
 
 describe('loadGrowthData', () => {
   beforeEach(() => {
-    ;(getAuthContext as Mock).mockResolvedValue(STUDENT)
+    ;(getCurrentUser as Mock).mockResolvedValue(STUDENT)
     ;(getLeagueStandings as Mock).mockResolvedValue([
       { rank: 1, nickname: '익명1', points: 100, isMe: false },
       { rank: 2, nickname: '나', points: 80, isMe: true },
@@ -313,7 +313,7 @@ describe('loadGrowthData', () => {
   })
 
   it('returns null when unauthenticated', async () => {
-    ;(getAuthContext as Mock).mockResolvedValue(null)
+    ;(getCurrentUser as Mock).mockResolvedValue(null)
     expect(await loadGrowthData()).toBeNull()
   })
 
@@ -347,11 +347,11 @@ describe('loadGrowthData', () => {
 
 describe('loadErrorsData', () => {
   beforeEach(() => {
-    ;(getAuthContext as Mock).mockResolvedValue(STUDENT)
+    ;(getCurrentUser as Mock).mockResolvedValue(STUDENT)
   })
 
   it('returns null when unauthenticated', async () => {
-    ;(getAuthContext as Mock).mockResolvedValue(null)
+    ;(getCurrentUser as Mock).mockResolvedValue(null)
     expect(await loadErrorsData()).toBeNull()
   })
 
@@ -375,13 +375,13 @@ describe('loadErrorsData', () => {
 
 describe('loadLearnData', () => {
   beforeEach(() => {
-    ;(getAuthContext as Mock).mockResolvedValue(STUDENT)
+    ;(getCurrentUser as Mock).mockResolvedValue(STUDENT)
     ;(listAssignmentsForStudent as Mock).mockResolvedValue([])
     ;(listAssignedReviews as Mock).mockResolvedValue([])
   })
 
   it('returns null when unauthenticated', async () => {
-    ;(getAuthContext as Mock).mockResolvedValue(null)
+    ;(getCurrentUser as Mock).mockResolvedValue(null)
     expect(await loadLearnData()).toBeNull()
   })
 

@@ -10,6 +10,7 @@
 // §2.4 완전 자동 파이프라인(수집·해설·안전필터·배포)은 lib/hotword-pipeline.ts 에 구현됨.
 // 기존 weekly_cardnews 로직·테이블은 일절 사용하지 않는다.
 
+import { unstable_cache } from 'next/cache'
 import { createAdminClient, createServerClient } from '@/lib/supabase'
 import type { Database } from '@/types/database'
 import type {
@@ -103,34 +104,49 @@ export async function setInterests(
   }
 }
 
+// 전역 active 열词 목록(사용자 무관)만 캐시한다. dislike·관심분야 개인화는 캐시 밖(사용자별).
+// createServerClient 는 cookies() 의존이라 unstable_cache 안에서 못 쓴다 → 쿠키리스 admin 사용.
+// active 열词는 공개 데이터(status=active 만 노출)라 admin 조회로도 안전하다.
+// revalidate 300s: 하루 1회 도는 수집 크론 기준 충분히 신선. force-dynamic 페이지 안이라도
+// 이 공유 참조 데이터만 캐시해 /learn 매 진입의 hotwords 왕복을 없앤다.
+const getActiveHotwordRows = unstable_cache(
+  async (): Promise<HotwordRow[]> => {
+    const admin = createAdminClient()
+    const { data } = await admin
+      .from('hotwords')
+      .select(HOTWORD_COLS)
+      .eq('status', 'active')
+      .order('first_seen', { ascending: false })
+      .limit(200)
+    return (data ?? []) as HotwordRow[]
+  },
+  ['hotwords-active-all'],
+  { revalidate: 300, tags: ['hotwords'] },
+)
+
 /**
  * 오늘의 단어 — active 풀에서 신선도 순으로, 학생이 비추(dislike)한 카드는 제외.
  * 관심분야가 설정돼 있으면 해당 분야로 개인화(§2.1). 결과가 없으면 전 분야로 폴백.
+ * 전역 목록은 캐시(getActiveHotwordRows), 개인화(관심분야·비추)는 메모리에서 적용한다.
  */
 export async function getTodayHotword(studentId: string): Promise<Hotword | null> {
   const supabase = createServerClient()
 
-  // 관심분야·비추 표를 병렬 조회(순차 왕복 제거).
-  const [interests, votesRes] = await Promise.all([
+  // 개인화 입력(관심분야·비추)은 사용자별 → 캐시 밖. 전역 목록은 캐시. 셋을 병렬로.
+  const [interests, votesRes, allRows] = await Promise.all([
     getInterests(studentId),
     supabase
       .from('hotword_feedback')
       .select('hotword_id')
       .eq('student_id', studentId)
       .eq('vote', 'dislike'),
+    getActiveHotwordRows(),
   ])
 
-  // 명시 컬럼(HOTWORD_COLS)으로 조회. 관심분야 필터는 선택적.
-  const runQuery = async (categories: HotwordCategory[] | null) => {
-    let q = supabase.from('hotwords').select(HOTWORD_COLS).eq('status', 'active')
-    if (categories && categories.length > 0) q = q.in('category', categories)
-    const { data } = await q.order('first_seen', { ascending: false }).limit(20)
-    return data ?? []
-  }
-
-  // 관심분야 우선 → 없으면 전 분야 폴백.
-  let rows = await runQuery(interests.length > 0 ? interests : null)
-  if (rows.length === 0 && interests.length > 0) rows = await runQuery(null)
+  // 관심분야 우선(메모리 필터) → 결과 없으면 전 분야 폴백.
+  const inInterest =
+    interests.length > 0 ? allRows.filter((r) => interests.includes(r.category)) : allRows
+  const rows = inInterest.length > 0 ? inInterest : allRows
   if (rows.length === 0) return null
 
   const disliked = new Set((votesRes.data ?? []).map((v) => v.hotword_id))

@@ -5,7 +5,7 @@
 //   부수효과를 피하기 위해 gamification_stats 는 select 만 한다(레이아웃 loadStats 와 동일 패턴).
 
 import { createServerClient } from './supabase'
-import { getAuthContext } from './auth'
+import { getCurrentUser } from './auth'
 import { nextLevelXp } from './gamification'
 import { getLeagueStandings } from './league'
 import { getChapterConfig } from './prompts'
@@ -130,7 +130,9 @@ interface StatsRow {
 }
 
 export async function loadGrowthData(): Promise<GrowthData | null> {
-  const ctx = await getAuthContext()
+  // getCurrentUser: 로컬 JWT 검증만(id/email). 예전 getAuthContext 는 여기서 쓰지도 않는
+  // profiles.role 을 직렬로 한 번 더 읽어 왕복이 하나 더 늘었다 — 홈/오류/성장은 userId 만 쓰므로 제거.
+  const ctx = await getCurrentUser()
   if (!ctx) return null
   const supabase = createServerClient()
 
@@ -138,13 +140,13 @@ export async function loadGrowthData(): Promise<GrowthData | null> {
     supabase
       .from('gamification_stats')
       .select('level, xp, activity_coins')
-      .eq('student_id', ctx.userId)
+      .eq('student_id', ctx.id)
       .maybeSingle(),
-    supabase.from('badges').select('badge_type').eq('student_id', ctx.userId),
+    supabase.from('badges').select('badge_type').eq('student_id', ctx.id),
     supabase
       .from('enrollments')
       .select('class_id')
-      .eq('student_id', ctx.userId)
+      .eq('student_id', ctx.id)
       .order('enrolled_at', { ascending: false })
       .limit(1)
       .maybeSingle(),
@@ -196,7 +198,9 @@ export interface ErrorsData {
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
 export async function loadErrorsData(limit = 20): Promise<ErrorsData | null> {
-  const ctx = await getAuthContext()
+  // getCurrentUser: 로컬 JWT 검증만(id/email). 예전 getAuthContext 는 여기서 쓰지도 않는
+  // profiles.role 을 직렬로 한 번 더 읽어 왕복이 하나 더 늘었다 — 홈/오류/성장은 userId 만 쓰므로 제거.
+  const ctx = await getCurrentUser()
   if (!ctx) return null
   const supabase = createServerClient()
   const weekAgoIso = new Date(Date.now() - WEEK_MS).toISOString()
@@ -207,22 +211,22 @@ export async function loadErrorsData(limit = 20): Promise<ErrorsData | null> {
       .select(
         'id, error_span, error_type, error_subtype, correction, explanation, chapter_number, created_at'
       )
-      .eq('student_id', ctx.userId)
+      .eq('student_id', ctx.id)
       .order('created_at', { ascending: false })
       .limit(limit),
     supabase
       .from('error_cards')
       .select('id', { count: 'exact', head: true })
-      .eq('student_id', ctx.userId),
+      .eq('student_id', ctx.id),
     supabase
       .from('error_cards')
       .select('id', { count: 'exact', head: true })
-      .eq('student_id', ctx.userId)
+      .eq('student_id', ctx.id)
       .eq('is_resolved', true),
     supabase
       .from('error_cards')
       .select('id', { count: 'exact', head: true })
-      .eq('student_id', ctx.userId)
+      .eq('student_id', ctx.id)
       .eq('is_resolved', true)
       .gte('created_at', weekAgoIso),
   ])
@@ -387,10 +391,12 @@ interface CardnewsTeaserRow {
 const DAY_MS = 24 * 60 * 60 * 1000
 
 export async function loadLearnData(): Promise<LearnHomeData | null> {
-  const ctx = await getAuthContext()
+  // getCurrentUser: 로컬 JWT 검증만(id/email). 예전 getAuthContext 는 여기서 쓰지도 않는
+  // profiles.role 을 직렬로 한 번 더 읽어 왕복이 하나 더 늘었다 — 홈/오류/성장은 userId 만 쓰므로 제거.
+  const ctx = await getCurrentUser()
   if (!ctx) return null
   const supabase = createServerClient()
-  const userId = ctx.userId
+  const userId = ctx.id
 
   // 성능: 홈은 매 진입마다 렌더된다. 예전엔 (프로필+등록) 조회 → classId 확인 → 나머지 7개
   // 조회로 **2번의 네트워크 왕복 그룹**이 발생했다. 2번째 그룹의 쿼리는 전부 userId(=ctx)만
