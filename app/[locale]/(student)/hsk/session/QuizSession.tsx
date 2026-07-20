@@ -68,7 +68,8 @@ export default function QuizSession({
   // 듣기 연습 게이팅(문항별): 음성 완청 여부 · 대본(문제·보기) 열림 · 정답 공개.
   const [audioDoneSet, setAudioDoneSet] = useState<Set<number>>(new Set());
   const [scriptOpenSet, setScriptOpenSet] = useState<Set<number>>(new Set());
-  const [answerShownSet, setAnswerShownSet] = useState<Set<number>>(new Set());
+  // 해설은 정답을 고른 뒤 "해설 보기"를 눌러야 열린다(자동 노출 X). 문항별.
+  const [explainOpenSet, setExplainOpenSet] = useState<Set<number>>(new Set());
   const [submitted, setSubmitted] = useState(false);
   const [startedAt] = useState(() => Date.now());
   const [elapsed, setElapsed] = useState(0);
@@ -175,14 +176,16 @@ export default function QuizSession({
 
   const item = items[index];
   const answered = answers[index] !== undefined;
-  // 듣기 연습만 "듣기 우선" 게이팅: 기본엔 음성만, 대본보기로 문제·보기 노출, 정답표시로 정답 공개.
+  // 듣기 연습만 "듣기 우선" 게이팅: 기본엔 음성만, 대본보기로 문제 텍스트·대본 원문 노출.
   const gateListening = !isExam && item.kind === "listening";
   const audioDone = !gateListening || audioDoneSet.has(index);
-  const contentOpen = !gateListening || scriptOpenSet.has(index); // 문제·보기 노출 여부
-  const answerShown = answerShownSet.has(index);
-  // 실전은 채점 전 정답/해설을 절대 노출하지 않는다(시험 무결성).
-  // 연습: 즉시채점+응답 시, 또는 "정답표시"를 눌렀을 때 공개.
-  const revealed = (!isExam && immediate && answered) || answerShown;
+  const contentOpen = !gateListening || scriptOpenSet.has(index); // 문제 텍스트 노출 여부
+
+  // 보기 채점(정답/오답 하이라이트)은 정답을 고르면 즉시(실전은 채점 전 미노출).
+  const choiceRevealed = !isExam && immediate && answered;
+  // 해설(정답·대본·해석·해설)은 자동 노출 X — 정답을 고른 뒤 "해설 보기"를 눌러야 열린다.
+  const canOpenExplain = !isExam && immediate && answered;
+  const explainOpen = explainOpenSet.has(index);
 
   function markAudioDone() {
     setAudioDoneSet((s) => (s.has(index) ? s : new Set(s).add(index)));
@@ -195,9 +198,8 @@ export default function QuizSession({
       return n;
     });
   }
-  function showAnswer() {
-    setAnswerShownSet((s) => new Set(s).add(index));
-    setScriptOpenSet((s) => (s.has(index) ? s : new Set(s).add(index))); // 정답은 문제·보기와 함께 노출
+  function openExplain() {
+    setExplainOpenSet((s) => (s.has(index) ? s : new Set(s).add(index)));
   }
 
   return (
@@ -237,33 +239,20 @@ export default function QuizSession({
           <span className="text-xs font-semibold text-muted">
             {index + 1} / {items.length}
           </span>
-          {gateListening ? (
-            // 듣기 연습 — "정답표시"(정답·해설 공개). 음성을 끝까지 듣기 전엔 비활성.
-            <button
-              type="button"
-              onClick={showAnswer}
-              disabled={!audioDone || answerShown}
-              aria-label="정답 표시"
-              title={audioDone ? "정답 표시" : "음성을 끝까지 들으면 볼 수 있어요"}
-              className="inline-flex items-center gap-1 rounded-md border border-hairline bg-white px-2 py-1 text-xs font-semibold text-muted transition-colors hover:bg-ivory disabled:cursor-not-allowed disabled:opacity-45 focus:outline-none focus-visible:ring-2 focus-visible:ring-jade/50"
-            >
-              <Eye size={13} aria-hidden />
-              정답표시
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={toggleFlag}
-              aria-pressed={flagged.has(index)}
-              aria-label={flagged.has(index) ? "표시 해제" : "나중에 다시 볼 문항으로 표시"}
-              className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 ${
-                flagged.has(index) ? "bg-gold-soft text-gold-dark" : "border border-hairline bg-white text-muted hover:bg-ivory"
-              }`}
-            >
-              <Flag size={13} aria-hidden />
-              표시
-            </button>
-          )}
+          {/* 나중에 다시 볼 문항 표시(플래그). 이전 "정답표시"는 보기 선택 시 정답/오답이 바로
+              드러나 의미가 없어 삭제. 해설은 해설 창의 "해설 보기"로 연다. */}
+          <button
+            type="button"
+            onClick={toggleFlag}
+            aria-pressed={flagged.has(index)}
+            aria-label={flagged.has(index) ? "표시 해제" : "나중에 다시 볼 문항으로 표시"}
+            className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 ${
+              flagged.has(index) ? "bg-gold-soft text-gold-dark" : "border border-hairline bg-white text-muted hover:bg-ivory"
+            }`}
+          >
+            <Flag size={13} aria-hidden />
+            표시
+          </button>
         </div>
 
         <Card className="space-y-3 p-4">
@@ -291,8 +280,8 @@ export default function QuizSession({
               음성이 질문·보기까지 읽어주고, 보기(선택지)는 항상 노출·선택 가능해 정답을 고를 수 있다. */}
           {gateListening && !contentOpen ? (
             <p className="rounded-md border border-hairline bg-ivory px-3 py-2.5 text-xs leading-relaxed text-muted">
-              음성을 듣고 아래 보기에서 정답을 골라 보세요. 문제·대본 원문은 음성을 끝까지 들으면 「대본 보기」로,
-              정답은 「정답표시」로 확인할 수 있어요.
+              음성을 듣고 아래 보기에서 정답을 골라 보세요. 문제·대본 원문은 음성을 끝까지 들으면 「대본 보기」로
+              볼 수 있어요.
             </p>
           ) : (
             /* 질문은 실제 HSK 처럼 중국어 */
@@ -304,8 +293,8 @@ export default function QuizSession({
             answer={item.answer}
             selected={answers[index] ?? null}
             onSelect={select}
-            reveal={revealed}
-            locked={revealed}
+            reveal={choiceRevealed}
+            locked={choiceRevealed}
           />
         </Card>
 
@@ -375,7 +364,14 @@ export default function QuizSession({
       </div>
 
       {/* 가운데: 해설 (실전은 채점 후) */}
-      <ExplainColumn item={item} revealed={revealed} isExam={isExam} immediate={immediate} />
+      <ExplainColumn
+        item={item}
+        open={explainOpen}
+        canOpen={canOpenExplain}
+        onOpen={openExplain}
+        isExam={isExam}
+        immediate={immediate}
+      />
 
       {/* 우: AI 과외 (실전은 잠금) */}
       <ChatColumn isExam={isExam} />
@@ -503,22 +499,42 @@ function Choices({
 // errornote 공통 규칙: 모든 콘텐츠에 해설창 + AI 질문창 상시 노출.
 function ExplainColumn({
   item,
-  revealed,
+  open,
+  canOpen,
+  onOpen,
   isExam,
   immediate,
 }: {
   item: QuizItem;
-  revealed: boolean;
+  open: boolean;
+  canOpen: boolean;
+  onOpen: () => void;
   isExam: boolean;
   immediate: boolean;
 }) {
   return (
     <div className="mt-3 flex flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[min(540px,calc(100dvh-10.5rem))]">
-      <div className="flex items-center gap-1.5 border-b border-hairline px-4 py-3 text-sm font-bold text-ink">
-        <Lightbulb size={15} className="text-gold" aria-hidden /> 해설
+      <div className="flex items-center justify-between gap-2 border-b border-hairline px-4 py-3">
+        <span className="flex items-center gap-1.5 text-sm font-bold text-ink">
+          <Lightbulb size={15} className="text-gold" aria-hidden /> 해설
+        </span>
+        {/* 해설 보기 — 자동 노출 대신 눌러서 연다. 정답을 골라야 활성화(연습·즉시채점). */}
+        {!isExam && immediate && !open && (
+          <button
+            type="button"
+            onClick={onOpen}
+            disabled={!canOpen}
+            aria-label="해설 보기"
+            title={canOpen ? "해설 보기" : "정답을 고르면 볼 수 있어요"}
+            className="inline-flex items-center gap-1 rounded-md border border-gold/40 bg-white px-2.5 py-1 text-xs font-semibold text-gold-dark transition-colors hover:bg-gold-soft disabled:cursor-not-allowed disabled:opacity-45 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
+          >
+            <Eye size={13} aria-hidden />
+            해설 보기
+          </button>
+        )}
       </div>
       <div className="min-h-0 flex-1 overflow-auto">
-        <ExplainBody item={item} revealed={revealed} isExam={isExam} immediate={immediate} />
+        <ExplainBody item={item} open={open} canOpen={canOpen} isExam={isExam} immediate={immediate} />
       </div>
     </div>
   );
@@ -546,20 +562,24 @@ function ChatColumn({ isExam }: { isExam: boolean }) {
 
 function ExplainBody({
   item,
-  revealed,
+  open,
+  canOpen,
   isExam,
   immediate,
 }: {
   item: QuizItem;
-  revealed: boolean;
+  open: boolean;
+  canOpen: boolean;
   isExam: boolean;
   immediate: boolean;
 }) {
-  if (!revealed) {
+  if (!open) {
     const msg = isExam
       ? "실전 채점 후 성적표에서 해설을 확인할 수 있어요."
       : immediate
-        ? "답을 고르면 여기에 정답·대본·해석·해설이 나와요."
+        ? canOpen
+          ? "위 「해설 보기」를 누르면 정답·대본·해석·해설이 나와요."
+          : "정답을 고른 뒤 「해설 보기」를 누르면 정답·대본·해석·해설이 나와요."
         : "모아서 채점을 제출하면 성적표에서 해설이 나와요.";
     return (
       <div className="flex h-full items-center justify-center p-5 text-center">
