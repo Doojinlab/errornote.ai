@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Flag, ChevronLeft, ChevronRight, RotateCcw, Clock, AlertTriangle, Lightbulb, MessageCircle, Lock } from "lucide-react";
+import { Flag, ChevronLeft, ChevronRight, RotateCcw, Clock, AlertTriangle, Lightbulb, MessageCircle, Lock, Eye } from "lucide-react";
 import Card from "@/components/ui/Card";
 import TutorChat from "@/components/learn/TutorChat";
 import ListeningPlayer from "./ListeningPlayer";
@@ -55,6 +55,10 @@ export default function QuizSession({
   const [index, setIndex] = useState(initialState?.index ?? 0);
   const [answers, setAnswers] = useState<Record<number, string>>(initialState?.answers ?? {});
   const [flagged, setFlagged] = useState<Set<number>>(new Set(initialState?.flagged ?? []));
+  // 듣기 연습 게이팅(문항별): 음성 완청 여부 · 대본(문제·보기) 열림 · 정답 공개.
+  const [audioDoneSet, setAudioDoneSet] = useState<Set<number>>(new Set());
+  const [scriptOpenSet, setScriptOpenSet] = useState<Set<number>>(new Set());
+  const [answerShownSet, setAnswerShownSet] = useState<Set<number>>(new Set());
   const [submitted, setSubmitted] = useState(false);
   const [startedAt] = useState(() => Date.now());
   const [elapsed, setElapsed] = useState(0);
@@ -161,8 +165,30 @@ export default function QuizSession({
 
   const item = items[index];
   const answered = answers[index] !== undefined;
-  // 실전은 채점 전 정답/해설을 절대 노출하지 않는다(시험 무결성). 연습·즉시채점 + 응답 시에만 공개.
-  const revealed = !isExam && immediate && answered;
+  // 듣기 연습만 "듣기 우선" 게이팅: 기본엔 음성만, 대본보기로 문제·보기 노출, 정답표시로 정답 공개.
+  const gateListening = !isExam && item.kind === "listening";
+  const audioDone = !gateListening || audioDoneSet.has(index);
+  const contentOpen = !gateListening || scriptOpenSet.has(index); // 문제·보기 노출 여부
+  const answerShown = answerShownSet.has(index);
+  // 실전은 채점 전 정답/해설을 절대 노출하지 않는다(시험 무결성).
+  // 연습: 즉시채점+응답 시, 또는 "정답표시"를 눌렀을 때 공개.
+  const revealed = (!isExam && immediate && answered) || answerShown;
+
+  function markAudioDone() {
+    setAudioDoneSet((s) => (s.has(index) ? s : new Set(s).add(index)));
+  }
+  function toggleScript() {
+    setScriptOpenSet((s) => {
+      const n = new Set(s);
+      if (n.has(index)) n.delete(index);
+      else n.add(index);
+      return n;
+    });
+  }
+  function showAnswer() {
+    setAnswerShownSet((s) => new Set(s).add(index));
+    setScriptOpenSet((s) => (s.has(index) ? s : new Set(s).add(index))); // 정답은 문제·보기와 함께 노출
+  }
 
   return (
     // 3단(데스크톱): 좌=문제 / 가운데=해설 / 우=AI 과외. 탭 없이 각 열로 세로로 길게(화면 폭 활용).
@@ -201,18 +227,33 @@ export default function QuizSession({
           <span className="text-xs font-semibold text-muted">
             {index + 1} / {items.length}
           </span>
-          <button
-            type="button"
-            onClick={toggleFlag}
-            aria-pressed={flagged.has(index)}
-            aria-label={flagged.has(index) ? "표시 해제" : "나중에 다시 볼 문항으로 표시"}
-            className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 ${
-              flagged.has(index) ? "bg-gold-soft text-gold-dark" : "border border-hairline bg-white text-muted hover:bg-ivory"
-            }`}
-          >
-            <Flag size={13} aria-hidden />
-            표시
-          </button>
+          {gateListening ? (
+            // 듣기 연습 — "정답표시"(정답·해설 공개). 음성을 끝까지 듣기 전엔 비활성.
+            <button
+              type="button"
+              onClick={showAnswer}
+              disabled={!audioDone || answerShown}
+              aria-label="정답 표시"
+              title={audioDone ? "정답 표시" : "음성을 끝까지 들으면 볼 수 있어요"}
+              className="inline-flex items-center gap-1 rounded-md border border-hairline bg-white px-2 py-1 text-xs font-semibold text-muted transition-colors hover:bg-ivory disabled:cursor-not-allowed disabled:opacity-45 focus:outline-none focus-visible:ring-2 focus-visible:ring-jade/50"
+            >
+              <Eye size={13} aria-hidden />
+              정답표시
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={toggleFlag}
+              aria-pressed={flagged.has(index)}
+              aria-label={flagged.has(index) ? "표시 해제" : "나중에 다시 볼 문항으로 표시"}
+              className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 ${
+                flagged.has(index) ? "bg-gold-soft text-gold-dark" : "border border-hairline bg-white text-muted hover:bg-ivory"
+              }`}
+            >
+              <Flag size={13} aria-hidden />
+              표시
+            </button>
+          )}
         </div>
 
         <Card className="space-y-3 p-4">
@@ -224,6 +265,10 @@ export default function QuizSession({
               scriptPinyin={item.scriptPinyin}
               scriptTranslation={item.scriptTranslation}
               sessionType={sessionType}
+              scriptOpen={gateListening ? contentOpen : undefined}
+              onToggleScript={gateListening ? toggleScript : undefined}
+              scriptEnabled={audioDone}
+              onAudioComplete={markAudioDone}
             />
           )}
           {item.passage && (
@@ -231,16 +276,25 @@ export default function QuizSession({
               {formatDialogueScript(item.passage)}
             </p>
           )}
-          {/* 질문·보기는 실제 HSK 처럼 중국어 */}
-          <p lang="zh" className="font-cn text-base font-semibold leading-relaxed text-ink">{item.question}</p>
-          <Choices
-            options={item.options}
-            answer={item.answer}
-            selected={answers[index] ?? null}
-            onSelect={select}
-            reveal={revealed}
-            locked={revealed}
-          />
+          {/* 듣기 연습: 문제·보기는 기본 숨김 — 「대본 보기」/「정답표시」로만 노출(듣기 우선). */}
+          {gateListening && !contentOpen ? (
+            <p className="rounded-md border border-hairline bg-ivory px-3 py-2.5 text-xs leading-relaxed text-muted">
+              먼저 음성을 들어 보세요. 끝까지 들으면 「대본 보기」로 문제·보기를, 「정답표시」로 정답을 확인할 수 있어요.
+            </p>
+          ) : (
+            <>
+              {/* 질문·보기는 실제 HSK 처럼 중국어 */}
+              <p lang="zh" className="font-cn text-base font-semibold leading-relaxed text-ink">{item.question}</p>
+              <Choices
+                options={item.options}
+                answer={item.answer}
+                selected={answers[index] ?? null}
+                onSelect={select}
+                reveal={revealed}
+                locked={revealed}
+              />
+            </>
+          )}
         </Card>
 
         <div className="flex items-center justify-between">
@@ -447,7 +501,7 @@ function ExplainColumn({
   immediate: boolean;
 }) {
   return (
-    <div className="mt-3 flex flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[calc(100dvh-7rem)]">
+    <div className="mt-3 flex flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[calc(100dvh-10.5rem)]">
       <div className="flex items-center gap-1.5 border-b border-hairline px-4 py-3 text-sm font-bold text-ink">
         <Lightbulb size={15} className="text-gold" aria-hidden /> 해설
       </div>
@@ -461,7 +515,7 @@ function ExplainColumn({
 // 우측 열 — AI 과외 채팅(TutorChat 자체 헤더 사용). 실전은 잠금.
 function ChatColumn({ isExam }: { isExam: boolean }) {
   return (
-    <div className="mt-3 flex h-[440px] flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[calc(100dvh-7rem)]">
+    <div className="mt-3 flex h-[440px] flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[calc(100dvh-10.5rem)]">
       {isExam ? (
         <>
           <div className="flex items-center gap-1.5 border-b border-hairline px-4 py-3 text-sm font-bold text-ink">
