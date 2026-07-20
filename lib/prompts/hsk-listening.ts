@@ -23,6 +23,7 @@ export function buildHskListeningSystem(level: HskLevel): string {
     '  (예: "男：你好。\\n女：你好，请坐。\\n男：谢谢。") 한 줄에 여러 화자를 붙이지 않는다.',
     '  같은 성별 화자가 둘 이상이면 "男1：" "男2：" "女1：" 처럼 번호로 구분한다(성우 배정용).',
     '- question: 대본을 듣고 답할 질문. 실제 HSK 처럼 **중국어(简体字)로만** 쓴다. 한국어 금지.',
+    '- question_translation: question 의 자연스러운 **한국어** 번역(해설에 함께 노출).',
     '- options: 4개 보기. 실제 HSK 처럼 **모두 중국어(简体字)로만** 쓴다. 한국어 뜻 병기 금지(예 "炒鱼 (볶은 생선)" 금지 → "炒鱼").',
     '- answer: 반드시 options 중 하나와 글자까지 정확히 일치.',
     '- explanation: 왜 그 답인지 **한국어**로 간단히. 핵심 표현을 짚어준다(여기서만 한국어 사용).',
@@ -37,7 +38,7 @@ export function buildHskListeningSystem(level: HskLevel): string {
     '출력은 아래 JSON 객체 하나만. 마크다운·설명 금지:',
     '{"audio_script":"...","script_pinyin":"...","script_translation":"...",',
     '"speakers":[{"label":"男","gender":"male","age":"adult","role":"..."}],',
-    '"instructions":"...","question":"...",',
+    '"instructions":"...","question":"...","question_translation":"...",',
     '"options":["...","...","...","..."],"answer":"...","explanation":"..."}',
   ].join('\n')
 }

@@ -68,8 +68,10 @@ export interface HskListeningQuestion {
   scriptTranslation?: string
   /** 학습자에게 보여줄 한국어 지시문. */
   instructions: string
-  /** 문제 본문(한국어). */
+  /** 문제 본문(중국어). */
   question: string
+  /** 문제(질문)의 한국어 번역 — 해설에 함께 노출. 없을 수 있음. */
+  questionTranslation?: string
   /** 4지선다 보기(중국어 또는 한국어). */
   options: string[]
   /** 정답 — options 중 하나와 정확히 일치. */

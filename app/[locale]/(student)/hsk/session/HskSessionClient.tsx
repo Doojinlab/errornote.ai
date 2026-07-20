@@ -13,7 +13,6 @@ import type { HskQuestion, HskListeningQuestion } from "@/types/hsk";
 interface DrillState {
   answers: Record<number, string>;
   index: number;
-  flagged: number[];
 }
 interface PersistedDrill extends DrillState {
   items: QuizItem[];
@@ -59,6 +58,7 @@ export default function HskSessionClient({
       kind: "listening",
       instructions: question.instructions,
       question: question.question,
+      questionTranslation: question.questionTranslation,
       options: question.options,
       answer: question.answer,
       explanation: question.explanation,
@@ -136,7 +136,6 @@ export default function HskSessionClient({
             setRestored({
               answers: saved.answers ?? {},
               index: saved.index ?? 0,
-              flagged: saved.flagged ?? [],
             });
             setError(null);
             setLoading(false);

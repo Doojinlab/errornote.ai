@@ -1,15 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Play, Pause, Repeat, Gauge, ScrollText } from "lucide-react";
-import { pinyinToneParts, toneTextClass } from "@/lib/pinyin-tone";
+import { Play, Pause, Repeat, Gauge } from "lucide-react";
 import { formatDialogueScript } from "@/lib/hsk-quiz";
 import type { HskSessionType } from "@/types";
 import type { HskSpeaker } from "@/types/hsk";
 
-// A-6 듣기 재생 컨트롤 — 속도(0.75/1/1.25)·반복(1/2/무제한)·재생/일시정지·스크립트 토글.
-// 음성은 ElevenLabs(서버 /api/tts, 기본 v3)로 통일. 마운트 시 사전 생성·캐싱.
-// 키 미설정/실패 시 대본 표시로 폴백. 실전(exam)은 1.0x·1회 잠금 + 스크립트 미노출(A-5).
+// A-6 듣기 재생 컨트롤 — 속도(0.75/1/1.25)·반복(1/2/무제한)·재생/일시정지.
+// 음성은 ElevenLabs(서버 /api/tts)로 통일. 마운트 시 사전 생성·캐싱.
+// 키 미설정/실패 시 대본 표시로 폴백. 실전(exam)은 1.0x·1회 잠금(A-5).
+// 대본·문제·해석·해설은 해설 창의 "해설 보기"로 통합해 본다(별도 "대본 보기" 없음).
 
 const SPEEDS = [0.75, 1, 1.25] as const;
 type RepeatCount = 1 | 2 | "inf";
@@ -23,28 +23,13 @@ export default function ListeningPlayer({
   audioScript,
   speechText,
   cast,
-  scriptPinyin,
-  scriptTranslation,
   sessionType,
-  scriptOpen: scriptOpenProp,
-  onToggleScript,
-  scriptEnabled = true,
-  onAudioComplete,
 }: {
   audioScript: string;
-  /** 실제 합성할 음성 텍스트(대화+질문+보기). 미지정 시 audioScript. 대본 표시는 audioScript 만. */
+  /** 실제 합성할 음성 텍스트(대화+질문+보기). 미지정 시 audioScript. */
   speechText?: string;
   cast?: HskSpeaker[];
-  scriptPinyin?: string;
-  scriptTranslation?: string;
   sessionType?: HskSessionType;
-  /** 대본 열림 상태(제어). 미지정 시 내부 상태 사용. */
-  scriptOpen?: boolean;
-  onToggleScript?: () => void;
-  /** 대본 보기 활성 여부(듣기 완료 전 비활성). 기본 true. */
-  scriptEnabled?: boolean;
-  /** 음성을 끝까지 재생했거나(1회) 음성이 없을 때(폴백) 1회 호출 — 대본·정답 활성화 신호. */
-  onAudioComplete?: () => void;
 }) {
   const locked = sessionType === "exam";
 
@@ -53,19 +38,10 @@ export default function ListeningPlayer({
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<number>(1);
   const [repeat, setRepeat] = useState<RepeatCount>(1);
-  const [scriptOpenLocal, setScriptOpenLocal] = useState(false);
-  // 제어 모드(onToggleScript 제공) 우선, 아니면 내부 상태.
-  const scriptOpen = scriptOpenProp ?? scriptOpenLocal;
-  const toggleScript = () => (onToggleScript ? onToggleScript() : setScriptOpenLocal((o) => !o));
 
   const urlRef = useRef<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playsLeft = useRef(0);
-  // 최신 onAudioComplete 를 ref 로 보관 — ensureAudio 의존성에 넣지 않아 매 렌더 재합성을 막는다.
-  const onAudioCompleteRef = useRef(onAudioComplete);
-  useEffect(() => {
-    onAudioCompleteRef.current = onAudioComplete;
-  }, [onAudioComplete]);
 
   // ElevenLabs 오디오 사전 생성·캐싱. 실패(503 등) 시 대본 폴백.
   const ensureAudio = useCallback(async (): Promise<HTMLAudioElement | null> => {
@@ -79,7 +55,6 @@ export default function ListeningPlayer({
       });
       if (!res.ok) {
         setTtsDown(true);
-        onAudioCompleteRef.current?.(); // 음성 없음(폴백) — 들을 게 없으니 대본·정답 바로 활성화
         return null;
       }
       const blob = await res.blob();
@@ -87,7 +62,6 @@ export default function ListeningPlayer({
       urlRef.current = url;
       const audio = new Audio(url);
       audio.onended = () => {
-        onAudioCompleteRef.current?.(); // 끝까지 1회 들음 — 대본·정답 활성화
         if (playsLeft.current === Infinity || playsLeft.current > 1) {
           if (playsLeft.current !== Infinity) playsLeft.current -= 1;
           audio.currentTime = 0;
@@ -100,7 +74,6 @@ export default function ListeningPlayer({
       return audio;
     } catch {
       setTtsDown(true);
-      onAudioCompleteRef.current?.(); // 합성 실패(폴백) — 대본·정답 활성화
       return null;
     } finally {
       setSynth(false);
@@ -201,43 +174,6 @@ export default function ListeningPlayer({
             음성이 아직 설정되지 않았어요(관리자: ELEVENLABS_API_KEY). 대본으로 대신 볼게요.
           </p>
           <p lang="zh" className="mt-1 whitespace-pre-wrap font-cn text-sm leading-relaxed text-ink">{formatDialogueScript(audioScript)}</p>
-        </div>
-      )}
-
-      {/* 스크립트 토글 — 연습 모드에서만(A-6). 실전·대본폴백은 미노출.
-          듣기를 끝까지 듣기 전(scriptEnabled=false)에는 비활성. */}
-      {!locked && !ttsDown && (
-        <div>
-          <button
-            type="button"
-            onClick={toggleScript}
-            disabled={!scriptEnabled}
-            aria-expanded={scriptOpen}
-            aria-label="대본 원문·병음·번역 보기"
-            title={scriptEnabled ? undefined : "음성을 끝까지 들으면 볼 수 있어요"}
-            className={`${ctrlBtn} bg-white text-blue-dark border border-blue/25 disabled:cursor-not-allowed disabled:opacity-45`}
-          >
-            <ScrollText size={13} aria-hidden />
-            {scriptOpen ? "대본 숨기기" : "대본 보기"}
-          </button>
-          {!scriptEnabled && (
-            <span className="ml-2 text-[11px] text-muted">음성을 끝까지 들으면 활성화돼요</span>
-          )}
-          {scriptOpen && (
-            <div className="mt-2 space-y-1.5 rounded-md border border-hairline bg-ivory p-3">
-              <p lang="zh" className="whitespace-pre-wrap font-cn text-sm leading-relaxed text-ink">{formatDialogueScript(audioScript)}</p>
-              {scriptPinyin && (
-                <p lang="zh" className="font-cn text-xs">
-                  {pinyinToneParts(scriptPinyin).map((p, i) => (
-                    <span key={i} className={toneTextClass(p.tone)}>
-                      {p.text}
-                    </span>
-                  ))}
-                </p>
-              )}
-              {scriptTranslation && <p className="text-xs text-bodytx">{scriptTranslation}</p>}
-            </div>
-          )}
         </div>
       )}
     </div>
