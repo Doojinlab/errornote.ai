@@ -317,8 +317,8 @@ export default function HotwordCard({
                   type="button"
                   onClick={() => speak(word.term)}
                   disabled={speaking}
-                  aria-label={`${word.term} 발음 듣기`}
-                  title="발음 듣기"
+                  aria-label={`단어 ${word.term} 발음 듣기`}
+                  title="단어 발음 듣기"
                   className={`${iconBtn} disabled:opacity-50`}
                 >
                   <Volume2 size={15} aria-hidden />
@@ -344,6 +344,22 @@ export default function HotwordCard({
                 </div>
               )}
               {word.meaning && <div className="text-sm font-medium text-bodytx">{word.meaning}</div>}
+              {/* 예문 — 단어를 포함한 문장 + 예문 전용 재생 버튼(단어/예문 독립 재생). */}
+              {word.example && (
+                <div className="mt-1 flex w-full items-center justify-center gap-2 rounded-lg bg-ivory px-2.5 py-1.5">
+                  <p lang="zh" className="font-cn text-sm leading-relaxed text-ink">{word.example}</p>
+                  <button
+                    type="button"
+                    onClick={() => speak(word.example)}
+                    disabled={speaking}
+                    aria-label="예문 발음 듣기"
+                    title="예문 듣기"
+                    className={`${iconBtn} h-7 w-7 shrink-0 disabled:opacity-50`}
+                  >
+                    <Volume2 size={14} aria-hidden />
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-center text-sm text-muted">

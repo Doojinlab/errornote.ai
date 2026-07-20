@@ -219,7 +219,6 @@ export default function QuizSession({
           <p className="text-sm text-bodytx">{item.instructions}</p>
           {item.kind === "listening" && item.audioScript && (
             <ListeningPlayer
-              key={index}
               audioScript={item.audioScript}
               speechText={buildListeningSpeech(item)}
               cast={item.cast}
