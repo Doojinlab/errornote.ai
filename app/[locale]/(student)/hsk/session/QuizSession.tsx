@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, RotateCcw, Clock, AlertTriangle, Lightbulb, MessageCircle, Lock, Eye } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw, Clock, AlertTriangle, Lightbulb, MessageCircle, Lock, Eye, Check, X } from "lucide-react";
 import Card from "@/components/ui/Card";
 import TutorChat from "@/components/learn/TutorChat";
 import ListeningPlayer from "./ListeningPlayer";
@@ -359,8 +359,11 @@ function ResultsView({
         ? "border-gold-soft bg-gold-soft text-gold"
         : "border-terra-soft bg-terra-soft text-terra";
 
+  // 상단은 문항별 정답/오답만. 번호를 누르면 아래에 그 문항의 지문·문제·해설·AI 과외를 편다.
+  const [selected, setSelected] = useState<number | null>(null);
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <Card className={`border ${bandCls} p-5 text-center`}>
         <p className="text-sm text-bodytx">성적표</p>
         <p className="mt-1 text-4xl font-extrabold">{result.score}점</p>
@@ -369,29 +372,49 @@ function ResultsView({
         </p>
       </Card>
 
-      {result.wrongIndexes.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-ink">틀린 문항 리뷰 ({result.wrongIndexes.length})</h3>
-            <span className="text-[11px] text-muted">오답은 「오답 노트」에 자동 저장됨</span>
-          </div>
-          {result.wrongIndexes.map((i) => {
-            const it = items[i];
+      {/* 문항별 정답/오답 요약 — 번호 클릭 시 아래에 지문·해설·AI 과외 */}
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-1">
+          <h3 className="text-sm font-bold text-ink">문항별 결과</h3>
+          <span className="text-[11px] text-muted">번호를 누르면 지문·해설·AI 과외가 나와요 · 오답은 「오답 노트」에 자동 저장</span>
+        </div>
+        <div className="flex flex-wrap gap-2" role="group" aria-label="문항 결과">
+          {items.map((it, i) => {
+            const correct = answers[i] === it.answer;
+            const isCur = selected === i;
             return (
-              <Card key={i} className="space-y-1.5 p-3">
-                <p className="text-xs font-semibold text-muted">{i + 1}번</p>
-                <p className="text-sm font-semibold text-ink">{it.question}</p>
-                <p className="text-xs text-terra-dark">
-                  내 답: {answers[i] ? <span lang="zh" className="font-cn">{answers[i]}</span> : "미응답"}
-                </p>
-                <p className="text-xs text-jade-dark">
-                  정답: <span lang="zh" className="font-cn font-semibold">{it.answer}</span>
-                </p>
-                {it.explanation && <p className="text-xs text-bodytx">{it.explanation}</p>}
-              </Card>
+              <button
+                key={i}
+                type="button"
+                onClick={() => setSelected(i)}
+                aria-pressed={isCur}
+                aria-label={`${i + 1}번 ${correct ? "정답" : "오답"} — 지문·해설 보기`}
+                className={`inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue/50 ${
+                  correct
+                    ? "border-jade bg-jade-soft text-jade-dark"
+                    : "border-terra bg-terra-soft text-terra-dark"
+                } ${isCur ? "ring-2 ring-blue ring-offset-1" : ""}`}
+              >
+                {i + 1}
+                {correct ? <Check size={13} aria-hidden /> : <X size={13} aria-hidden />}
+              </button>
             );
           })}
         </div>
+      </div>
+
+      {/* 선택 문항 상세 — 지문 · 문제 · 내답/정답 · 해설 · AI 채팅(맞은 문제도 노출) */}
+      {selected !== null ? (
+        <ResultDetail
+          key={selected}
+          item={items[selected]}
+          userAnswer={answers[selected] ?? null}
+          index={selected}
+        />
+      ) : (
+        <p className="rounded-xl2 border border-dashed border-hairline bg-white px-4 py-8 text-center text-sm text-muted">
+          위 문항 번호를 누르면 지문·해설·AI 과외가 여기에 나와요.
+        </p>
       )}
 
       <button
@@ -402,6 +425,96 @@ function ResultsView({
         <RotateCcw size={14} aria-hidden />
         새 문제로 재도전
       </button>
+    </div>
+  );
+}
+
+// 채점 결과의 문항 상세 — 지문(독해)·대본/해석(듣기) + 문제 + 보기(정답 표시) + 해설 + AI 과외.
+// 맞은 문제·틀린 문제 모두 동일하게 보여준다(사용자 요청). key=index 로 문항 전환 시 AI 채팅 초기화.
+function ResultDetail({
+  item,
+  userAnswer,
+  index,
+}: {
+  item: QuizItem;
+  userAnswer: string | null;
+  index: number;
+}) {
+  const correct = userAnswer !== null && userAnswer === item.answer;
+  return (
+    <div className="lg:grid lg:grid-cols-[1.3fr_1fr] lg:items-start lg:gap-3">
+      <Card className="space-y-3 p-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-ink">{index + 1}번</span>
+          <span
+            className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+              correct ? "bg-jade-soft text-jade-dark" : "bg-terra-soft text-terra-dark"
+            }`}
+          >
+            {correct ? "정답" : "오답"}
+          </span>
+        </div>
+
+        {/* 지문(독해) / 대본·해석(듣기) */}
+        {item.passage && (
+          <div>
+            <p className="text-[11px] font-semibold text-muted">지문</p>
+            <p lang="zh" className="mt-0.5 whitespace-pre-wrap font-cn text-sm leading-relaxed text-ink">
+              {formatDialogueScript(item.passage)}
+            </p>
+          </div>
+        )}
+        {item.audioScript && (
+          <div>
+            <p className="text-[11px] font-semibold text-muted">대본(지문)</p>
+            <p lang="zh" className="mt-0.5 whitespace-pre-wrap font-cn text-sm leading-relaxed text-ink">
+              {formatDialogueScript(item.audioScript)}
+            </p>
+          </div>
+        )}
+        {item.scriptTranslation && (
+          <div>
+            <p className="text-[11px] font-semibold text-muted">해석</p>
+            <p className="mt-0.5 whitespace-pre-wrap text-sm text-bodytx">{item.scriptTranslation}</p>
+          </div>
+        )}
+
+        {/* 문제(+번역) */}
+        <div>
+          <p className="text-[11px] font-semibold text-muted">문제</p>
+          <p lang="zh" className="mt-0.5 font-cn text-sm font-semibold leading-relaxed text-ink">
+            {item.question}
+          </p>
+          {item.questionTranslation && (
+            <p className="mt-0.5 text-sm text-bodytx">{item.questionTranslation}</p>
+          )}
+        </div>
+
+        {/* 보기 — 정답(초록)·내 답(빨강) 표시 */}
+        <Choices options={item.options} answer={item.answer} selected={userAnswer} onSelect={() => {}} reveal locked />
+
+        <div className="space-y-0.5">
+          <p className="text-xs text-terra-dark">
+            내 답: {userAnswer ? <span lang="zh" className="font-cn">{userAnswer}</span> : "미응답"}
+          </p>
+          <p className="text-xs text-jade-dark">
+            정답: <span lang="zh" className="font-cn font-semibold">{item.answer}</span>
+          </p>
+        </div>
+
+        {/* 해설 — 맞은 문제도 노출 */}
+        {item.explanation && (
+          <div>
+            <p className="text-[11px] font-semibold text-muted">해설</p>
+            <p className="mt-0.5 whitespace-pre-wrap text-sm text-bodytx">{item.explanation}</p>
+          </div>
+        )}
+      </Card>
+
+      {/* AI 과외 채팅 — 문항별(전환 시 초기화). TutorChat 자체 헤더 사용. */}
+      <div className="mt-3 flex h-[440px] flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0">
+        <TutorChat focusedError={null} />
+      </div>
     </div>
   );
 }
