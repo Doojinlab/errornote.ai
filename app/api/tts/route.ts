@@ -6,6 +6,8 @@ import {
   assignSpeakerVoices,
   assignCastVoices,
   pickBrightVoice,
+  getBrightVoicePool,
+  getVoicePools,
   BRIGHT_VOICE_SETTINGS,
   ElevenLabsError,
   TTS_MAX_CHARS,
@@ -168,14 +170,15 @@ export async function POST(req: Request): Promise<Response> {
       }
     }
 
-    // 단일 발화(热词 발음 등). voice:'bright' 면 밝은 하이톤 풀에서 랜덤으로 골라 다양한 음성으로 낸다.
-    // seed 를 주면 그 값으로 고정, 없으면 매 요청 랜덤 → 새로고침·재생마다 다른 밝은 성우.
-    const b = body as { voice?: unknown; seed?: unknown }
+    // 단일 발화(热词 발음 등). voice:'bright' 면 선택 성별 풀에서 랜덤으로 골라 다양한 음성으로 낸다.
+    // gender:'male' 이면 남성 풀, 아니면 밝은(여성) 풀. seed 없으면 매 요청 랜덤 → 재생·새로고침마다 다른 성우.
+    const b = body as { voice?: unknown; seed?: unknown; gender?: unknown }
     const brightOpts =
       b.voice === 'bright'
         ? {
             voiceId: pickBrightVoice(
               typeof b.seed === 'number' ? b.seed : Math.floor(Math.random() * 1e9),
+              b.gender === 'male' ? getVoicePools().male : getBrightVoicePool(),
             ),
             voiceSettings: { ...BRIGHT_VOICE_SETTINGS },
           }
