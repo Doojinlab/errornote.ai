@@ -33,7 +33,7 @@ export default function ListeningPlayer({
 }) {
   const locked = sessionType === "exam";
 
-  const [synth, setSynth] = useState(true);
+  const [synth, setSynth] = useState(false);
   const [ttsDown, setTtsDown] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<number>(1);
@@ -80,16 +80,16 @@ export default function ListeningPlayer({
     }
   }, [audioScript, speechText, cast]);
 
+  // 미리 생성하지 않는다(비용 절감) — "듣기"를 눌렀을 때만 합성한다. 언마운트 시 오디오 정리.
+  // (문항 전환은 QuizSession 에서 key 로 리마운트 → 상태·오디오가 항상 새로 시작.)
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트 시 오디오 사전 생성(로딩 상태). 의도적.
-    void ensureAudio();
     return () => {
       audioRef.current?.pause();
       if (urlRef.current) URL.revokeObjectURL(urlRef.current);
       audioRef.current = null;
       urlRef.current = null;
     };
-  }, [ensureAudio]);
+  }, []);
 
   async function togglePlay() {
     const audio = await ensureAudio();

@@ -41,11 +41,13 @@ const DEFAULT_FEMALE_VOICE_POOL = [
 // 실제 밝은 성우 ID 가 있으면 env(ELEVENLABS_VOICE_ID_BRIGHT, 쉼표 목록)로 교체하면 품질이 올라간다.
 const DEFAULT_BRIGHT_VOICE_POOL = DEFAULT_FEMALE_VOICE_POOL
 
-// 밝은 톤 발화용 voice_settings — 낮은 stability(더 생동감/밝은 표현) + style 강조.
+// 热词 발음용 voice_settings — 밝기는 보이스 "선택"으로 내고, 설정은 발음 "정확도"를 우선한다.
+// (낮은 stability + 높은 style 은 표현은 살지만 중국어 성조를 흘리고 발음이 뭉개지는 부작용이 있어
+//  단어 발음 레퍼런스에는 부적합. 그래서 stability 를 올리고 style 을 낮춰 성조·명료도를 확보한다.)
 export const BRIGHT_VOICE_SETTINGS = {
-  stability: 0.35,
-  similarity_boost: 0.8,
-  style: 0.45,
+  stability: 0.55,
+  similarity_boost: 0.85,
+  style: 0.1,
   use_speaker_boost: true,
 } as const
 
