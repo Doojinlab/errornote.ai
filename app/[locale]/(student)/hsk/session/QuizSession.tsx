@@ -501,7 +501,7 @@ function ExplainColumn({
   immediate: boolean;
 }) {
   return (
-    <div className="mt-3 flex flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[calc(100dvh-10.5rem)]">
+    <div className="mt-3 flex flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[min(540px,calc(100dvh-10.5rem))]">
       <div className="flex items-center gap-1.5 border-b border-hairline px-4 py-3 text-sm font-bold text-ink">
         <Lightbulb size={15} className="text-gold" aria-hidden /> 해설
       </div>
@@ -515,7 +515,7 @@ function ExplainColumn({
 // 우측 열 — AI 과외 채팅(TutorChat 자체 헤더 사용). 실전은 잠금.
 function ChatColumn({ isExam }: { isExam: boolean }) {
   return (
-    <div className="mt-3 flex h-[440px] flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[calc(100dvh-10.5rem)]">
+    <div className="mt-3 flex h-[440px] flex-col overflow-hidden rounded-xl2 border border-hairline bg-white lg:mt-0 lg:sticky lg:top-4 lg:h-[min(540px,calc(100dvh-10.5rem))]">
       {isExam ? (
         <>
           <div className="flex items-center gap-1.5 border-b border-hairline px-4 py-3 text-sm font-bold text-ink">
