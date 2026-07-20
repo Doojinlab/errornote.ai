@@ -19,6 +19,7 @@ interface RawListening {
   script_translation?: unknown
   instructions?: unknown
   question?: unknown
+  question_translation?: unknown
   options?: unknown
   answer?: unknown
   explanation?: unknown
@@ -76,6 +77,7 @@ export function parseHskListening(raw: string, level: HskLevel): HskListeningQue
     scriptTranslation: str(obj.script_translation),
     instructions: instructions ?? '녹음을 듣고 알맞은 답을 고르세요.',
     question,
+    questionTranslation: str(obj.question_translation),
     options,
     answer,
     explanation: str(obj.explanation) ?? '',

@@ -7,6 +7,8 @@ export interface QuizItem {
   kind: 'listening' | 'reading'
   instructions: string
   question: string
+  /** 문제(질문)의 한국어 번역 — 해설에 함께 노출. 없을 수 있음. */
+  questionTranslation?: string
   options: string[]
   answer: string
   explanation: string

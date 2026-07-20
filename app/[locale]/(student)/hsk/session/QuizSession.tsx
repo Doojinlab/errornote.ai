@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Flag, ChevronLeft, ChevronRight, RotateCcw, Clock, AlertTriangle, Lightbulb, MessageCircle, Lock, Eye } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw, Clock, AlertTriangle, Lightbulb, MessageCircle, Lock, Eye } from "lucide-react";
 import Card from "@/components/ui/Card";
 import TutorChat from "@/components/learn/TutorChat";
 import ListeningPlayer from "./ListeningPlayer";
@@ -38,7 +38,6 @@ interface Persisted {
   items: QuizItem[];
   answers: Record<number, string>;
   index: number;
-  flagged: number[];
 }
 
 export default function QuizSession({
@@ -57,17 +56,13 @@ export default function QuizSession({
   topic: string;
   /** 연습(drill) 이어풀기 저장 키. 실전/미제공이면 null. */
   storageKey?: string | null;
-  initialState?: { answers: Record<number, string>; index: number; flagged: number[] };
+  initialState?: { answers: Record<number, string>; index: number };
   onRetry: () => void;
 }) {
   const isExam = sessionType === "exam";
 
   const [index, setIndex] = useState(initialState?.index ?? 0);
   const [answers, setAnswers] = useState<Record<number, string>>(initialState?.answers ?? {});
-  const [flagged, setFlagged] = useState<Set<number>>(new Set(initialState?.flagged ?? []));
-  // 듣기 연습 게이팅(문항별): 음성 완청 여부 · 대본(문제·보기) 열림 · 정답 공개.
-  const [audioDoneSet, setAudioDoneSet] = useState<Set<number>>(new Set());
-  const [scriptOpenSet, setScriptOpenSet] = useState<Set<number>>(new Set());
   // 해설은 정답을 고른 뒤 "해설 보기"를 눌러야 열린다(자동 노출 X). 문항별.
   const [explainOpenSet, setExplainOpenSet] = useState<Set<number>>(new Set());
   const [submitted, setSubmitted] = useState(false);
@@ -134,13 +129,13 @@ export default function QuizSession({
   // 연습 이어풀기(A-9) — 진행 상태 저장. 실전은 저장 안 함(중단=무효).
   useEffect(() => {
     if (!storageKey || submitted || typeof window === "undefined") return;
-    const blob: Persisted = { items, answers, index, flagged: [...flagged] };
+    const blob: Persisted = { items, answers, index };
     try {
       window.localStorage.setItem(storageKey, JSON.stringify(blob));
     } catch {
       /* 저장 실패는 무시 */
     }
-  }, [storageKey, submitted, items, answers, index, flagged]);
+  }, [storageKey, submitted, items, answers, index]);
 
   // 실전 이탈 경고(A-9) — 새로고침/닫기 시 확인.
   useEffect(() => {
@@ -157,14 +152,6 @@ export default function QuizSession({
     if (immediate && answers[index] !== undefined) return;
     setAnswers((a) => ({ ...a, [index]: opt }));
   }
-  function toggleFlag() {
-    setFlagged((f) => {
-      const n = new Set(f);
-      if (n.has(index)) n.delete(index);
-      else n.add(index);
-      return n;
-    });
-  }
   function retry() {
     if (storageKey && typeof window !== "undefined") window.localStorage.removeItem(storageKey);
     onRetry();
@@ -176,28 +163,15 @@ export default function QuizSession({
 
   const item = items[index];
   const answered = answers[index] !== undefined;
-  // 듣기 연습만 "듣기 우선" 게이팅: 기본엔 음성만, 대본보기로 문제 텍스트·대본 원문 노출.
+  // 듣기 연습: 문제 텍스트는 좌측에 숨기고(음성이 읽어줌) 해설로 통합한다. 독해는 그대로 노출.
   const gateListening = !isExam && item.kind === "listening";
-  const audioDone = !gateListening || audioDoneSet.has(index);
-  const contentOpen = !gateListening || scriptOpenSet.has(index); // 문제 텍스트 노출 여부
 
   // 보기 채점(정답/오답 하이라이트)은 정답을 고르면 즉시(실전은 채점 전 미노출).
   const choiceRevealed = !isExam && immediate && answered;
-  // 해설(정답·대본·해석·해설)은 자동 노출 X — 정답을 고른 뒤 "해설 보기"를 눌러야 열린다.
+  // 해설(문제·대본·해석·해설)은 자동 노출 X — 정답을 고른 뒤 "해설 보기"를 눌러야 열린다.
   const canOpenExplain = !isExam && immediate && answered;
   const explainOpen = explainOpenSet.has(index);
 
-  function markAudioDone() {
-    setAudioDoneSet((s) => (s.has(index) ? s : new Set(s).add(index)));
-  }
-  function toggleScript() {
-    setScriptOpenSet((s) => {
-      const n = new Set(s);
-      if (n.has(index)) n.delete(index);
-      else n.add(index);
-      return n;
-    });
-  }
   function openExplain() {
     setExplainOpenSet((s) => (s.has(index) ? s : new Set(s).add(index)));
   }
@@ -234,25 +208,11 @@ export default function QuizSession({
           </div>
         )}
 
-        {/* 진행 + 플래그 */}
-        <div className="flex items-center justify-between">
+        {/* 진행 — 상단 "표시"(플래그)·"정답표시"는 삭제. 해설은 해설 창의 "해설 보기"로 연다. */}
+        <div className="flex items-center">
           <span className="text-xs font-semibold text-muted">
             {index + 1} / {items.length}
           </span>
-          {/* 나중에 다시 볼 문항 표시(플래그). 이전 "정답표시"는 보기 선택 시 정답/오답이 바로
-              드러나 의미가 없어 삭제. 해설은 해설 창의 "해설 보기"로 연다. */}
-          <button
-            type="button"
-            onClick={toggleFlag}
-            aria-pressed={flagged.has(index)}
-            aria-label={flagged.has(index) ? "표시 해제" : "나중에 다시 볼 문항으로 표시"}
-            className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 ${
-              flagged.has(index) ? "bg-gold-soft text-gold-dark" : "border border-hairline bg-white text-muted hover:bg-ivory"
-            }`}
-          >
-            <Flag size={13} aria-hidden />
-            표시
-          </button>
         </div>
 
         <Card className="space-y-3 p-4">
@@ -262,13 +222,7 @@ export default function QuizSession({
               audioScript={item.audioScript}
               speechText={buildListeningSpeech(item)}
               cast={item.cast}
-              scriptPinyin={item.scriptPinyin}
-              scriptTranslation={item.scriptTranslation}
               sessionType={sessionType}
-              scriptOpen={gateListening ? contentOpen : undefined}
-              onToggleScript={gateListening ? toggleScript : undefined}
-              scriptEnabled={audioDone}
-              onAudioComplete={markAudioDone}
             />
           )}
           {item.passage && (
@@ -276,15 +230,16 @@ export default function QuizSession({
               {formatDialogueScript(item.passage)}
             </p>
           )}
-          {/* 듣기 연습: 문제(질문) 텍스트·대본 원문만 「대본 보기」 전까지 숨긴다(듣기 우선).
-              음성이 질문·보기까지 읽어주고, 보기(선택지)는 항상 노출·선택 가능해 정답을 고를 수 있다. */}
-          {gateListening && !contentOpen ? (
+          {/* 듣기 연습: 문제(질문) 텍스트는 좌측에 숨긴다 — 음성이 질문·보기를 읽어주고,
+              문제·대본·해석·해설은 정답을 고른 뒤 해설 창의 「해설 보기」에서 통합해 본다.
+              독해는 문제를 그대로 노출. 보기(선택지)는 항상 노출·선택 가능. */}
+          {gateListening ? (
             <p className="rounded-md border border-hairline bg-ivory px-3 py-2.5 text-xs leading-relaxed text-muted">
-              음성을 듣고 아래 보기에서 정답을 골라 보세요. 문제·대본 원문은 음성을 끝까지 들으면 「대본 보기」로
-              볼 수 있어요.
+              음성을 듣고 아래 보기에서 정답을 골라 보세요. 문제·대본·해석·해설은 정답을 고른 뒤
+              해설 창의 「해설 보기」에서 볼 수 있어요.
             </p>
           ) : (
-            /* 질문은 실제 HSK 처럼 중국어 */
+            /* 독해 질문은 실제 HSK 처럼 중국어 */
             <p lang="zh" className="font-cn text-base font-semibold leading-relaxed text-ink">{item.question}</p>
           )}
           {/* 보기(선택지)는 듣기여도 항상 노출·선택 가능 — 정답을 고를 수 있어야 한다. */}
@@ -328,21 +283,18 @@ export default function QuizSession({
             {items.map((_, i) => {
               const isCur = i === index;
               const isAns = answers[i] !== undefined;
-              const isFlag = flagged.has(i);
               let cls = "border-hairline bg-white text-muted";
               if (isAns) cls = "border-jade bg-jade-soft text-jade-dark";
-              if (isFlag) cls = "border-gold bg-gold-soft text-gold-dark";
               return (
                 <button
                   key={i}
                   type="button"
                   onClick={() => setIndex(i)}
-                  aria-label={`${i + 1}번 문항${isAns ? " (완료)" : ""}${isFlag ? " (표시됨)" : ""}`}
+                  aria-label={`${i + 1}번 문항${isAns ? " (완료)" : ""}`}
                   aria-current={isCur ? "true" : undefined}
                   className={`relative h-8 w-8 rounded-md border text-xs font-bold transition-colors ${cls} ${isCur ? "ring-2 ring-blue ring-offset-1" : ""}`}
                 >
                   {i + 1}
-                  {isFlag && <Flag size={9} className="absolute -right-0.5 -top-0.5 text-gold-dark" aria-hidden />}
                 </button>
               );
             })}
@@ -589,12 +541,24 @@ function ExplainBody({
   }
   return (
     <div className="space-y-3 p-4">
+      {/* 문제(질문) — 좌측에서 숨겼으므로 해설에 통합. 있으면 한국어 번역도 함께. */}
+      {item.question && (
+        <div>
+          <p className="text-[11px] font-semibold text-muted">문제</p>
+          <p lang="zh" className="mt-0.5 font-cn text-sm font-semibold leading-relaxed text-ink">
+            {item.question}
+          </p>
+          {item.questionTranslation && (
+            <p className="mt-0.5 text-sm text-bodytx">{item.questionTranslation}</p>
+          )}
+        </div>
+      )}
       <p className="text-xs text-bodytx">
         정답: <span lang="zh" className="font-cn font-semibold text-jade-dark">{item.answer}</span>
       </p>
       {item.audioScript && (
         <div>
-          <p className="text-[11px] font-semibold text-muted">대본</p>
+          <p className="text-[11px] font-semibold text-muted">대본(지문)</p>
           <p lang="zh" className="mt-0.5 whitespace-pre-wrap font-cn text-sm leading-relaxed text-ink">
             {formatDialogueScript(item.audioScript)}
           </p>
