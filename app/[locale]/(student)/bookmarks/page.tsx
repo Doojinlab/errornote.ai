@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { createServerClient } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/auth";
+import { createServerClient } from "@/lib/supabase";
 import BookmarksList, { type BookmarkItem } from "./BookmarksList";
 
 async function loadBookmarks(): Promise<BookmarkItem[]> {

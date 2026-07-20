@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { createServerClient } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/auth";
+import { createServerClient } from "@/lib/supabase";
 import { getOrCreateTodayQuest } from "@/lib/daily-quests";
 import { processGraduations } from "@/lib/graduation";
 import { getClassGoals, type ClassGoal } from "@/lib/class-goals";
@@ -19,6 +19,9 @@ async function loadClassGoals(): Promise<ClassGoalsView | null> {
   const user = await getCurrentUser();
   if (!user) return null;
   try {
+    // 성능: 종(species) 카탈로그는 전역 참조 테이블이라 classId 가 필요 없다.
+    // enrollments 왕복과 동시에 시작해 순차 왕복을 없앤다.
+    const speciesPromise = listErrorSpecies();
     const { data: enr } = await supabase
       .from("enrollments")
       .select("class_id")
@@ -26,8 +29,11 @@ async function loadClassGoals(): Promise<ClassGoalsView | null> {
       .limit(1)
       .maybeSingle();
     const classId = (enr as { class_id: string } | null)?.class_id;
-    if (!classId) return null;
-    const [goals, species] = await Promise.all([getClassGoals(classId), listErrorSpecies()]);
+    if (!classId) {
+      void speciesPromise.catch(() => {}); // 미사용 시 미처리 rejection 방지
+      return null;
+    }
+    const [goals, species] = await Promise.all([getClassGoals(classId), speciesPromise]);
     if (goals.length === 0) return null;
     const speciesName: Record<string, string> = {};
     for (const s of species) speciesName[s.id] = s.name_ko;

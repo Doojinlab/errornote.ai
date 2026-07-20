@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getCurrentUser } from '@/lib/auth';
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createServerClient } from '@/lib/supabase'
@@ -185,10 +186,7 @@ export default async function ClassDetailPage(
 ) {
   const params = await props.params;
   const t = await getTranslations('pages.professor.classDetail')
-  const supabase = createServerClient()
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) return null
 
   // 반 정보와 학생 목록은 서로 독립이므로 병렬 조회로 순차 왕복을 제거한다.
@@ -230,6 +228,15 @@ export default async function ClassDetailPage(
           <span className="font-mono text-muted">
             {t('inviteCode', { code: info.invite_code })}
           </span>
+          <Link href={`/classes/${info.id}/assignments`} className="text-blue hover:underline">
+            과제
+          </Link>
+          <Link href={`/classes/${info.id}/rubrics`} className="text-blue hover:underline">
+            루브릭
+          </Link>
+          <Link href={`/classes/${info.id}/live`} className="text-blue hover:underline">
+            실시간
+          </Link>
           <Link href={`/classes/${info.id}/corpus`} className="text-blue hover:underline">
             {t('corpusLink')}
           </Link>

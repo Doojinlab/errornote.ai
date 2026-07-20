@@ -55,6 +55,9 @@ Copy `.env.example` to `.env.local` and fill in the values below.
 | `NEXT_PUBLIC_KAKAO_REDIRECT_URI` | Kakao OAuth callback URL |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | PWA web push |
 | `WEB_PUSH_SUBJECT` | Web push sender identity |
+| `ELEVENLABS_API_KEY` | HSK 듣기 TTS 음성(`/hsk/session` 영역=듣기). 없으면 대본 표시로 폴백 |
+| `ELEVENLABS_VOICE_ID` / `ELEVENLABS_MODEL_ID` | ElevenLabs 보이스·모델 재정의(선택) |
+| `ELEVENLABS_VOICE_ID_BRIGHT` | 今日热词 발음용 "밝은 하이톤" 보이스 풀(쉼표 목록). 미설정 시 여성 풀에서 랜덤 |
 | `DEEPL_API_KEY` | DeepL translation comparison |
 | `PAPAGO_CLIENT_ID` / `PAPAGO_CLIENT_SECRET` | Papago translation comparison |
 | `OPENAI_API_KEY` / `OPENAI_TRANSLATE_MODEL` | GPT translation comparison |
@@ -166,3 +169,9 @@ The type file is handwritten until Docker Desktop is available; keep `types/data
 
 ## 게임화 / 인게이지먼트
 - 설계 기준: docs/gamification-spec.md (재미 우선, 무벌점, 닫힘 루프, 과잉 게임화 경계)
+
+## 대시보드 확장 (실전 HSK · 今日热词)
+- 기능·로직 정의: docs/dashboard-features.md
+- 두 기능 모두 "입장하기" 시 기존 3분할 워크스페이스를 재사용(`?mode=hsk|hotword`), 오류카드→내 오류 파이프라인 그대로 사용
+- 今日热词는 기존 주간 카드뉴스(weekly_cardnews)와 **완전 별개** — 테이블·로직 분리(hotwords/hotword_feedback/hotword_impressions)
+- 신규 마이그레이션: `20260715000002_dashboard_features.sql`

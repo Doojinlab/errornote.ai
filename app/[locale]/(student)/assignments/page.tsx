@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/auth";
+import { getTranslations } from "next-intl/server";
 import { listAssignmentsForStudent } from "@/lib/assignments";
 import Card from "@/components/ui/Card";
 

@@ -1,6 +1,6 @@
 import Link from 'next/link'
+import { getCurrentUser } from '@/lib/auth';
 import { getTranslations } from 'next-intl/server'
-import { getCurrentUser } from '@/lib/auth'
 import { listAssignedReviews, listReceivedReviews } from '@/lib/peer-review'
 import { Card } from '@/components/student-ui'
 import type { ReviewStatus } from '@/types/peer-review'

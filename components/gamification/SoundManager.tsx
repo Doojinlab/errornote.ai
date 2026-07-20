@@ -94,7 +94,9 @@ export function SoundProvider({ children }: ProviderProps) {
           howlsRef.current[cfg.key] = new Howl({
             src: sources,
             volume: cfg.volume ?? 1,
-            preload: true,
+            // preload:false — 5개 WAV(~336KB) 를 초기화 시점에 한꺼번에 디코드하지 않는다.
+            // howler 가 각 사운드 첫 play() 때 지연 로드하므로 첫 클릭이 무거워지지 않는다.
+            preload: false,
             html5: false
           }) as unknown as HowlLike
         }
@@ -119,8 +121,15 @@ export function SoundProvider({ children }: ProviderProps) {
   useEffect(() => {
     if (typeof window === 'undefined' || unlocked) return
 
+    // 초기화를 클릭 태스크에서 분리한다 — 사용자의 첫 클릭이 엔진 셋업(동적 import 등)을
+    // 동기로 기다리지 않도록 idle/다음 틱으로 미룬다.
     const onInteract = () => {
-      initializeEngine()
+      const run = () => void initializeEngine()
+      if ('requestIdleCallback' in window) {
+        ;(window as unknown as { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(run)
+      } else {
+        setTimeout(run, 0)
+      }
     }
     window.addEventListener('click', onInteract, { once: true, passive: true })
     window.addEventListener('keydown', onInteract, { once: true })

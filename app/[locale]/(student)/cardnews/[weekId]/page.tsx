@@ -1,8 +1,8 @@
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
-import { getCurrentUser } from "@/lib/auth";
 import CardNewsViewer from "@/components/cardnews/CardNewsViewer";
 import SendSelfButton from "./SendSelfButton";
 import type { CardnewsRecord } from "@/types/cardnews";

@@ -1,13 +1,21 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["icn1"],
   "crons": [
     {
       "path": "/api/cron/weekly-report",
       "schedule": "0 0 * * 1"
+    },
+    {
+      "path": "/api/cron/hotwords",
+      "schedule": "0 18 * * *"
     }
   ],
   "functions": {
     "app/api/cron/weekly-report/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/cron/hotwords/route.ts": {
       "maxDuration": 300
     }
   }

@@ -56,10 +56,50 @@ export interface ChatMessage {
   content: string
 }
 
+// ── 워크스페이스 입장 컨텍스트 (docs/dashboard-features.md ★공통 상호작용 모델) ──
+// 실전 HSK / 今日热词 는 새 화면을 만들지 않고 기존 3분할 워크스페이스를 재사용한다.
+// 차이는 AI 과외 채팅에 주입되는 시작 컨텍스트(시스템 프롬프트)뿐이다.
+export type WorkspaceEntryMode = 'hsk' | 'hotword'
+
+export type HskLevel = 3 | 4 | 5 | 6
+export type HskArea = 'listening' | 'reading' | 'writing' | 'speaking'
+export type HskMode = 'practice' | 'concept'
+/** 문제 풀이 세부(A-3): 연습(drill, 제한시간 없음) / 실전(exam, 제한시간·자동제출). */
+export type HskSessionType = 'drill' | 'exam'
+/** 연습 채점 타이밍(A-3/A-7): 즉시 / 모아서. 실전은 항상 batch(A-5). */
+export type HskGradingMode = 'immediate' | 'batch'
+
+export interface HskEntryContext {
+  level: HskLevel
+  area: HskArea
+  mode: HskMode
+  /** mode='practice'(문제 풀이) 일 때만. */
+  sessionType?: HskSessionType
+  /** sessionType='drill'(연습) 일 때만. 실전은 batch 로 강제된다. */
+  gradingMode?: HskGradingMode
+}
+
+export interface HotwordEntryContext {
+  term: string
+  category: string
+  pinyin?: string
+  literal?: string
+  meaning?: string
+  example?: string
+  origin?: string
+  registerTag?: string
+}
+
 export interface ChatRequest {
   messages: ChatMessage[]
   errorContext?: AnalysisError
   chapterNumber?: number
+  /** 입장 모드 — 있으면 시스템 프롬프트가 문제 제시/작문 과제 제시로 분기한다. */
+  entryMode?: WorkspaceEntryMode
+  /** entryMode === 'hsk' 일 때의 급수·영역·모드. */
+  hskContext?: HskEntryContext
+  /** entryMode === 'hotword' 일 때의 오늘의 단어 정보. */
+  hotwordContext?: HotwordEntryContext
 }
 
 export interface RemedialQuiz {

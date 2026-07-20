@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { createServerClient } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/auth";
+import { createServerClient } from "@/lib/supabase";
 import BadgeDisplay, { type BadgeDisplayItem } from "@/components/gamification/BadgeDisplay";
 
 const CATALOG: Omit<BadgeDisplayItem, "earned">[] = [

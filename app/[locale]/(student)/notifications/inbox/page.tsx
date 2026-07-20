@@ -1,9 +1,9 @@
-// Phase 4-B — 학생 인앱 알림 인박스.
-// [창] feat/phase4-weekly-report
-// NAV 노출은 PR #21 머지 후 별도 PR. 그 전엔 /notifications/inbox 직접 URL 접근.
+// Phase 4-B — 학생 인앱 알림 인박스. 헤더 🔔 진입점(app/[locale]/(student)/layout.tsx).
 
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import { Settings } from 'lucide-react'
+import { Link } from '@/i18n/routing'
 import { getAuthContext } from '@/lib/auth'
 import NotificationInbox from '@/components/NotificationInbox'
 
@@ -16,7 +16,18 @@ export default async function StudentNotificationsInboxPage() {
   const t = await getTranslations('pages.student.notifications.inbox')
 
   return (
-    <NotificationInbox
+    <>
+      {/* 알림 설정(카카오/푸시)으로 가는 링크 — 설정 페이지가 고아가 되지 않도록. */}
+      <div className="mb-2 flex justify-end">
+        <Link
+          href="/notifications"
+          className="inline-flex items-center gap-1 rounded-full border border-hairline bg-white px-3 py-1 text-xs font-medium text-bodytx hover:bg-ivory"
+        >
+          <Settings size={13} aria-hidden />
+          알림 설정
+        </Link>
+      </div>
+      <NotificationInbox
       labels={{
         title: t('title'),
         subtitle: t('subtitle'),
@@ -33,5 +44,6 @@ export default async function StudentNotificationsInboxPage() {
         loadError: t('loadError')
       }}
     />
+    </>
   )
 }

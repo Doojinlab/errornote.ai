@@ -1,7 +1,7 @@
 import Link from 'next/link'
+import { getCurrentUser } from '@/lib/auth';
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { createServerClient } from '@/lib/supabase'
 import { getMarketplaceDetail } from '@/lib/marketplace'
 import Card from '@/components/ui/Card'
 import RatingForm from './RatingForm'
@@ -29,10 +29,7 @@ export default async function MarketplaceDetailPage(
   }
 ) {
   const params = await props.params;
-  const supabase = createServerClient()
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) return null
 
   const [t, detail] = await Promise.all([

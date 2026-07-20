@@ -9,24 +9,41 @@ import ErrorPanel from "@/components/learn/ErrorPanel";
 import TutorChat from "@/components/learn/TutorChat";
 import { useSound } from "@/components/gamification/SoundManager";
 import { fetchOrEnqueue, isQueuedSentinel } from "@/lib/offline-queue";
-import type { AnalysisResponse, AnalyzeRequest } from "@/types";
+import type {
+  AnalysisResponse,
+  AnalyzeRequest,
+  HskEntryContext,
+  HotwordEntryContext,
+  WorkspaceEntryMode,
+} from "@/types";
 
 type Tab = "doc" | "errors" | "chat";
 
 interface Props {
   classId: string;
   chapterId: string;
+  /** 입장 모드(실전 HSK / 今日热词) — 워크스페이스 재사용, 채팅 시작 컨텍스트만 분기. */
+  entryMode?: WorkspaceEntryMode;
+  hskContext?: HskEntryContext;
+  hotwordContext?: HotwordEntryContext;
 }
 
 // 각 패널 공통 — 데스크톱에서는 카드(둥근 테두리+그림자), 모바일에서는 풀블리드.
 const PANE =
   "min-h-0 flex-1 flex-col overflow-hidden bg-white lg:flex lg:rounded-xl2 lg:border lg:border-hairline lg:shadow-sm";
 
-export default function LearnClient({ classId, chapterId }: Props) {
+export default function LearnClient({
+  classId,
+  chapterId,
+  entryMode,
+  hskContext,
+  hotwordContext,
+}: Props) {
   const t = useTranslations("pages.student.learn");
   const chapterNumber = Number(chapterId);
   const { play } = useSound();
-  const [tab, setTab] = useState<Tab>("doc");
+  // 입장 모드면 AI가 첫 문제/단어를 제시하는 채팅부터 보여준다(모바일 기본 탭).
+  const [tab, setTab] = useState<Tab>(entryMode ? "chat" : "doc");
   const [draft, setDraft] = useState("");
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
@@ -206,7 +223,13 @@ export default function LearnClient({ classId, chapterId }: Props) {
         <section
           className={`${tab === "chat" ? "flex" : "hidden"} ${PANE} lg:col-start-2 lg:row-start-2`}
         >
-          <TutorChat focusedError={focusedError} chapterNumber={chapterNumber} />
+          <TutorChat
+            focusedError={focusedError}
+            chapterNumber={chapterNumber}
+            entryMode={entryMode}
+            hskContext={hskContext}
+            hotwordContext={hotwordContext}
+          />
         </section>
       </div>
 

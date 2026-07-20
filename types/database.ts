@@ -948,6 +948,240 @@ export type Database = {
           },
         ]
       }
+      hotwords: {
+        Row: {
+          id: string
+          term: string
+          category: 'game' | 'entertainment' | 'society' | 'economy' | 'daily' | 'meme'
+          pinyin: string | null
+          literal: string | null
+          meaning: string | null
+          example: string | null
+          origin: string | null
+          register_tag: string | null
+          sources: Json
+          first_seen: string
+          status: 'active' | 'dormant'
+          exposure_until: string | null
+          dormant_at: string | null
+          impressions: number
+          likes: number
+          dislikes: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          term: string
+          category: 'game' | 'entertainment' | 'society' | 'economy' | 'daily' | 'meme'
+          pinyin?: string | null
+          literal?: string | null
+          meaning?: string | null
+          example?: string | null
+          origin?: string | null
+          register_tag?: string | null
+          sources?: Json
+          first_seen?: string
+          status?: 'active' | 'dormant'
+          exposure_until?: string | null
+          dormant_at?: string | null
+          impressions?: number
+          likes?: number
+          dislikes?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          term?: string
+          category?: 'game' | 'entertainment' | 'society' | 'economy' | 'daily' | 'meme'
+          pinyin?: string | null
+          literal?: string | null
+          meaning?: string | null
+          example?: string | null
+          origin?: string | null
+          register_tag?: string | null
+          sources?: Json
+          first_seen?: string
+          status?: 'active' | 'dormant'
+          exposure_until?: string | null
+          dormant_at?: string | null
+          impressions?: number
+          likes?: number
+          dislikes?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      hotword_feedback: {
+        Row: {
+          id: string
+          hotword_id: string
+          student_id: string
+          vote: 'like' | 'dislike'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          hotword_id: string
+          student_id: string
+          vote: 'like' | 'dislike'
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          hotword_id?: string
+          student_id?: string
+          vote?: 'like' | 'dislike'
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'hotword_feedback_hotword_id_fkey'
+            columns: ['hotword_id']
+            isOneToOne: false
+            referencedRelation: 'hotwords'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'hotword_feedback_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      hotword_impressions: {
+        Row: {
+          id: string
+          hotword_id: string
+          student_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          hotword_id: string
+          student_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          hotword_id?: string
+          student_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'hotword_impressions_hotword_id_fkey'
+            columns: ['hotword_id']
+            isOneToOne: false
+            referencedRelation: 'hotwords'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'hotword_impressions_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      hsk_generated_questions: {
+        Row: {
+          id: string
+          student_id: string
+          level: number
+          area: 'reading' | 'writing' | 'speaking'
+          mode: 'practice' | 'concept'
+          question: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          level: number
+          area: 'reading' | 'writing' | 'speaking'
+          mode: 'practice' | 'concept'
+          question?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          level?: number
+          area?: 'reading' | 'writing' | 'speaking'
+          mode?: 'practice' | 'concept'
+          question?: Json
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'hsk_generated_questions_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      feature_waitlist: {
+        Row: {
+          id: string
+          student_id: string
+          feature: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          feature: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          feature?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'feature_waitlist_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      student_hotword_interests: {
+        Row: {
+          id: string
+          student_id: string
+          category: 'game' | 'entertainment' | 'society' | 'economy' | 'daily' | 'meme'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          category: 'game' | 'entertainment' | 'society' | 'economy' | 'daily' | 'meme'
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          category?: 'game' | 'entertainment' | 'society' | 'economy' | 'daily' | 'meme'
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'student_hotword_interests_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       professor_reports: {
         Row: {
           id: string

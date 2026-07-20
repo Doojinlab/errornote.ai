@@ -132,7 +132,7 @@
       "eyebrow": "3분할 학습 화면",
       "title": "이렇게 흘러갑니다 AI가 실시간으로 분석합니다",
       "kicker": "왼쪽에 작성, 오른쪽 상단에 오류 카드, 오른쪽 하단에 AI 과외 채팅. 학습자가 타이핑하면 분석·하이라이트·카드·솔루션이 순차적으로 제시됩니다.",
-      "windowTitle": "wunote.app · 작문 — 중급 중국어 작문 (CHIN-301)",
+      "windowTitle": "errornote.ai · 작문 — 중급 중국어 작문 (CHIN-301)",
       "saved": "저장됨",
       "draftTitle": "초고 작성",
       "analyzeBtn": "AI 분석",
@@ -238,11 +238,11 @@
     },
     "footer": {
       "desc": "한국 대학교 중국어 전공 학부생을 위한 AI 기반 중국어 오류 교정 PWA.",
-      "affiliation": "경기대학교 중어중문학과 × 서강대학교 중국문화학과\n© 2026 Wunote / AI오답노트",
+      "affiliation": "경기대학교 중어중문학과 × 서강대학교 중국문화학과\n© 2026 errornote / AI오답노트",
       "columns": [
         { "title": "제품", "items": ["학습자 앱", "교수자 도구", "마켓플레이스", "로드맵"] },
         { "title": "자료", "items": ["강병규 2025 논문", "개발 기술 기획서", "프롬프트 설계", "프라이버시"] },
-        { "title": "연락", "items": ["데모 신청", "파트너십", "학회 발표", "press@wunote.app"] }
+        { "title": "연락", "items": ["데모 신청", "파트너십", "학회 발표", "press@errornote.ai"] }
       ]
     }
   },
@@ -269,6 +269,24 @@
   },
   "pages": {
     "student": {
+      "quickAsk": {
+        "title": "이거 자연스러워?",
+        "subtitle": "중국어 문장이 자연스러운지 원어민 친구처럼 즉답해 드려요. 같이 다듬어 봐요.",
+        "inputLabel": "확인할 중국어 문장",
+        "placeholder": "예: 我今天很累了",
+        "submit": "물어보기",
+        "checking": "확인 중…",
+        "scoreLabel": "자연스러움 {score}점",
+        "verdict": {
+          "natural": "자연스러워요 👍",
+          "awkward": "조금 어색해요",
+          "incorrect": "고칠 부분이 있어요"
+        },
+        "suggestionHeading": "이렇게 하면 더 자연스러워요",
+        "noteHeading": "설명",
+        "hint": "짧은 문장 하나를 넣어보세요. 최대 300자",
+        "genericError": "확인에 실패했어요. 잠시 후 다시 시도해 주세요."
+      },
       "quests": {
         "title": "오늘의 퀘스트",
         "subtitle": "어제 오류에서 만든 2분 미션이에요. 误 동반자와 함께해요.",
@@ -279,6 +297,22 @@
         "coinsEarned": "+{coins} 도장 획득",
         "allDone": "오늘 미션을 모두 끝냈어요! 🎉",
         "failed": "처리에 실패했어요. 다시 시도해 주세요."
+      },
+      "gradedReading": {
+        "title": "맞춤 리딩",
+        "subtitle": "내가 자주 틀리는 문법을 자연스럽게 심은 짧은 지문을 만들어 드려요.",
+        "emptyHint": "버튼을 누르면 내 오류 프로필에 맞춘 지문이 만들어져요.",
+        "regenerateHint": "다른 지문을 원하면 새로 만들어 보세요.",
+        "generate": "지문 생성하기",
+        "regenerate": "새 지문",
+        "generating": "생성 중…",
+        "hskLevelLabel": "HSK {level}급 수준",
+        "targetedGrammar": "이번 지문이 노린 약점",
+        "noWeakness": "특정 약점이 없어 기초 문형 위주로 만들었어요.",
+        "glossaryHeading": "낱말 풀이",
+        "questionsHeading": "이해 확인",
+        "showAnswer": "정답 보기",
+        "genericError": "생성에 실패했어요. 잠시 후 다시 시도해 주세요."
       },
       "errorDex": {
         "title": "오류 도감",
@@ -318,6 +352,28 @@
         "categoryTheme": "테마",
         "categoryAvatar": "아바타",
         "categorySticker": "스티커"
+      },
+      "tonePractice": {
+        "back": "발음 연습으로",
+        "title": "중국어 성조 연습",
+        "subtitle": "단음절을 녹음하면 실제 피치(음높이)를 분석해 성조가 맞았는지 알려드려요.",
+        "pickTarget": "연습할 성조를 고르세요",
+        "recordCta": "녹음 (2초)",
+        "recording": "녹음 중… 또렷하게!",
+        "analyzing": "분석 중…",
+        "correct": "정확해요! 🎉",
+        "wrong": "다시 해볼까요?",
+        "targetLabel": "목표",
+        "detectedLabel": "감지",
+        "detectedNone": "감지 안 됨",
+        "pitchCurve": "내 피치 곡선",
+        "noPitch": "목소리를 감지하지 못했어요. 조금 더 길고 또렷하게 발음해 주세요.",
+        "micDenied": "마이크 권한이 필요해요.",
+        "unsupported": "이 브라우저는 오디오 분석을 지원하지 않아요.",
+        "tone1": "1성 (고평)",
+        "tone2": "2성 (상승)",
+        "tone3": "3성 (저강하)",
+        "tone4": "4성 (하강)"
       },
       "league": {
         "title": "주간 리그",
@@ -408,6 +464,21 @@
           "xiaohongshu": "샤오홍수",
           "other": "일반"
         }
+      },
+      "handwriting": {
+        "title": "한자 획순 쓰기",
+        "subtitle": "획순 애니메이션을 보고, 손가락·마우스로 따라 써보며 익혀요.",
+        "pickChar": "글자를 고르세요",
+        "showStroke": "획순 보기",
+        "practice": "따라 쓰기",
+        "reset": "다시",
+        "loading": "불러오는 중…",
+        "loadError": "획순 데이터를 불러오지 못했어요.",
+        "quizStart": "칸에 순서대로 따라 써보세요.",
+        "correctStroke": "좋아요! 계속 이어서 써요.",
+        "mistake": "이 획을 다시 그어볼까요?",
+        "complete": "완성! 잘했어요 🎉 (실수 {mistakes}회)",
+        "progress": "{done}/{total} 획 · 실수 {mistakes}회"
       },
       "cardnews": {
         "title": "주간 카드뉴스",
@@ -701,6 +772,7 @@
         "title": "발음 연습",
         "subtitle": "소리 내어 읽고 AI 피드백을 받으세요",
         "historyLink": "기록 보기 →",
+        "toneDrillLink": "성조 연습 (중국어)",
         "sampleTextsTitle": "샘플 텍스트",
         "textInputLabel": "읽을 텍스트",
         "textInputPlaceholder": "샘플을 선택하거나 직접 텍스트를 입력하세요...",

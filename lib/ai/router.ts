@@ -12,6 +12,9 @@ export type TaskKind =
   | 'translate-compare'
   | 'url-analyze'
   | 'quiz-generate'
+  | 'hsk-generate'
+  | 'hotword-collect'
+  | 'hotword-generate'
   | 'remedial'
   | 'professor-report'
   | 'daily-quest'
@@ -34,6 +37,9 @@ const POLICY: Record<TaskKind, ModelChoice> = {
   'translate-compare':{ model: ROUTER_HAIKU, cacheTier: '5m', reason: '번역 비교 — 짧고 결정적' },
   'url-analyze':      { model: ROUTER_HAIKU, cacheTier: '5m', reason: 'URL 어휘·문체 추출' },
   'quiz-generate':    { model: ROUTER_HAIKU, cacheTier: '5m', reason: '오류카드 기반 빈칸 생성' },
+  'hsk-generate':     { model: ROUTER_HAIKU, cacheTier: '5m', reason: '기출 유형 기반 문제 생성' },
+  'hotword-collect':  { model: ROUTER_HAIKU, cacheTier: false, reason: '웹 검색 수집 — 캐시 무의미' },
+  'hotword-generate': { model: ROUTER_HAIKU, cacheTier: '5m', reason: '신조어 해설·안전필터 생성' },
   'professor-report': { model: ROUTER_HAIKU, cacheTier: '1h', reason: '주간 집계 — 코퍼스 RAG 캐시' },
   'daily-quest':      { model: ROUTER_HAIKU, cacheTier: '5m', reason: '어제 오류 → 2분 미션 3개 생성' },
   'graded-reading':   { model: ROUTER_HAIKU, cacheTier: '5m', reason: '약점 문법 심은 짧은 지문 생성' },

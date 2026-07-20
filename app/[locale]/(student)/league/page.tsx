@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { createServerClient } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/auth";
+import { createServerClient } from "@/lib/supabase";
 import {
   getLeagueStandings,
   leagueTier,

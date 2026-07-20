@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { createServerClient } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/auth";
+import { createServerClient } from "@/lib/supabase";
 import { calcProgressForGoals } from "@/lib/goals";
 import type { GoalProgress, LearningGoal } from "@/types/goals";
 import GoalsManager from "./GoalsManager";

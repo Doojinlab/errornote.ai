@@ -1,14 +1,44 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowUp } from "lucide-react";
-import type { AnalysisError, ChatMessage, ChatRequest } from "@/types";
+import type {
+  AnalysisError,
+  ChatMessage,
+  ChatRequest,
+  HskEntryContext,
+  HotwordEntryContext,
+  WorkspaceEntryMode,
+} from "@/types";
 import type { TutorQuiz, AddToVocabInput } from "@/lib/tutor-tools";
+import type { HskQuestion } from "@/types/hsk";
 import QuizModal from "./QuizModal";
+
+/** 생성된 HSK 문제를 튜터가 학습자에게 제시하도록 하는 숨김 킥오프 메시지. */
+function buildHskKickoff(q: HskQuestion): string {
+  const lines = [
+    "아래는 이번 세션용으로 생성된 HSK 문제입니다. 이 문제를 학습자에게 보기 좋게 제시하고,",
+    "학습자가 답하면 채점·해설해 주세요. 정답은 학습자가 답한 뒤에만 공개합니다.",
+    "",
+    `[유형] ${q.type}`,
+    `[지시] ${q.instructions}`,
+  ];
+  if (q.passage) lines.push(`[지문] ${q.passage}`);
+  lines.push(`[문제] ${q.prompt}`);
+  if (q.options?.length) {
+    lines.push("[보기]");
+    q.options.forEach((o, i) => lines.push(`${i + 1}. ${o}`));
+  }
+  return lines.join("\n");
+}
 
 interface Props {
   focusedError: AnalysisError | null;
   chapterNumber?: number;
+  /** 워크스페이스 입장 모드 — 있으면 진입 시 AI가 첫 문제/단어를 자동 제시한다. */
+  entryMode?: WorkspaceEntryMode;
+  hskContext?: HskEntryContext;
+  hotwordContext?: HotwordEntryContext;
 }
 
 /** 튜터 도구 산출물 — 채팅 말풍선에 인라인 렌더. */
@@ -20,6 +50,8 @@ interface UiMessage {
   role: "user" | "assistant";
   content: string;
   artifacts?: Artifact[];
+  /** 입장 킥오프 등 화면에 노출하지 않는 트리거 메시지(모델에는 전달). */
+  hidden?: boolean;
 }
 
 /** NDJSON 스트림 이벤트(서버 lib/tutor-stream.ts 와 1:1). */
@@ -29,7 +61,13 @@ type StreamEvent =
   | { type: "done" }
   | { type: "error"; message: string };
 
-export default function TutorChat({ focusedError, chapterNumber }: Props) {
+export default function TutorChat({
+  focusedError,
+  chapterNumber,
+  entryMode,
+  hskContext,
+  hotwordContext,
+}: Props) {
   const t = useTranslations("pages.components.tutorChat");
   const [messages, setMessages] = useState<UiMessage[]>([]);
   const [input, setInput] = useState("");
@@ -72,21 +110,58 @@ export default function TutorChat({ focusedError, chapterNumber }: Props) {
     }
   }
 
-  async function send() {
-    const text = input.trim();
+  // 입장 킥오프를 한 번만 트리거 — entryMode 가 있으면 진입 시 AI가 먼저 말을 건다.
+  const kickedOff = useRef(false);
+  useEffect(() => {
+    if (kickedOff.current || !entryMode || messages.length > 0) return;
+    kickedOff.current = true;
+    void runKickoff();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entryMode]);
+
+  async function runKickoff() {
+    if (entryMode === "hotword") {
+      const trigger = `오늘의 단어 "${hotwordContext?.term ?? ""}"로 학습을 시작할게요. 안내해 주세요.`;
+      void sendText(trigger, { hidden: true });
+      return;
+    }
+    if (entryMode === "hsk" && hskContext) {
+      // 실전 HSK: 서버에서 기출 유형 기반 문제를 생성·로그한 뒤 튜터가 그 문제를 제시하게 한다.
+      let trigger = "실전 HSK 세션을 시작할게요. 첫 문제를 내주세요.";
+      try {
+        const res = await fetch("/api/hsk/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(hskContext),
+        });
+        if (res.ok) {
+          const data = (await res.json()) as { question?: HskQuestion };
+          if (data.question) trigger = buildHskKickoff(data.question);
+        }
+      } catch {
+        /* 생성 실패 시 일반 트리거로 폴백(튜터가 유형에 맞게 즉석 출제) */
+      }
+      void sendText(trigger, { hidden: true });
+    }
+  }
+
+  async function sendText(text: string, opts?: { hidden?: boolean }) {
     if (!text || sending) return;
+    const hidden = opts?.hidden ?? false;
     const history: ChatMessage[] = [
       ...messages.map((m) => ({ role: m.role, content: m.content })),
       { role: "user", content: text },
     ];
-    setMessages((prev) => [...prev, { role: "user", content: text }]);
-    setInput("");
+    setMessages((prev) => [...prev, { role: "user", content: text, hidden }]);
     setSending(true);
 
     const body: ChatRequest = {
       messages: history,
       errorContext: focusedError ?? undefined,
       chapterNumber,
+      entryMode,
+      hskContext,
+      hotwordContext,
     };
 
     try {
@@ -134,6 +209,13 @@ export default function TutorChat({ focusedError, chapterNumber }: Props) {
     }
   }
 
+  function send() {
+    const text = input.trim();
+    if (!text || sending) return;
+    setInput("");
+    void sendText(text);
+  }
+
   return (
     <div className="flex h-full flex-col bg-ivory">
       <header className="flex items-center justify-between gap-2 border-b border-hairline bg-white px-4 py-3">
@@ -145,10 +227,11 @@ export default function TutorChat({ focusedError, chapterNumber }: Props) {
         )}
       </header>
       <div className="min-h-0 flex-1 space-y-2.5 overflow-auto p-4">
-        {messages.length === 0 && (
+        {messages.length === 0 && !entryMode && (
           <p className="mt-8 text-center text-sm text-muted">{t("emptyState")}</p>
         )}
-        {messages.map((m, i) => (
+        {messages.map((m, i) =>
+          m.hidden ? null : (
           <div
             key={i}
             className={

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getCurrentUser } from '@/lib/auth';
 import { createServerClient } from '@/lib/supabase'
 import { listReports } from '@/lib/professor-reports'
 import Card from '@/components/ui/Card'
@@ -29,9 +30,7 @@ export default async function ReportsListPage(
 ) {
   const searchParams = await props.searchParams;
   const supabase = createServerClient()
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) return null
 
   const { data: classData } = await supabase

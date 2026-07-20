@@ -1,7 +1,7 @@
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth";
 import { getTranslations } from "next-intl/server";
 import { createServerClient } from "@/lib/supabase";
-import { getCurrentUser } from "@/lib/auth";
 import Card from "@/components/ui/Card";
 import GenerateButton from "./GenerateButton";
 

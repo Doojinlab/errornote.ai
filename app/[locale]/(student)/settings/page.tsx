@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server'
 import SoundSettings from '@/components/gamification/SoundSettings'
 import { Card } from '@/components/student-ui'
 import JoinClassForm from '@/components/student/JoinClassForm'
+import HotwordInterestPicker from '@/components/student/HotwordInterestPicker'
 
 export default async function StudentSettingsPage() {
   const t = await getTranslations('pages.student.settings')
@@ -13,6 +14,8 @@ export default async function StudentSettingsPage() {
         <p className="mt-0.5 text-xs text-muted">{t('subtitle')}</p>
       </div>
       <SoundSettings />
+
+      <HotwordInterestPicker />
 
       {/* 수업 참여(선택) — 자기주도 학습이 기본이며, 교수자 수업은 옵션이다. */}
       <Card className="p-4 text-left">
