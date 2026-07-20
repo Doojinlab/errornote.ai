@@ -21,6 +21,7 @@ const REPEATS: { value: RepeatCount; label: string }[] = [
 
 export default function ListeningPlayer({
   audioScript,
+  speechText,
   cast,
   scriptPinyin,
   scriptTranslation,
@@ -31,6 +32,8 @@ export default function ListeningPlayer({
   onAudioComplete,
 }: {
   audioScript: string;
+  /** 실제 합성할 음성 텍스트(대화+질문+보기). 미지정 시 audioScript. 대본 표시는 audioScript 만. */
+  speechText?: string;
   cast?: HskSpeaker[];
   scriptPinyin?: string;
   scriptTranslation?: string;
@@ -72,7 +75,7 @@ export default function ListeningPlayer({
       const res = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: audioScript, cast }),
+        body: JSON.stringify({ text: speechText ?? audioScript, cast }),
       });
       if (!res.ok) {
         setTtsDown(true);
@@ -102,7 +105,7 @@ export default function ListeningPlayer({
     } finally {
       setSynth(false);
     }
-  }, [audioScript, cast]);
+  }, [audioScript, speechText, cast]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- 마운트 시 오디오 사전 생성(로딩 상태). 의도적.
