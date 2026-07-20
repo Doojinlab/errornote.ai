@@ -456,7 +456,7 @@ export async function loadLearnData(): Promise<LearnHomeData | null> {
     ((profileRes.data as { name: string | null } | null)?.name ?? '').trim() || '학생'
   const classId = (enrollRes.data as { class_id: string } | null)?.class_id ?? null
 
-  // 활성 수업 없음 → 빈 상태(나머지 결과는 무시).
+  // 활성 수업 없음 → 빈 상태. 나머지 조회 생략(신규/미배정 학생의 불필요 쿼리 방지 — 테스트로 고정된 불변식).
   if (!classId) {
     return {
       studentName,
